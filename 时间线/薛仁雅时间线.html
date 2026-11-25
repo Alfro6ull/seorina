@@ -32,73 +32,27 @@ a:hover { color:var(--accent); }
 .info-body,.evidence-notes {
  background:var(--white-glass); -webkit-backdrop-filter:blur(40px) saturate(105%); backdrop-filter:blur(40px) saturate(105%); box-shadow:var(--glass-depth);
 }
-.identity { display:flex; padding:clamp(24px,3.4vw,44px) 0 clamp(20px,2.45vw,32px); }
-.identity h1 { font-size:clamp(56px,7vw,96px); line-height:1.02; font-weight:700; letter-spacing:-.04em; }
-.year-banner { container-type:inline-size; overflow:hidden; background:#fff; }
-.year-collage {
- --lead-columns:1 / 11; --role-columns:7 / 12; --works-columns:2 / 8; --keyword-columns:8 / 13;
- --year-left:23%; --year-bottom:9px;
- position:relative; isolation:isolate; display:grid; grid-template-columns:repeat(12,minmax(0,1fr));
- align-content:center; align-items:baseline; row-gap:clamp(6px,1.18cqw,13px);
- min-height:clamp(208px,23cqw,282px); padding:clamp(14px,2.8cqw,33px) clamp(7px,3.4cqw,40px) clamp(16px,3.35cqw,39px);
+.identity { padding:clamp(20px,2.5vw,36px) 0 0; }
+.identity h1 { color:var(--title-hover); font:550 clamp(.86rem,1.45vw,1.25rem)/1.25 var(--sans); letter-spacing:.14em; }
+.year-banner { container-type:inline-size; overflow:hidden; padding:clamp(12px,1.6vw,22px) 0 0; text-align:center; }
+.year-display {
+ display:inline-block; padding-inline:.057em .1em; color:var(--title-hover);
+ font:700 41cqw/.81 Arial,Helvetica,sans-serif;
+ letter-spacing:-.057em; font-variant-numeric:tabular-nums; white-space:nowrap;
 }
-.year-collage[data-layout="offset"] {
- --lead-columns:3 / 13; --role-columns:2 / 8; --works-columns:4 / 10; --keyword-columns:1 / 4;
- --year-left:0%; --year-bottom:16px;
+.year-display.phase-label { font:700 21cqw/1.3 var(--sans); }
+@supports (background-clip:text) {
+ .year-display { background:linear-gradient(#172cff 18%,#203bf4 65%,#1730b9 92%); background-clip:text; color:transparent; }
 }
-.year-collage[data-layout="dual"] {
- --lead-columns:2 / 12; --role-columns:8 / 13; --works-columns:1 / 8; --keyword-columns:9 / 13;
- --year-left:32%; --year-bottom:2px;
+@media(forced-colors:active) {
+ .year-display { background:none; color:CanvasText; }
 }
-.year-collage[data-layout="single"] {
- --lead-columns:2 / 12; --role-columns:3 / 9; --keyword-columns:7 / 12; --year-left:12%;
-}
-.year-collage a { color:inherit; text-decoration:none; }
-.year-collage a:hover { color:var(--accent); text-decoration:underline; }
-.collage-lead { grid-column:var(--lead-columns); grid-row:2; min-width:0; }
-.collage-title { font-size:clamp(31px,7.55cqw,87px); font-weight:740; line-height:1.05; letter-spacing:-.045em; overflow-wrap:anywhere; text-wrap:balance; }
-.collage-title.long-title { font-size:clamp(24px,5.2cqw,59px); line-height:1.1; }
-.collage-roles { grid-column:var(--role-columns); grid-row:1; justify-self:start; color:var(--accent); font-size:clamp(.9rem,2.45cqw,1.76rem); line-height:1.22; font-weight:510; transform:rotate(-5deg); }
-.collage-year {
- position:absolute; z-index:-1; inset:auto auto var(--year-bottom) var(--year-left); pointer-events:none;
- color:#e9ecf4; font-size:clamp(100px,27.7cqw,319px); font-weight:740; line-height:.83;
- letter-spacing:-.08em; font-variant-numeric:tabular-nums; white-space:nowrap;
-}
-.collage-year.phase-label { font-size:clamp(65px,14cqw,160px); letter-spacing:-.07em; }
-.collage-works { grid-column:var(--works-columns); grid-row:3; display:grid; justify-items:start; gap:4px; min-width:0; padding:0; list-style:none; }
-.collage-works li { min-width:0; display:flex; flex-wrap:wrap; gap:0 6px; align-items:baseline; font-size:clamp(.76rem,1.45cqw,1.06rem); line-height:1.35; }
-.collage-works li:first-child { font-size:clamp(.91rem,2.7cqw,1.94rem); line-height:1.24; transform:rotate(-1.2deg); }
-.collage-works li:first-child > a { background:linear-gradient(transparent 63%,var(--lamp) 63% 89%,transparent 89%); font-weight:630; }
-.collage-works a { font-weight:480; overflow-wrap:anywhere; }
-.collage-works span { color:var(--accent); font-size:.71em; }
-.collage-keywords { grid-column:var(--keyword-columns); grid-row:3; display:grid; justify-items:start; gap:3px; min-width:0; }
-.collage-stamp { font-size:clamp(.83rem,2.05cqw,1.48rem); line-height:1.25; font-weight:510; }
-.collage-keyword-line { color:var(--accent); font-size:clamp(.72rem,1.48cqw,1.03rem); line-height:1.36; }
-.collage-topic.latin-topic { font:italic 600 1.48em/1 var(--serif,Georgia,serif); }
-.year-collage .collage-work:focus-visible { color:var(--title-hover); }
 @media(hover:hover) {
- .identity h1:hover,.year-collage .collage-work:hover,.event-body h4:hover { color:var(--title-hover); }
- .year-collage .collage-title a:hover { text-decoration:none; }
+ .event-body h4:hover { color:var(--title-hover); }
 }
 @media(prefers-reduced-motion:no-preference) {
- .year-collage > * { animation:collage-enter 390ms both cubic-bezier(.18,.71,.28,1); }
- .collage-year,.collage-works { animation-delay:38ms; }
- .collage-keywords { animation-delay:76ms; }
- @keyframes collage-enter { from { opacity:0; translate:0 8px; } to { opacity:1; translate:0 0; } }
-}
-@container (max-width:550px) {
- .year-collage[data-layout] {
-   --lead-columns:1 / 13; --role-columns:6 / 13; --works-columns:1 / 8; --keyword-columns:9 / 13;
-   --year-left:12%; --year-bottom:14px;
- }
- .year-collage[data-layout="offset"] { --lead-columns:2 / 13; --role-columns:2 / 10; --year-left:3%; }
- .year-collage[data-layout="dual"] { --lead-columns:1 / 13; --year-left:18%; }
- .year-collage { row-gap:6px; min-height:152px; padding:11px 7px 14px; }
- .collage-title { font-size:clamp(28px,10cqw,43px); }
- .collage-title.long-title { font-size:clamp(21px,7.3cqw,32px); }
- .collage-year { font-size:clamp(87px,35cqw,166px); }
- .collage-year.phase-label { font-size:clamp(58px,18cqw,94px); }
- .collage-works span { font-size:.8em; }
+ .year-display { animation:year-enter 280ms ease-out both; }
+ @keyframes year-enter { from { opacity:.15; translate:0 4px; } to { opacity:1; translate:0 0; } }
 }
 .year-stage { --stage-top:12px; --line-y:51px; --rail-inset:36px; position:relative; padding-top:var(--stage-top); }
 .year-stage::before { position:absolute; top:calc(var(--stage-top) + var(--line-y)); inset-inline:var(--rail-inset); height:1px; background:var(--ink); content:""; }
@@ -238,8 +192,6 @@ a:hover { color:var(--accent); }
 .category-label,.status { border-radius:4px; }
 @media(max-width:700px) {
  :root { --edge:18px; }
- .identity { padding:22px 0 16px; }
- .identity h1 { font-size:clamp(50px,12.2vw,70px); }
  .year-stage { --rail-inset:27px; }
  .year-track { --slots:5; }
  .track-scroll { width:24px; }
@@ -275,11 +227,6 @@ a:hover { color:var(--accent); }
  .year-heading h3 { font-size:21px; }
 }
 .month-marker { display:none; }
-@media screen and (min-width:701px) {
- .year-collage[data-layout="front"] { --year-left:18%; }
- .year-collage[data-layout="dual"] { --year-left:21%; --role-columns:7 / 12; --keyword-columns:8 / 13; }
- .year-collage[data-layout="dual"] .collage-lead { margin-inline-start:-2.4cqw; }
-}
 @media screen {
  .timeline.is-ready .phase-heading {
    position:absolute; width:1px; height:1px; min-height:0; overflow:hidden;
@@ -364,7 +311,7 @@ a:hover { color:var(--accent); }
   <div class="identity">
     <h1>薛仁雅</h1>
   </div>
-  <section class="year-banner" aria-label="年度文字拼贴" hidden></section>
+  <div class="year-banner" aria-live="polite" hidden></div>
 </header>
 <nav class="year-stage wrap" id="year-index" aria-label="横向年份时间线" hidden>
   <button class="track-scroll previous" type="button" aria-label="上一个年份" disabled>‹</button>
@@ -4933,142 +4880,13 @@ a:hover { color:var(--accent); }
   const notes = document.getElementById("evidence-notes");
   const banner = document.querySelector(".year-banner");
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
-  const { events } = JSON.parse(document.getElementById("archive").textContent);
-  const metadata = new Map(events.map(event => [event.id, event]));
-  const categoryWeight = {
-    "剧集": 32, "电影": 31, "综艺": 24, "MV·音乐": 20, "主持·颁奖": 12,
-    "舞台·活动": 11, "杂志·品牌": 7, "广播·网综": 5, "生平": 4
-  };
-  const kindWeight = { broadcast: 12, release: 11, event: 5, announcement: -4, production: -8 };
-  const keywords = [
-    ["电视剧出道", /电视剧出道/u], ["首部主演剧", /首部担任主角的电视剧/u],
-    ["短道速滑", /短道速滑/u], ["铁人三项", /铁人三项/u], ["拳击", /拳击/u],
-    ["戛纳电影节", /戛纳电影节/u], ["校园生活", /校园生活/u], ["动作戏", /动作戏/u],
-    ["影视原声", /影视原声/u], ["金牌", /获金牌|夺得金牌/u], ["演技大赏", /演技大赏/u],
-    ["Julie", /\bJulie\b/u], ["翻唱", /翻唱/u], ["红毯", /红毯/u],
-    ["音乐剧", /音乐剧/u], ["画报", /画报/u]
-  ];
-
-  function roleNames(event) {
-    if (!["剧集", "电影", "舞台·活动"].includes(event.category) || event.status === "lead") return [];
-    const role = event.detail.match(/(?:饰演?|客串)([^（。？！；]{2,32})（([가-힣]+(?:[／/、·][가-힣]+)*)/u);
-    if (!role) return [];
-    const count = role[2].split(/[／/、·]/u).length;
-    return role[1].split(/[／/、和]/u).slice(-count).map(name =>
-      name.trim().replace(/^.*的/u, "").replace(/^(?:女主角?|男主角?|空乘|演员|前女友)/u, "").trim()
-    ).filter(name => /^[\p{Script=Han}·]{2,9}$/u.test(name));
-  }
-
-  const castByWork = new Map();
-  for (const event of events) {
-    const names = roleNames(event);
-    if (names.length) {
-      const title = event.project || event.title;
-      castByWork.set(title, Array.from(new Set([...(castByWork.get(title) || []), ...names])));
-    }
-  }
-
-  function snippet(className, label, id) {
-    const link = document.createElement("a");
-    link.className = className;
-    link.href = "#" + id;
-    link.textContent = label;
-    return link;
-  }
-
-  function updateCollage(record) {
-    const choicesByWork = new Map();
-    const confirmed = [];
-    for (const entry of record.entries) {
-      const id = entry.element.id;
-      const label = entry.element.querySelector("h4").textContent.trim();
-      const event = metadata.get(id);
-      const name = event?.project || label;
-      const status = entry.element.querySelector(".event-tags .status");
-      const provisional = event?.status === "lead" || event?.status === "scheduled" ||
-        status?.classList.contains("lead") || status?.classList.contains("scheduled");
-      const title = name.match(/^《([^《》]+)》(上线)?$/u)?.[1] || name;
-      const roles = provisional ? [] : (castByWork.get(name) || []);
-      const score = (provisional ? 0 : 100) + (categoryWeight[event?.category] || 0) +
-        (kindWeight[event?.kind] || 0) + roles.length * 2;
-      const choice = { id, title, roles, score, provisional, status: status?.textContent.trim(), entry, event };
-      if (!provisional) confirmed.push(choice);
-      if (score > (choicesByWork.get(name)?.score ?? -Infinity)) choicesByWork.set(name, choice);
-    }
-
-    const works = Array.from(choicesByWork.values())
-      .filter(choice => !confirmed.length || !choice.provisional)
-      .sort((left, right) => right.score - left.score)
-      .slice(0, 3);
-    const featured = works[0];
-    banner.hidden = !featured;
-    if (!featured) return;
-
-    const topics = [];
-    for (const [text, pattern] of keywords) {
-      const match = confirmed.find(choice => pattern.test(choice.event?.title + " " + choice.event?.detail));
-      if (match) topics.push({ text, id: match.id });
-      if (topics.length >= 3) break;
-    }
-    if (!topics.length) topics.push({ text: featured.status || featured.entry.category, id: featured.id });
-
-    const collage = document.createElement("div");
-    collage.className = "year-collage";
-    if (works.length === 1) collage.dataset.layout = "single";
-    else if (featured.roles.length > 1) collage.dataset.layout = "dual";
-    else collage.dataset.layout = Number(record.label) % 2 ? "offset" : "front";
-    const lead = document.createElement("div");
-    lead.className = "collage-lead";
-    const heading = document.createElement("h2");
-    heading.className = "collage-title";
-    heading.classList.toggle("long-title", featured.title.length > 12);
-    heading.append(snippet("collage-work", featured.title, featured.id));
-    lead.append(heading);
-    collage.append(lead);
-    if (featured.roles.length) {
-      const roles = document.createElement("p");
-      roles.className = "collage-roles";
-      roles.textContent = featured.roles.join(" / ");
-      collage.append(roles);
-    }
+  function updateYearBanner(record) {
     const year = document.createElement(record.label ? "time" : "span");
-    year.className = record.label ? "collage-year" : "collage-year phase-label";
+    year.className = record.label ? "year-display" : "year-display phase-label";
     if (record.label) year.dateTime = record.label;
     year.textContent = record.label || "出道前";
-    collage.append(year);
-
-    if (works.length > 1) {
-      const extras = document.createElement("ul");
-      extras.className = "collage-works";
-      for (const work of works.slice(1)) {
-        const item = document.createElement("li");
-        item.append(snippet("collage-work", work.title, work.id));
-        const label = work.roles.join(" / ") || (work.provisional ? work.status : "");
-        if (label) {
-          const detail = document.createElement("span");
-          detail.textContent = label;
-          item.append(detail);
-        }
-        extras.append(item);
-      }
-      collage.append(extras);
-    }
-    const tags = document.createElement("div");
-    tags.className = "collage-keywords";
-    tags.append(snippet("collage-stamp", topics[0].text, topics[0].id));
-    if (topics.length > 1) {
-      const line = document.createElement("p");
-      line.className = "collage-keyword-line";
-      for (const topic of topics.slice(1)) {
-        if (line.childNodes.length) line.append("  ·  ");
-        const link = snippet("collage-topic", topic.text, topic.id);
-        link.classList.toggle("latin-topic", /^[A-Za-z]/u.test(topic.text));
-        line.append(link);
-      }
-      tags.append(line);
-    }
-    collage.append(tags);
-    banner.replaceChildren(collage);
+    banner.replaceChildren(year);
+    banner.hidden = false;
   }
 
   const years = [];
@@ -5361,7 +5179,7 @@ a:hover { color:var(--accent); }
       rendered = true;
     }
     applyCategory();
-    if (changed) updateCollage(record);
+    if (changed) updateYearBanner(record);
     centerYear(animate);
   }
 
@@ -5400,7 +5218,6 @@ a:hover { color:var(--accent); }
     if (!isYear) revealDate(target, true);
   }
   track.addEventListener("click", openRecordLink);
-  banner.addEventListener("click", openRecordLink);
 
   track.addEventListener("keydown", event => {
     if (!event.target.matches(".year-node")) return;

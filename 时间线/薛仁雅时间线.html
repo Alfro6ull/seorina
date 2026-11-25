@@ -323,7 +323,7 @@ a:hover { color:var(--accent); }
  .calendar-year .event-date .month,.calendar-year .event-date .day span { display:none; }
  .calendar-year .event-date.month-precision::after { content:"—"; color:var(--muted); font-size:.67em; }
  .calendar-year .event > .dot { margin-top:13px; width:11px; height:11px; background:var(--ink); }
- .calendar-year .event.current-date > .dot { background:var(--lamp); }
+ .calendar-year .event.date-reached > .dot { background:var(--lamp); }
  .calendar-year .event.current-date .event-date { font-weight:680; }
 }
 @media screen and (max-width:700px) {
@@ -5106,7 +5106,7 @@ a:hover { color:var(--accent); }
   let railPosition = 0;
   let railWidth;
   let rendered = false;
-  let activeDate;
+  let dateProgress = { entries: [], index: -1 };
   let highlightFrame = 0;
   let dateJump;
 
@@ -5284,12 +5284,18 @@ a:hover { color:var(--accent); }
       trail = Math.max(0, tip - timeline.getBoundingClientRect().top);
     }
     timeline.style.setProperty("--date-trail", trail + "px");
-    const row = entry?.element;
-    if (activeDate !== row) {
-      activeDate?.classList.remove("current-date");
-      row?.classList.add("current-date");
-      activeDate = row;
+    const currentIndex = dated.indexOf(entry);
+    if (dateProgress.entries === dated && dateProgress.index === currentIndex) return;
+    if (dateProgress.entries !== dated) {
+      for (const { element } of dateProgress.entries) {
+        element.classList.remove("date-reached", "current-date");
+      }
     }
+    dated.forEach(({ element }, index) => {
+      element.classList.toggle("date-reached", index <= currentIndex);
+      element.classList.toggle("current-date", index === currentIndex);
+    });
+    dateProgress = { entries: dated, index: currentIndex };
   }
 
   function queueDateHighlight() {

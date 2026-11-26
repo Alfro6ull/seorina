@@ -342,8 +342,10 @@ a:hover { color:var(--accent); }
 </style>
 <style>.spring-response { scale:var(--spring-scale, 1); }</style>
 <link rel="stylesheet" href="../assets/copyright.css?v=centered">
+<link rel="stylesheet" href="../assets/archive-language.css">
+<script src="../assets/archive-language.js" defer></script>
 </head>
-<body id="top">
+<body id="top" data-archive-page="timeline" data-archive-language="zh">
 <a class="skip" href="#life">跳至事件档案</a>
 <header class="wrap">
   <nav class="archive-return" aria-label="站点导航"><a href="../">← 返回首页</a><a href="../index/">站点索引</a></nav>
@@ -5153,7 +5155,7 @@ a:hover { color:var(--accent); }
     </details>
   </article>
 </li></ol></section></section></div></div>
-  <footer class="footer">
+  <footer class="footer" id="archive-footer">
     <details class="footer-notes" id="evidence-notes">
       <summary>档案说明与待考</summary>
       <div class="evidence-notes">
@@ -5186,11 +5188,19 @@ a:hover { color:var(--accent); }
         </section>
       </div>
     </details>
-    <nav class="footer-links" aria-label="档案导航">
-      <a href="names.html">语名索引</a>
-      <a href="research.md">文字考据 <span aria-hidden="true">↗</span></a>
-      <a href="#top">返回页首 ↑</a>
-    </nav>
+    <div class="footer-actions">
+      <nav class="footer-links" aria-label="档案导航">
+        <a href="names.html">语名索引</a>
+        <a href="research.html">文字考据 <span aria-hidden="true">↗</span></a>
+        <a href="#top">返回页首 ↑</a>
+      </nav>
+      <nav class="archive-language archive-language--entry" aria-label="语名索引与考据语言">
+        <span class="archive-language__label">资料语言</span>
+        <a href="names.html" lang="zh-Hans" hreflang="zh-Hans" data-language="zh" title="中文语名索引与考据">中文</a><span aria-hidden="true">·</span>
+        <a href="names.ko.html" lang="ko" hreflang="ko" data-language="ko" title="한국어 색인·자료">한국어</a><span aria-hidden="true">·</span>
+        <a href="names.en.html" lang="en" hreflang="en" data-language="en" title="English names and research">English</a>
+      </nav>
+    </div>
   </footer>
     <section class="archive-copyright archive-copyright--detached" aria-labelledby="archive-copyright-title">
     <h2 id="archive-copyright-title">版权声明</h2>

@@ -1,0 +1,42 @@
+<!doctype html>
+<!-- Generated from {{source}} by tools/build-research.mjs. Edit the Markdown or this shared template. -->
+<html lang="{{htmlLang}}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="{{description}}">
+  <title>{{title}}</title>
+  <link rel="alternate" hreflang="zh-Hans" href="research.html">
+  <link rel="alternate" hreflang="ko" href="research.ko.html">
+  <link rel="alternate" hreflang="en" href="research.en.html">
+  <link rel="stylesheet" href="research.css">
+  <link rel="stylesheet" href="../assets/copyright.css?v=centered">
+  <link rel="stylesheet" href="../assets/archive-language.css">
+  <script src="../assets/archive-language.js" defer></script>
+</head>
+<body data-archive-page="research" data-archive-language="{{language}}">
+  <div class="scene" aria-hidden="true"></div>
+  <main id="top">
+    <nav class="research-top" aria-label="{{navLabel}}">
+      <a href="index.html">{{archiveLabel}}</a>
+      <a href="{{namesPath}}">{{namesLabel}}</a>
+      <a href="../index/">{{siteIndexLabel}}</a>
+    </nav>
+    <article class="research-body" aria-labelledby="research-title">
+{{body}}
+    </article>
+    <footer id="archive-footer" class="research-footer">
+      <nav class="research-footer-links" aria-label="{{navLabel}}">
+        <a href="#top">{{topLabel}}</a>
+        <a href="{{source}}">{{sourceLabel}}</a>
+      </nav>
+      <nav class="archive-language" data-language-switch aria-label="{{languageLabel}}">
+{{languageLinks}}
+      </nav>
+    </footer>
+    <section class="archive-copyright archive-copyright--detached" aria-labelledby="archive-copyright-title">
+{{copyright}}
+    </section>
+  </main>
+</body>
+</html>

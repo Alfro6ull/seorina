@@ -1,0 +1,47 @@
+:root { --ink:#202836; --muted:#485565; --rule:#566d8326; --mono:ui-monospace,"SFMono-Regular",Consolas,monospace; }
+*, *::before, *::after { box-sizing:border-box; }
+html { min-height:100%; background:#f6f8fb; }
+body { margin:0; color:var(--ink); font:16px/1.65 "PingFang SC","Microsoft YaHei",system-ui,sans-serif; isolation:isolate; }
+.scene { position:fixed; z-index:-1; inset:-14%; pointer-events:none; background:
+  radial-gradient(ellipse at 18% 28%,#c9e4eb70,transparent 40%),
+  radial-gradient(ellipse at 82% 18%,#ded7f272,transparent 40%),
+  radial-gradient(ellipse at 64% 86%,#f0dcc363,transparent 45%); }
+main { width:min(100% - 40px,980px); margin:24px auto 48px; padding:20px clamp(16px,4vw,44px) 24px; border:1px solid #fff; border-radius:28px;
+  background:#ffffff95; box-shadow:inset 0 1px 0 #fff,inset 0 0 12px #ffffff7a,inset 0 -2px #a9bfcc24,0 18px 52px #25486d14; }
+@supports (backdrop-filter:blur(40px)) { main { backdrop-filter:blur(40px) saturate(128%); background:#ffffff1a; } }
+@media(prefers-reduced-transparency:reduce) { main { backdrop-filter:none; background:#fff; } }
+@media(prefers-reduced-motion:no-preference) {
+ .scene { animation:mesh-shift 22s ease-in-out infinite alternate; }
+ @keyframes mesh-shift { to { transform:translate(5%,-4%) scale(1.07); } }
+}
+a { color:inherit; text-underline-offset:.23em; }
+a:focus-visible { outline:2px solid #345876; outline-offset:4px; }
+.top { min-height:48px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; border-bottom:1px solid var(--rule); }
+h1,h2 { font-weight:720; line-height:1.16; letter-spacing:-.035em; margin:0; }
+h1 { font-size:clamp(44px,7vw,86px); margin:40px 0 16px; }
+h2 { margin:48px 0 16px; font-size:clamp(25px,4vw,38px); }
+p { max-width:38em; margin:0 0 24px; color:var(--muted); }
+.languages { display:flex; flex-wrap:wrap; gap:2px 24px; border-block:1px solid var(--rule); padding:8px 0; }
+.languages a,.top a { display:inline-flex; align-items:center; min-height:44px; }
+section, li { scroll-margin-top:24px; }
+ul { list-style:none; padding:0; margin:0; border-bottom:1px solid var(--rule); }
+li { display:grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr) 100px; gap:16px; padding:12px 0; border-top:1px solid var(--rule); }
+li:target { background:#ffffff7a; }
+.name { overflow-wrap:anywhere; }
+.title-alias { position:relative; display:inline-block; max-inline-size:100%; margin-inline-start:.18em; padding-inline-start:.52em; overflow-wrap:anywhere; }
+.title-alias::before { content:""; position:absolute; inset-inline-start:0; inset-block-start:.36em; inline-size:1px; block-size:.78em; background:currentColor; opacity:.36; }
+.title-note { display:block; margin-top:2px; color:var(--muted); font-size:.75rem; }
+.title-sources li { grid-template-columns:minmax(0,1fr) minmax(0,1.35fr); }
+.title-sources .name a { display:block; width:fit-content; }
+.date { font: .79rem/1.6 var(--mono); color:var(--muted); text-align:right; padding-top:3px; white-space:nowrap; }
+footer { margin-top:40px; border-top:1px solid var(--rule); padding:16px 0; }
+@media(max-width:620px) {
+  main { width:calc(100% - 24px); margin-block:12px 24px; border-radius:20px; }
+  li { grid-template-columns:minmax(0,1fr) auto; gap:4px 12px; }
+  .title-sources li { grid-template-columns:minmax(0,1fr); }
+  .name { grid-row:2; grid-column:1/-1; }
+  .date { grid-row:1; grid-column:2; }
+}
+html[lang="en"] body { font-family:system-ui,sans-serif; }
+html[lang="ko"] body { font-family:system-ui,"Apple SD Gothic Neo","Malgun Gothic",sans-serif; word-break:keep-all; overflow-wrap:anywhere; }
+

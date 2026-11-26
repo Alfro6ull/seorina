@@ -22,8 +22,6 @@ try{renderer=new MuseRenderer($('stage'),{onError:showFallback});}catch(error){s
 $('prev').addEventListener('click',()=>gallery.select(gallery.index-1));
 $('next').addEventListener('click',()=>gallery.select(gallery.index+1));
 $('action').addEventListener('click',()=>{const label=renderer?.action();if(label)$('action').textContent=label;});
-$('fullscreen').addEventListener('click',async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();}catch{}});
-if(!document.documentElement.requestFullscreen)$('fullscreen').hidden=true;
 $('viewer').addEventListener('close',()=>renderer?.setPaused(false));
 for(const button of document.querySelectorAll('[data-close]'))button.addEventListener('click',()=> $('viewer').close());
 window.addEventListener('keydown',event=>{if($('viewer').open||event.altKey||event.ctrlKey||event.metaKey)return;if(event.key==='ArrowLeft')gallery.select(gallery.index-1);if(event.key==='ArrowRight')gallery.select(gallery.index+1);if(event.key==='Escape'&&$('viewer').open)$('viewer').close();});

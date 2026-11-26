@@ -48,3 +48,5 @@ dialog{color:var(--paper);border:1px solid #c9c1b33b;background:#1c1c1a;padding:
  .exhibit-rights{left:5%;right:5%;bottom:12px;gap:7px;font-size:8px;flex-wrap:wrap}
  .exhibit-rights a{margin-left:auto}
 }
+
+.back-index{position:absolute;z-index:4;top:28px;right:3%;width:38px;height:38px;display:grid;place-items:center;border:1px solid #ffffff38;border-radius:50%;background:#03080c55;backdrop-filter:blur(8px);color:#e3edf0;transition:background .2s,border-color .2s}.back-index svg{width:19px;height:19px;stroke:currentColor;stroke-width:1.4;fill:none}.back-index:hover{background:#d9e9a2;color:#071014;border-color:#d9e9a2}@media(max-width:700px){.back-index{top:max(16px,env(safe-area-inset-top));right:5%;width:34px;height:34px}}

@@ -54,7 +54,7 @@ export class ParticlesScene {
     this.camera.position.set(0,0,8.8);
     this.camera.lookAt(0,.1,0);
     this.group=new THREE.Group();
-    this.group.position.set(0,0,0);
+    this.group.position.set(0,.72,0);
     this.scene.add(this.group);
     this.yaw=this.yawTarget=-.15;
     this.pitch=this.pitchTarget=.015;
@@ -130,7 +130,7 @@ export class ParticlesScene {
     this.zoomTarget=this.mobile?9.5:8.8;
     this.uniforms.uPointScale.value=(this.mobile?2.8:3.0)*Math.min(devicePixelRatio||1,this.mobile?1.35:1.75);
     this.group.position.x=0;
-    this.group.position.y=0;
+    this.group.position.y=this.mobile?.78:.72;
     if(wasMobile!==undefined&&wasMobile!==this.mobile&&this.items?.length)this.setIndex(this.index);
   }
   update(dt,time,input){
@@ -145,7 +145,7 @@ export class ParticlesScene {
     this.uniforms.uPointer.value.set(input.x*(this.photoWidth||4)*.6,input.y*3.4);
     this.uniforms.uPointerActive.value+=((input.active&&!input.down?1:0)-this.uniforms.uPointerActive.value)*lerp;
     this.camera.position.z=this.zoom;
-    if(!this.reducedMotion){this.group.position.x=Math.sin(time*.29)*.105;this.group.position.y=Math.sin(time*.37)*.065;this.dust.rotation.y=time*.035;this.dust.rotation.z=Math.sin(time*.34)*.035;}
+    if(!this.reducedMotion){this.group.position.x=Math.sin(time*.29)*.105;this.group.position.y=(this.mobile?.78:.72)+Math.sin(time*.37)*.045;this.dust.rotation.y=time*.035;this.dust.rotation.z=Math.sin(time*.34)*.035;}
   }
   drag(dx,dy){this.yawTarget=THREE.MathUtils.clamp(this.yawTarget+dx*4.2,-1.28,1.28);this.pitchTarget=THREE.MathUtils.clamp(this.pitchTarget+dy*2,-.5,.5);}
   wheel(delta){this.zoomTarget=THREE.MathUtils.clamp(this.zoomTarget+delta*.012,this.mobile?8.2:6.4,this.mobile?14:13);}

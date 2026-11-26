@@ -1,34 +1,140 @@
-# MUSE — SEORINA / Image experiments
+# MUSE — SEORINA
 
-The landing page at `muse/` offers four animated previews based on the shared catalog. Each link enters an independent WebGL experiment. The landing page samples up to four reviewed public images and uses labeled graphic studies when the catalog is empty. No image files are bundled.
+An interactive photographic exhibition with four independently implemented Three.js scenes and one shared collection. `/muse/` opens the Infinite gallery; the bottom navigation links to each scene's own URL. The interface supports pointer, touch, keyboard photo selection, an image viewer, and local photo imports.
 
-Four independent URLs, shared rendering engine and one collection:
+| Route | Scene | Main interaction |
+| --- | --- | --- |
+| `muse/infinite/` | A stone gallery with dimensional frames, receding arches, warm light portals, and a real reflected floor | Drag the camera; scroll through the repeating space |
+| `muse/prism/` | A photograph seen through physical glass forms with refraction and dispersion | Move the pointer or drag to change the optical arrangement |
+| `muse/ribbon/` | Photographs mapped onto a continuous, deforming film ribbon | Drag or scroll through the film; fold/unfold the ribbon |
+| `muse/particles/` | Photographic color samples displaced by relative depth into a point sculpture | Drag the viewpoint; disturb, dissolve, and reassemble the points |
 
-- `muse/infinite/`: infinite depth archive; drag to pan, wheel to fly.
-- `muse/prism/`: interactive optical refraction and RGB dispersion.
-- `muse/ribbon/`: tessellated, scroll/drag-controlled curved film strip.
-- `muse/particles/`: GPU point-cloud disintegration and reassembly.
+`renderer.js` owns one GPU context, input handling, resizing, and the shared color-texture cache. Each module in `scenes/` owns its scene, camera, geometry, materials, interaction state, and disposal. The bundled Three.js revision is r170; its license is retained under `vendor/`. No external JavaScript CDN or build step is needed.
 
-No server, build command, CDN or external runtime dependency. Serve from the repository root, e.g. `python3 -m http.server 8769`. Local imports stay in the current tab and survive client-side scene navigation. They are never uploaded, stored in the repository, or retained on reload. Public collections larger than 80 photos are randomly sampled on each page load; use the library dialog or arrow controls to select within that sample. Local imports are capped at 80 per tab. With no eligible photos, the renderer uses eight original abstract graphic studies (not photographs of the artist). There is no automatic Instagram download.
+## Run locally
 
-## Shared image catalog
-`library.json` is the only public photo catalog read by all four scenes; paths are relative to `muse/`. Add image files under `photos/` or point to another same-origin collection under the site using relative paths. An entry must have `publish: true` to be loaded. Example (illustrative only):
-
-```json
-{"version":1,"photos":[{"id":"2026-example-01","src":"photos/2026-example-01.webp","title":"A quiet afternoon","source":"https://www.instagram.com/p/REPLACE_WITH_ACTUAL_POST/","date":"2026-01-01","tags":["daily"],"publish":true,"rights":"Record permission or applicable license here"}]}
-```
-
-`src`, `publish` and nonempty `rights` are required; only same-origin JPG/JPEG/PNG/WebP/AVIF image paths are accepted. Non-commercial use does not automatically clear copyright. Keep the exact source post, photographer/license and approval record; don't put unreviewed photos in the public Git repository, including a supposedly hidden directory.
-
-For batch imports, prepare candidate images in a **local folder outside the public repository**, create a CSV of approved images (see the sample header in `tools/index-library.py`), and run:
+Serve the repository root through HTTP, then open `/muse/`:
 
 ```sh
-python3 muse/tools/index-library.py --source /path/to/local/approved-photos --csv /path/to/review.csv
+python3 -m http.server 8769
 ```
 
-The script validates the reviewed entries, copies only those files to `muse/photos/`, and rewrites the shared manifest. It does not scrape Instagram, bypass access restrictions, or grant permission. Existing files are not automatically deleted; remove withdrawn photos from the repository and index manually.
+Opening the HTML through `file://` will not reliably load the ES modules or catalog. Production can serve these files as static assets. Existing `life/` and `filters/` remain separate sections.
 
-## Controls
-Left/right arrows switch photographs, drag/wheel changes spatial position in Infinite/Ribbon, cursor or finger moves the Prism lens or repels particles, and the action button resets the scene or dissolves/reassembles particles. Open Library to select an image, import local photos, or clear them. The expand button opens the unmodified loaded image, including the original source link where available. WebGL-unavailable devices display a plain image fallback. Reduced-motion preference disables idle camera/lens motion and shortens particle transitions.
+## One collection for all four scenes
 
-Existing life/ and filters/ are intentionally unchanged.
+`gallery.js` reads `library.json` and combines its usable public entries with the current browser's local imports. No scene has its own hardcoded image list.
+
+The initial catalog contains **six everyday photographs associated with @_seorina's Instagram posts**, together with small precomputed depth textures. Two images come from the exact posts' public photographic previews; the other four come from an attributed Sports Donga article associated with an official post by its caption. The individual carousel positions for those article images were not inspected. The manifest retains those distinctions, source links, asset URLs, publication dates, image checksums, and depth provenance. See `credits.html`, `library.json`, and `photos/depth/MODEL.md` for the corresponding records.
+
+The `rights` field records actual provenance and rights status. A source link or `publish: true` flag does not create a reuse license; no new license or permission is claimed for these photographs.
+
+### Catalog format
+
+Paths resolve relative to `muse/`. Public image and optional depth paths must remain on the same origin. Entries require `publish: true`, an image `src`, and a nonempty `rights` note. HTTPS source links are retained for the viewer. JPEG, PNG, WebP, AVIF, GIF, and BMP paths are recognized; actual decoding depends on the browser.
+
+Example schema, with illustrative filenames:
+
+```json
+{
+  "version": 2,
+  "photos": [{
+    "id": "photo-001",
+    "src": "photos/photo-001.webp",
+    "title": "A quiet afternoon",
+    "source": "https://www.instagram.com/p/ACTUAL_POST_ID/",
+    "date": "2026-01-01",
+    "tags": ["daily"],
+    "publish": true,
+    "rights": "Record the actual source and rights status here.",
+    "depthSrc": "photos/depth/photo-001.png",
+    "depthDirection": "white-near",
+    "depthModel": "Record the model actually used, if applicable."
+  }]
+}
+```
+
+Depth fields are optional. When a photo has no usable depth map, Particles uses an explicitly artistic curved sheet and identifies that presentation in the interface. It does not infer facial depth from brightness. If neither public photos nor local imports can be loaded, `demo.js` supplies four original architectural light studies, clearly labeled as studies and not as photographs of Seorina. Their depth textures describe their constructed artwork, not measured real-world geometry.
+
+### Local imports and persistence
+
+Local photos are processed entirely in the browser. They are not uploaded, added to the public catalog, or committed to the repository.
+
+- The default budget is **48 real photographs in the active collection**, with local imports taking precedence. Public entries stay in stable catalog order; they are not randomly resampled per route.
+- Imported images are normalized to a maximum side of **1600 pixels** and stored as browser-encoded image blobs in IndexedDB. Up to two images are decoded at once. The collection budget is reserved before processing a large import batch.
+- Successfully saved images survive reloads and navigation among the four routes on the same origin and browser profile. Clearing site data, private-browsing policies, or storage eviction can remove them. The selected image ID is also retained when storage permits it.
+- If IndexedDB is unavailable or a write fails, including a quota failure, usable imports remain in the current page and the store reports that they are **session-only**. They must be imported again after leaving or refreshing that page.
+- A local file must be nonempty and no larger than 40 MB. Unsupported, unreadable, oversized, duplicate, and capacity-exceeding files receive separate result codes. HEIC/HEIF files work only when the browser can decode them; no external service converts them.
+- Clear local imports removes the saved local records and restores the public collection. Failed deletion is reported rather than silently discarding visible saved records.
+
+The browser normalizes the imported image used by both the renderer and viewer; it does not retain an additional full-resolution original. Public images retain their original `src` for the viewer while oversized rendering inputs are limited to the same 1600-pixel maximum side. Depth input images are limited to 640 pixels inside the store.
+
+## Add photos with a CSV
+
+`tools/index-library.py` builds the shared catalog from local image files and explicit CSV records. It does not download Instagram content or determine a license. Start with these columns:
+
+```text
+filename,id,title,source,date,tags,publish,rights,depth_filename,depth_src,depth_model,depth_type,depth_direction
+```
+
+Only `publish=true` rows are included. Tags use `|` separators. `filename` is a plain filename under `--source`; `source` is the actual HTTPS source URL and `rights` describes the actual status.
+
+For optional depth, choose one approach:
+
+- `depth_filename`: a relative image path beneath `--source`. The map is copied to `photos/depth/` beside the catalog.
+- `depth_src` or `depthSrc`: an existing image path relative to the catalog directory. It is referenced without copying. The indexer rejects external URLs and paths escaping that directory.
+
+A row must not use both approaches. Depth values must be **white near / black far**. Optional metadata columns are `depth_model`, `depth_type`, `depth_direction`, `depth_normalization`, `depth_kind`, and `depth_description`; their camel-case manifest names are also accepted. No model name is invented for a map without model provenance.
+
+```sh
+python3 muse/tools/index-library.py \
+  --source /path/to/local/photos \
+  --csv /path/to/reviewed-photos.csv
+```
+
+`--catalog /path/to/gallery/library.json` targets another collection. Existing descriptive metadata and depth fields are preserved when the photograph is byte-identical. Replacing the photograph clears stale image/depth provenance; replacing a depth map clears its previous depth metadata unless supplied again. All input validation precedes asset copying or catalog replacement. JSON replacement is atomic. Assets omitted from the CSV are not automatically deleted from disk.
+
+## Generate depth for new photos
+
+The six bundled maps were actually generated with **Depth Anything V2 Small**, through a pinned FP32 ONNX export and CPU inference. They are relative inverse-depth predictions, normalized per image with white representing nearer regions. They supply bounded visual parallax; they are not metric measurements, complete 3D scans, or unseen back-of-subject geometry.
+
+The website does not download or run the model. For newly indexed photos, use the offline preprocessing script:
+
+```sh
+python3 -m venv /tmp/muse-depth-env
+/tmp/muse-depth-env/bin/python -m pip install -r muse/tools/requirements-depth.txt
+/tmp/muse-depth-env/bin/python muse/tools/generate-depth.py \
+  --model /path/outside/repository/model.onnx
+```
+
+Download instructions, pinned revision and SHA-256, map orientation, preprocessing, actual inference records, and `--overwrite` behavior are documented in [photos/depth/MODEL.md](photos/depth/MODEL.md). The script verifies the model and writes aligned maps plus provenance. Keep model weights outside the website repository. A changed photo crop or orientation requires a new map or the identical transformation applied to both inputs.
+
+## Shared store API
+
+```js
+import { Gallery } from './gallery.js';
+
+const gallery = new Gallery();
+gallery.addEventListener('change', event => {
+  const { items, index, status } = event.detail;
+  // Update the renderer and display meaningful status messages.
+});
+gallery.addEventListener('select', event => {
+  const { item, index } = event.detail;
+  // Update the selected photograph.
+});
+await gallery.init();
+gallery.select(1);
+const result = await gallery.importFiles(fileInput.files);
+// result: { added, failed, skipped, persisted, errors }
+// Display gallery.status.message, especially when persisted < added.
+await gallery.clearLocal();
+```
+
+The store exposes `items`, `index`, `current`, `status`, `localCount`, and `publicCount`. Both events carry `{ items, index, item, status }`. `init()` is idempotent; import and clear operations are serialized. `destroy()` aborts pending image loads, closes IndexedDB, and releases owned images and object URLs.
+
+## Controls and fallback
+
+Arrow buttons and left/right keys select a photo. Clicking an interactive photo or using the expand control opens the viewer. Library selects or imports photos. The motion control and reduced-motion preference stop optional idle movement while retaining direct manipulation. Dialogs, hidden tabs, and page transitions pause GPU work.
+
+If WebGL cannot initialize, the static-photo fallback retains the collection and viewer. Leaving a scene disposes its resources; color textures remain shared until the photo leaves the collection or the renderer is disposed.

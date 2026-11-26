@@ -1,52 +1,147 @@
-import {MuseRenderer} from './renderer.js?v=zh';
-const $=id=>document.getElementById(id),base=new URL('./',import.meta.url),two=n=>String(n).padStart(2,'0'),text=(id,v)=>$(id).textContent=v;
+import { Gallery } from './gallery.js';
+import { MuseRenderer } from './renderer.js';
+
+const $=id=>document.getElementById(id);
+const base=new URL('./',import.meta.url);
+const two=n=>String(n).padStart(2,'0');
 const modes={
- infinite:{n:'01',title:'无限影像\n宇宙',description:'穿过悬浮的照片，在记忆的纵深中漫游。',hint:'拖动平移 · 滚动漫游'},
- prism:{n:'02',title:'光学影像\n实验室',description:'移动光学透镜，看影像在折射与色散中变化。',hint:'移动光标或手指，改变折射'},
- ribbon:{n:'03',title:'流动胶卷',description:'让照片在一卷连续的胶片上流动。',hint:'拖动或滚动，转动胶卷'},
- particles:{n:'04',title:'记忆粒子',description:'让照片散成光点，再聚回原来的形状。',hint:'移动光标拨开粒子 · 点击散开'}
+  infinite:{number:'01',title:'Infinite',subtitle:'无限影像宇宙',hint:'拖动探索 · 滚动穿行',action:'重置视角'},
+  prism:{number:'02',title:'Prism',subtitle:'光学影像实验室',hint:'移动光线 · 拖动玻璃',action:'重置光线'},
+  ribbon:{number:'03',title:'Ribbon',subtitle:'流动胶卷',hint:'拖动旋转 · 滚动流转',action:'展开胶卷'},
+  particles:{number:'04',title:'Particles',subtitle:'记忆粒子',hint:'拖动看立体 · 移动指针拨动光点',action:'散开'},
 };
-const palette=[['#d9a8ab','#342632','#f6dbb2'],['#8d9eab','#263e58','#e2e2d9'],['#b9c689','#203b29','#efe3b6'],['#d6a877','#402421','#f2dfb2'],['#b4acd7','#332b5c','#f2e0df'],['#8bc7be','#143d47','#e9ebcb'],['#e7b9ce','#49303a','#ecd7b3'],['#a4bdd7','#222d48','#f5edc8']];
-let catalog=[],local=[],collection=[],index=0,mode='infinite',renderer=null,importVersion=0,notice='';
-function demo(i){
- const [a,b,c]=palette[i],cv=document.createElement('canvas');cv.width=720;cv.height=960;const x=cv.getContext('2d'),g=x.createLinearGradient(0,0,720,960);g.addColorStop(0,a);g.addColorStop(1,b);x.fillStyle=g;x.fillRect(0,0,720,960);x.save();x.translate(360,435);x.rotate((i-3.5)*.09);
- for(let j=0;j<24;j++){x.save();x.rotate(j*Math.PI/12);x.beginPath();x.moveTo(0,0);x.bezierCurveTo(230,-230,310,-50,0,-370);x.bezierCurveTo(-80,-250,-160,-90,0,0);x.strokeStyle=j%3===0?c:'rgba(255,255,255,.35)';x.lineWidth=j%3===0?3:1.1;x.stroke();x.restore();}
- x.fillStyle=c;x.beginPath();x.arc(0,0,37+i*5,0,Math.PI*2);x.fill();x.restore();x.strokeStyle='rgba(255,255,255,.5)';x.strokeRect(32,32,656,896);x.fillStyle=c;x.font='28px Georgia';x.fillText('M U S E',56,92);x.font='15px monospace';x.fillText('ORIGINAL GRAPHIC STUDY / '+two(i+1),56,898);x.font='180px Georgia';x.globalAlpha=.30;x.fillText(two(i+1),44,825);x.globalAlpha=1;
- return{id:'demo-'+i,title:'图形示例 '+two(i+1),image:cv,width:720,height:960,src:cv.toDataURL('image/jpeg',.87),demo:true};
+const gallery=new Gallery();
+let mode=routeMode(),renderer=null,ready=false,failed=false,importing=false;
+const modeLinks=[...document.querySelectorAll('[data-mode]')];
+function routeMode(){return Object.hasOwn(modes,location.pathname.slice(base.pathname.length).split('/')[0])?location.pathname.slice(base.pathname.length).split('/')[0]:'infinite';}
+function sourceLink(element,url){element.hidden=!url;if(url)element.href=url;else element.removeAttribute('href');}
+function notify(message){$('status').textContent=message||'';$('status').hidden=!message;}
+
+function showFallback(error){
+  console.warn('MUSE renderer:',error);
+  if(renderer){renderer.dispose();renderer=null;}
+  failed=true;$('stage').hidden=true;$('fallback').hidden=false;
+  $('action').disabled=true;$('motion').disabled=true;
+  if(gallery.current)$('fallback').src=gallery.current.src;
+  notify('此设备暂时使用静态照片浏览。图库与原图仍可打开。');
+  $('loading').hidden=true;
 }
-const demos=palette.map((_,i)=>demo(i));
-function safeSource(v){try{const u=new URL(v);return u.protocol==='https:'?u.href:null;}catch{return null;}}
-function photoPath(v){try{const u=new URL(v,base);return u.origin===base.origin&&/\.(jpe?g|png|webp|avif)$/i.test(u.pathname)?u.href:null;}catch{return null;}}
-function loadImage(src,meta){return new Promise((resolve,reject)=>{const img=new Image();img.decoding='async';img.onload=()=>img.naturalWidth&&img.naturalHeight?resolve({...meta,src,image:img,width:img.naturalWidth,height:img.naturalHeight}):reject(Error('Empty image'));img.onerror=()=>reject(Error('Image load failed'));img.src=src;});}
-function setCollection(preferred){const old=preferred||collection[index]?.id;collection=[...local,...catalog];if(!collection.length)collection=demos;const i=collection.findIndex(p=>p.id===old);index=i<0?0:i;renderer?.setCollection(collection,index);updateUI();renderLibrary();}
-async function loadCatalog(){
- try{const res=await fetch(new URL('library.json',base),{cache:'no-cache'});if(!res.ok)throw Error('Catalog unavailable');const json=await res.json();if(!Array.isArray(json.photos))throw Error('Invalid catalog');const entries=json.photos.filter(x=>x&&x.publish===true&&typeof x.rights==='string'&&x.rights.trim()&&photoPath(x.src));const loaded=[];
- // Choose a representative rotating sample when the library is larger than the session budget.
- const chosen=[...entries];if(chosen.length>80){for(let i=chosen.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[chosen[i],chosen[j]]=[chosen[j],chosen[i]];}chosen.length=80;}
- for(let i=0;i<chosen.length;i+=8){const batch=await Promise.allSettled(chosen.slice(i,i+8).map((x,j)=>loadImage(photoPath(x.src),{id:String(x.id||'catalog-'+(i+j)),title:String(x.title||x.id||'照片'),source:safeSource(x.source),date:x.date||'',tags:Array.isArray(x.tags)?x.tags:[]})));batch.forEach(r=>{if(r.status==='fulfilled')loaded.push(r.value);});}
- catalog=loaded;notice=loaded.length!==chosen.length?'部分图片未能加载':entries.length>80?'展示 80 张，共 '+entries.length+' 张公开照片':'';
- }catch{notice='图库暂不可用，仍可本地导入';}setCollection();
+function updatePhoto(){
+  const photo=gallery.current;if(!photo)return;
+  $('photo-title').textContent=photo.title;
+  $('counter').textContent=`${two(gallery.index+1)} / ${two(gallery.items.length)}`;
+  $('count').textContent=two(gallery.items.filter(p=>!p.demo).length);
+  $('demo-label').textContent=photo.demo?'原创建筑光影':photo.local?'本地照片':'';
+  $('demo-label').hidden=!photo.demo&&!photo.local;
+  $('prev').disabled=$('next').disabled=gallery.items.length<2;
+  sourceLink($('source'),photo.source);
+  $('stage').setAttribute('aria-label',`${modes[mode].title}：${photo.title}。${modes[mode].hint}`);
+  if(failed)$('fallback').src=photo.src;
+  const depth=mode==='particles'&&!photo.depthImage;
+  $('depth-note').hidden=!depth;
+  $('depth-note').textContent=depth?'这张照片以曲面光点呈现':' ';
+  $('action').textContent=modes[mode].action;
 }
-function modeURL(name){return new URL(name+'/',base).href;}
-function currentMode(){const route=location.pathname.slice(base.pathname.length).split('/')[0];return Object.hasOwn(modes,route)?route:'infinite';}
-function setMode(name,push=false){if(!Object.hasOwn(modes,name))name='infinite';mode=name;if(push&&location.href!==modeURL(name))history.pushState({mode:name},'',modeURL(name));const s=modes[name];document.body.dataset.scene=name;text('chapter',s.n);text('description',s.description);text('hint',s.hint);$('scene-title').replaceChildren(...s.title.split('\n').flatMap((v,i)=>i?[document.createElement('br'),document.createTextNode(v)]:[document.createTextNode(v)]));document.title=s.title.replace('\n',' ')+' — MUSE / SEORINA';document.querySelectorAll('[data-mode]').forEach(a=>{a.href=modeURL(a.dataset.mode);if(a.dataset.mode===name)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});$('action').textContent=name==='particles'?'散开':'重置视角';renderer?.setMode(name);updateUI();}
-function link(id,url){const a=$(id);a.hidden=!url;if(url)a.href=url;else a.removeAttribute('href');}
-function updateUI(){const p=collection[index];if(!p)return;text('photo-title',p.title);text('counter',two(index+1)+' / '+two(collection.length));text('clock','第 '+two(index+1)+' 帧');text('demo-label',p.demo?'图形示例':p.local?'本地导入':'');link('source',p.source);text('count',two(local.length+catalog.length));$('prev').disabled=$('next').disabled=collection.length<2;
- if(!renderer){$('fallback').src=p.src;$('fallback').hidden=false;$('action').disabled=true;}else{$('fallback').hidden=true;$('action').disabled=false;}text('status',!renderer?'静态预览':notice||((p.demo?'图形示例 · ':'')+'WEBGL / '+modes[mode].n));}
-function select(i){if(!collection.length)return;index=((i%collection.length)+collection.length)%collection.length;renderer?.setIndex(index);if(mode==='particles')$('action').textContent='散开';updateUI();}
-function openViewer(){const p=collection[index];if(!p)return;$('view-image').src=p.src;$('view-image').alt=p.title;text('view-title',p.title+(p.demo?' · 图形示例':''));link('view-source',p.source);if(!$('viewer').open)$('viewer').showModal();}
-function renderLibrary(){const grid=$('library-grid');grid.replaceChildren();text('library-count',local.length+' 张本地照片 / '+catalog.length+' 张公开照片'+(!local.length&&!catalog.length?' · 显示示例':''));$('clear-local').disabled=!local.length;collection.forEach((p,i)=>{const btn=document.createElement('button');btn.className='thumb';btn.type='button';btn.title=p.title;const img=document.createElement('img');img.src=p.src;img.alt='';img.loading='lazy';const label=document.createElement('span');label.textContent=p.title;btn.append(img,label);btn.addEventListener('click',()=>{select(i);$('library').close();});grid.append(btn);});}
-async function importFiles(files){const version=++importVersion,chosen=[...files].filter(f=>/^image\/(jpeg|png|webp|avif)$/.test(f.type)||(!f.type&&/\.(jpe?g|png|webp|avif)$/i.test(f.name))).slice(0,Math.max(0,80-local.length));if(!chosen.length){text('library-count','未选择支持的图片，或已达到本地导入上限。');return;}text('library-count','正在导入 '+chosen.length+' 张本地照片…');const loaded=[];for(let i=0;i<chosen.length;i+=5){const batch=await Promise.allSettled(chosen.slice(i,i+5).map(async f=>{const url=URL.createObjectURL(f);try{return await loadImage(url,{id:'local-'+url,title:f.name.replace(/\.[^.]+$/,''),local:true});}catch(e){URL.revokeObjectURL(url);throw e;}}));batch.forEach(r=>{if(r.status==='fulfilled')loaded.push(r.value);});if(version!==importVersion){loaded.forEach(p=>URL.revokeObjectURL(p.src));return;}}local.push(...loaded);notice=loaded.length===chosen.length?'':(chosen.length-loaded.length)+' 张本地照片未能导入';setCollection(loaded[0]?.id);if(!loaded.length)text('library-count','未能读取这些图片。');}
-function clearLocal(){importVersion++;local.forEach(p=>URL.revokeObjectURL(p.src));local=[];notice='';setCollection();}
-function fallback(message){console.warn(message);renderer=null;notice=message;updateUI();}
-try{renderer=new MuseRenderer($('stage'),{onPick:i=>{select(i);openViewer();},onError:fallback});}catch(e){fallback(e.message);}
-document.querySelector('.brand').href=base.href;const siteLinks=document.querySelectorAll('.site-nav a');siteLinks[0].href=new URL('../life/',base).href;siteLinks[1].href=new URL('../filters/',base).href;
-setCollection();setMode(currentMode());loadCatalog();
-document.querySelectorAll('[data-mode]').forEach(a=>a.addEventListener('click',e=>{if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||e.button!==0)return;e.preventDefault();setMode(a.dataset.mode,true);}));
-window.addEventListener('popstate',()=>setMode(currentMode()));
-$('library-open').addEventListener('click',()=>{$('library').showModal();renderLibrary();});$('files').addEventListener('change',e=>{importFiles(e.target.files);e.target.value='';});$('clear-local').addEventListener('click',clearLocal);
-$('drop').addEventListener('dragover',e=>{e.preventDefault();$('drop').classList.add('dragover');});$('drop').addEventListener('dragleave',()=>$('drop').classList.remove('dragover'));$('drop').addEventListener('drop',e=>{e.preventDefault();$('drop').classList.remove('dragover');importFiles(e.dataTransfer.files);});
-$('prev').addEventListener('click',()=>select(index-1));$('next').addEventListener('click',()=>select(index+1));$('inspect').addEventListener('click',openViewer);$('action').addEventListener('click',()=>{if(renderer)$('action').textContent=renderer.action();});
-$('fullscreen').addEventListener('click',async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else if(document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen();}catch{text('status','当前无法使用全屏');}});if(!document.documentElement.requestFullscreen)$('fullscreen').hidden=true;
-document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>$(b.dataset.close).close()));
-window.addEventListener('keydown',e=>{if($('library').open||$('viewer').open||e.altKey||e.ctrlKey||e.metaKey||/INPUT|TEXTAREA|BUTTON/.test(document.activeElement?.tagName||''))return;if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();select(index+(e.key==='ArrowRight'?1:-1));}if(e.key==='Enter'&&document.activeElement?.tagName!=='A'){e.preventDefault();openViewer();}});
+function setMode(next,push=false){
+  if(!Object.hasOwn(modes,next))next='infinite';
+  mode=next;const spec=modes[mode];
+  if(push)history.pushState({mode},'',new URL(mode+'/',base));
+  document.body.dataset.scene=mode;
+  document.title=`${spec.title} — MUSE / SEORINA`;
+  $('scene-title').textContent=spec.title;
+  $('scene-subtitle').textContent=`${spec.number} / ${spec.subtitle}`;
+  $('hint').textContent=spec.hint;
+  $('action').textContent=spec.action;
+  for(const link of modeLinks){link.href=new URL(link.dataset.mode+'/',base);if(link.dataset.mode===mode)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');}
+  try{renderer?.setMode(mode);}catch(error){showFallback(error);}
+  updatePhoto();
+}
+
+function renderLibrary(){
+  const grid=$('library-grid');grid.replaceChildren();
+  $('library-count').textContent=`${gallery.items.filter(p=>!p.demo).length} 张照片 · ${gallery.localCount} 张本地导入`;
+  $('clear-local').disabled=!gallery.localCount||importing;
+  gallery.items.forEach((photo,index)=>{
+    const button=document.createElement('button');button.className='thumb';button.type='button';
+    button.setAttribute('aria-label',`选择 ${photo.title}`);button.setAttribute('aria-pressed',String(index===gallery.index));
+    const image=document.createElement('img');image.src=photo.src;image.alt='';image.loading='lazy';
+    const caption=document.createElement('span');caption.textContent=photo.title;
+    button.append(image,caption);
+    button.addEventListener('click',()=>{gallery.select(index);$('library').close();});
+    grid.append(button);
+  });
+}
+function pauseForDialog(){renderer?.setPaused($('library').open||$('viewer').open);}
+function openLibrary(){renderLibrary();$('library').showModal();pauseForDialog();}
+function openViewer(){
+  const photo=gallery.current;if(!photo)return;
+  $('view-image').src=photo.src;$('view-image').alt=photo.title;$('view-title').textContent=photo.title;
+  sourceLink($('view-source'),photo.source);
+  $('viewer').showModal();pauseForDialog();
+}
+async function importFiles(files){
+  if(importing)return;importing=true;$('files').disabled=true;$('clear-local').disabled=true;
+  $('import-status').textContent='正在载入照片…';
+  try{const result=await gallery.importFiles(files);$('import-status').textContent=gallery.status.message||(result.added?`已加入 ${result.added} 张，四个展厅都可以使用。`:'请选择可读取的照片。');}
+  catch(error){$('import-status').textContent=error.message||'导入未完成，请重试。';}
+  finally{importing=false;$('files').disabled=false;renderLibrary();}
+}
+
+gallery.addEventListener('change',()=>{
+  try{renderer?.setCollection(gallery.items,gallery.index);}catch(error){showFallback(error);}
+  updatePhoto();renderLibrary();
+  if(!failed)notify(gallery.status.message);
+});
+gallery.addEventListener('select',()=>{
+  try{renderer?.setIndex(gallery.index);}catch(error){showFallback(error);}
+  updatePhoto();
+});
+
+$('brand').href=base.href;$('archive-link').href=new URL('../index/',base).href;
+$('rights-link').href=new URL('credits.html',base).href;
+try{renderer=new MuseRenderer($('stage'),{onPick:index=>{gallery.select(index);openViewer();},onError:showFallback});}catch(error){showFallback(error);}
+setMode(mode);
+$('motion').setAttribute('aria-pressed',String(!!renderer?.motion));
+$('motion').setAttribute('aria-label',renderer?.motion?'暂停自动运动':'启用自动运动');
+
+modeLinks.forEach(link=>link.addEventListener('click',event=>{
+  if(event.button||event.metaKey||event.ctrlKey||event.altKey||event.shiftKey)return;
+  event.preventDefault();if(link.dataset.mode===mode)return;
+  setMode(link.dataset.mode,true);
+}));
+window.addEventListener('popstate',()=>setMode(routeMode()));
+$('library-open').addEventListener('click',openLibrary);
+$('files').addEventListener('change',event=>{importFiles(event.target.files);event.target.value='';});
+$('clear-local').addEventListener('click',async()=>{if(importing)return;const result=await gallery.clearLocal();$('import-status').textContent=gallery.status.message||(result?.error?'清除未完成，请重试。':'已清除本地导入。');});
+$('drop').addEventListener('dragover',event=>{event.preventDefault();$('drop').classList.add('dragover');});
+$('drop').addEventListener('dragleave',()=>$('drop').classList.remove('dragover'));
+$('drop').addEventListener('drop',event=>{event.preventDefault();$('drop').classList.remove('dragover');importFiles(event.dataTransfer.files);});
+$('prev').addEventListener('click',()=>gallery.select(gallery.index-1));
+$('next').addEventListener('click',()=>gallery.select(gallery.index+1));
+$('inspect').addEventListener('click',openViewer);
+$('action').addEventListener('click',()=>{const label=renderer?.action();if(label)$('action').textContent=label;});
+$('motion').addEventListener('click',()=>{if(!renderer)return;renderer.setMotion(!renderer.motion);$('motion').setAttribute('aria-pressed',String(renderer.motion));$('motion').setAttribute('aria-label',renderer.motion?'暂停自动运动':'启用自动运动');});
+$('fullscreen').addEventListener('click',async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();}catch{notify('当前浏览器不支持全屏。');}});
+if(!document.documentElement.requestFullscreen)$('fullscreen').hidden=true;
+for(const dialog of document.querySelectorAll('dialog')){
+  dialog.addEventListener('close',pauseForDialog);
+  dialog.addEventListener('click',event=>{if(event.target!==dialog)return;const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dialog.close();});
+}
+for(const button of document.querySelectorAll('[data-close]'))button.addEventListener('click',()=>$(button.dataset.close).close());
+window.addEventListener('keydown',event=>{
+  if($('library').open||$('viewer').open||event.altKey||event.ctrlKey||event.metaKey||/INPUT|TEXTAREA|BUTTON|A/.test(document.activeElement?.tagName||''))return;
+  if(event.key==='ArrowLeft'||event.key==='ArrowRight'){event.preventDefault();gallery.select(gallery.index+(event.key==='ArrowRight'?1:-1));}
+  if(event.key==='Enter'){event.preventDefault();openViewer();}
+});
+window.addEventListener('pagehide',()=>{renderer?.setPaused(true);});
+window.addEventListener('pageshow',()=>{if(ready)pauseForDialog();});
+
+try{
+  await gallery.init();
+  // A square, depth-backed photograph is a useful first view of the point sculpture.
+  if(mode==='particles'){
+    const portrait=gallery.items.findIndex(photo=>photo.depthImage&&photo.width/photo.height>.9&&photo.width/photo.height<1.1);
+    if(portrait>=0)gallery.select(portrait);
+  }
+  ready=true;document.body.classList.add('is-ready');$('loading').hidden=true;
+}catch(error){notify(error.message||'图库暂时无法载入。');$('loading').hidden=true;}

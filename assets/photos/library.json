@@ -295,6 +295,33 @@
       "publish": true,
       "sha256": "178322ef0ccfb1c71d68d99188491c42225320616656546927afd04609cf02bc",
       "bytes": 106606
+    },
+    {
+      "id": "cntv-oasis-2023",
+      "src": "files/seorina-cntv-oasis.jpg",
+      "title": "薛仁雅 ·《Oasis》访谈",
+      "source": "https://commons.wikimedia.org/wiki/File:Seol_In-ah_interview_on_CNTV_with_Oasis_cast.jpg",
+      "sourceVideo": "https://www.youtube.com/watch?v=0coyXuL-FJc",
+      "sourceAttribution": "CNTV 역사극채널",
+      "date": "2023-03-07",
+      "width": 872,
+      "height": 1085,
+      "tags": [
+        "interview",
+        "licensed"
+      ],
+      "license": {
+        "name": "CC BY 3.0",
+        "url": "https://creativecommons.org/licenses/by/3.0/"
+      },
+      "rights": "Commons reviewer verified the CC BY 3.0 source license on 2023-07-25. Retain credit, source, license, and change notice for adaptations. Separate likeness rights are not covered.",
+      "rightsStatus": "license-documented",
+      "uses": [
+        "filter-demo"
+      ],
+      "publish": true,
+      "sha256": "de48ca7750f2fc6fe5fd9cd49c436fd88d9900a0ce2f677d6ddf9f62423046e3",
+      "bytes": 61459
     }
   ]
 }

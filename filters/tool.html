@@ -6,8 +6,8 @@
 <meta name="theme-color" content="#141414">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' blob: data:; connect-src 'self'; media-src blob:; base-uri 'none'; form-action 'none'">
 <title>长虹玻璃 · 薛仁雅档案</title>
-<link rel="stylesheet" href="./style.css?v=monitor-poster">
-<script type="module" src="./art-tools.js?v=monitor-poster"></script>
+<link rel="stylesheet" href="./style.css?v=photo-picker">
+<script type="module" src="./art-tools.js?v=photo-picker"></script>
 <link rel="stylesheet" href="../assets/copyright.css?v=centered">
 </head>
 <body>
@@ -19,13 +19,13 @@
       <div id="stage" class="stage glass-stage">
         <div class="empty" id="empty">
           <svg width="35" height="35" viewBox="0 0 36 36" fill="none" aria-hidden="true"><path d="M12 4H4v8m20-8h8v8M4 24v8h8m20-8v8h-8M18 11v14m-7-7h14" stroke="currentColor"/></svg>
-          <button type="button" class="file-primary" data-pick>选择本地图片</button>
+          <button type="button" class="file-primary" data-pick>上传照片</button>
           <p>也可以把图片拖到这里</p>
         </div>
-        <canvas id="preview" tabindex="0" hidden aria-label="滤镜预览。用方向键移动清晰区"></canvas>
+        <canvas id="preview" tabindex="0" hidden aria-label="效果画布。用方向键移动清晰区"></canvas>
         <img id="original" hidden alt="你选择的原图">
       </div>
-      <div class="viewer-foot"><span id="image-info">正在读取示例</span><span id="screen-status">未选图</span></div>
+      <div class="viewer-foot"><a id="image-source" target="_blank" rel="noopener noreferrer" hidden></a><span id="image-info"></span></div>
     </div>
     <aside class="controls" aria-label="滤镜设置">
       <h2>调整</h2>
@@ -46,12 +46,18 @@
         <button type="button" id="clean" disabled>重置效果</button>
         <button type="button" id="compare" aria-pressed="false" disabled>看原图</button>
         <button type="button" id="save" disabled>保存图片</button>
-        <button type="button" id="change" data-pick>换成我的照片</button>
+        <button type="button" id="change" data-pick>上传照片</button>
+        <button type="button" id="open-gallery">图库</button>
         <button type="button" id="reset-demo" hidden>恢复示例</button>
       </div>
       <p class="local"><i aria-hidden="true"></i>在浏览器内处理，不上传图片。</p>
     </aside>
   </section>
+  <dialog id="photo-gallery" aria-labelledby="photo-gallery-title">
+    <div class="photo-gallery-head"><h2 id="photo-gallery-title">图库</h2><button type="button" id="close-gallery" aria-label="关闭图库" autofocus>×</button></div>
+    <p id="gallery-status" role="status" hidden></p>
+    <div id="gallery-photos" class="gallery-photos"></div>
+  </dialog>
   <p id="notice" role="status" aria-live="polite"></p>
   <input id="file" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/avif,image/bmp" hidden>
 </main>

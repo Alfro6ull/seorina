@@ -1,5 +1,5 @@
 import {drawCRT,drawPoster} from './digital-art.js?v=art';
-import {filterDemo, saveFrame} from './shared.js?v=shared-photos';
+import {defaultFilterPhotoId, filterDemo, filterPhotos, photoSource, saveFrame} from './shared.js?v=photo-picker';
 import {renderGlass,createStretchBrush,renderRGBGlitch} from './art-effects.js?v=rgb-and-stretch';
 
 const el=id=>document.getElementById(id);
@@ -33,7 +33,7 @@ if(effect!=='glass'){
 function loadDefaults() {
   el('amp').value=rgb||crt?68:stretch?75:poster?65:66;el('detail').value=rgb?50:stretch?29:crt?55:poster?52:41;seed=97;
   if(poster)el('poster-title').value=demo?'SEORINA':'POSTER';
-  focus=demo?{x:.47,y:.257}:{x:.50,y:.34};
+  focus=demo?.id===defaultFilterPhotoId?{x:.47,y:.257}:{x:.50,y:.34};
   document.querySelector('input[name=tone][value=a]').checked=true;
   el('coverage-full').checked=true;
 }
@@ -59,30 +59,30 @@ function sync(){
   canvas.hidden=!image||compare;original.hidden=!image||!compare;
   el('empty').hidden=Boolean(image);
   el('compare').disabled=el('save').disabled=el('clean').disabled=!image;
-  el('reset-demo').hidden=!image||demo;
+  el('reset-demo').hidden=!image||demo?.id===defaultFilterPhotoId;
   if(stretch)el('undo').hidden=!image||compare;
   el('compare').textContent=compare?'返回滤镜':'看原图';
   el('compare').setAttribute('aria-pressed',String(compare));
-  el('screen-status').textContent=!image?'未选图':compare?'原图':'滤镜预览';
+
   queue();
 }
-async function choose(file,useDemo=false){
-  if(!file&&!useDemo)return;
+async function choose(file,useDemo=false,selected=null){
+  if(!file&&!useDemo&&!selected)return;
   const id=++serial;
   if(file&&(!/\.(png|jpe?g|webp|gif|avif|bmp)$/i.test(file.name)||file.size>24*1024*1024)){
     notice.textContent='请选择不超过 24 MB 的 JPG、PNG、WebP、GIF、AVIF 或 BMP。';return;
   }
   let next, entry;notice.textContent='';
   try{
-    entry=useDemo?await filterDemo():null;
+    entry=selected||(useDemo?await filterDemo():null);
     if(id!==serial)return;
     next=entry?.src||URL.createObjectURL(file);
     const img=new Image();img.src=next;
     await img.decode();
-    if(id!==serial){if(!useDemo)URL.revokeObjectURL(next);return;}
+    if(id!==serial){if(!entry)URL.revokeObjectURL(next);return;}
     if(!img.naturalWidth||!img.naturalHeight||img.naturalWidth*img.naturalHeight>55000000)throw Error();
     if(src?.startsWith('blob:'))URL.revokeObjectURL(src);
-    src=next;original.src=src;demo=entry;compare=false;photoName=useDemo?'seorina-kpopit':file.name.replace(/\.[^.]+$/,'');
+    src=next;original.src=src;demo=entry;compare=false;photoName=entry?(entry.id===defaultFilterPhotoId?'seorina-kpopit':entry.id):file.name.replace(/\.[^.]+$/,'');
     const scale=Math.min(1,1100/Math.max(img.naturalWidth,img.naturalHeight));
     canvas.width=Math.max(2,Math.round(img.naturalWidth*scale));canvas.height=Math.max(2,Math.round(img.naturalHeight*scale));
     const source=document.createElement('canvas');source.width=canvas.width;source.height=canvas.height;
@@ -92,9 +92,13 @@ async function choose(file,useDemo=false){
     buffer=ctx.createImageData(source.width,source.height);
     if(poster){artworkSource=source;canvas.width=canvas.height=1080}
     loadDefaults();brush?.set(image);
-    el('image-info').textContent=(demo?demo.title+'　/　':'')+img.naturalWidth+' × '+img.naturalHeight+' px';
+    const link=el('image-source'), href=photoSource(demo);
+    link.hidden=!href;
+    if(href){link.href=href;link.textContent=demo.title}
+    else{link.removeAttribute('href');link.textContent=''}
+    el('image-info').textContent=demo&&!href?demo.title+' · '+img.naturalWidth+' × '+img.naturalHeight:img.naturalWidth+' × '+img.naturalHeight;
     sync();
-  }catch{if(next&&!useDemo)URL.revokeObjectURL(next);if(id===serial){notice.textContent='无法读取图片，请试试较小的 JPG 或 PNG。';sync();}}
+  }catch{if(next&&!entry)URL.revokeObjectURL(next);if(id===serial){notice.textContent='无法读取图片，请试试较小的 JPG 或 PNG。';sync();}}
 }
 const clamp01=v=>Math.max(0,Math.min(1,v));
 function pointAt(e,limit=false){
@@ -142,5 +146,34 @@ for(const radio of document.querySelectorAll('input[type=radio]'))radio.addEvent
 el('clean').addEventListener('click',()=>{if(stretch)brush.clear();else loadDefaults();sync();});
 el('compare').addEventListener('click',()=>{compare=!compare;sync();});
 el('save').addEventListener('click',()=>{if(stretch)brush.flush();else render();saveFrame(canvas,photoName+'-'+effect,demo,({'rgb':'RGB glitch filter','stretch':'Pixel stretch filter','crt':'CRT surveillance filter','poster':'Constructivist poster','glass':'Fluted glass filter'})[effect],notice);});
+const gallery=el('photo-gallery'), galleryGrid=el('gallery-photos'), galleryStatus=el('gallery-status');
+let photoOptions;
+function showGalleryPhotos(rows){
+  galleryStatus.hidden=rows.length>0;
+  galleryStatus.textContent=rows.length?'':'暂时没有可选照片。';
+  galleryGrid.replaceChildren(...rows.map(photo=>{
+    const item=document.createElement('article');
+    item.className='gallery-photo';
+    const pick=document.createElement('button');
+    pick.type='button';pick.className='gallery-pick';pick.setAttribute('aria-label','使用：'+photo.title);
+    if(demo?.id===photo.id)pick.classList.add('is-selected');
+    const img=document.createElement('img');img.src=photo.src;img.alt='';img.loading='lazy';img.decoding='async';
+    pick.append(img);pick.addEventListener('click',()=>{gallery.close();void choose(null,false,photo)});
+    const href=photoSource(photo);
+    const title=document.createElement(href?'a':'span');title.textContent=photo.title;
+    if(href){title.href=href;title.target='_blank';title.rel='noopener noreferrer'}
+    const credit=document.createElement('small');
+    credit.textContent=photo.sourceAttribution+(photo.license?' · '+photo.license.name:'');
+    item.append(pick,title,credit);return item;
+  }));
+}
+el('open-gallery').addEventListener('click',async()=>{
+  gallery.showModal();
+  galleryStatus.hidden=false;galleryStatus.textContent='正在读取图库';
+  try{photoOptions ||= await filterPhotos();showGalleryPhotos(photoOptions)}
+  catch{galleryStatus.textContent='图库暂时打不开，仍可上传照片。'}
+});
+el('close-gallery').addEventListener('click',()=>gallery.close());
+gallery.addEventListener('close',()=>el('open-gallery').focus());
 el('reset-demo').addEventListener('click',()=>void choose(null,true));
 loadDefaults();sync();void choose(null,true);

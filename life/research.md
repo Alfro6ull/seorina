@@ -324,3 +324,9 @@
 已知区间的起止日期写在右侧。《闪亮的西瓜》《钢铁少女团》和《我的有罪之人》的拍摄或训练与播出共用各自的小型甘特条，虚线表示日期含约值或上限。每条短图的轴只比较同一个项目。
 
 正文与索引有 402 个来源入口。可用性标签区分资料页、公开视频、地区及账号受限的播放入口和待核存档。查证用途、正片访问与素材再利用分别按证据标注。实际播放条件未逐一跨地区实测。可查到的节目、报道或画报可用作出处，原片、剧照与图片的再使用以对应许可为准。 [YouTube 视频许可说明](<https://support.google.com/youtube/answer/2797468>) · [Netflix 使用范围](<https://help.netflix.com/en/node/633853347904100>) · [Prime Video 使用条款](<https://www.primevideo.com/help?nodeId=202095490>) · [Viki 地区说明](<https://support.viki.com/hc/en-us/articles/200138684-Why-Is-the-Show-I-m-Trying-to-Watch-Not-Available-in-My-Region>)
+
+## 版权声明
+
+**非官方 · 粉丝制作**。本站为非营利的薛仁雅粉丝档案，与艺人、经纪公司及相关品牌无隶属关系。
+
+不商用不等于可以转载或二改。第三方素材的权利归相应权利人所有。关于素材使用、来源或署名，请发邮件至 [alfro6ull@gmail.com](mailto:alfro6ull@gmail.com)，并附上相关页面链接。我会核实，并按情况更正或移除。

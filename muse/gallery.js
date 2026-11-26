@@ -1,3 +1,4 @@
+import { photoLibraryURL, photosFor, readPhotoLibrary } from '../assets/photos/library.js';
 import { createStudies } from './demo.js';
 
 const MODULE_BASE = new URL('./', import.meta.url);
@@ -101,7 +102,7 @@ async function mapLimited(values, limit, mapper) {
 
 /** Photo collection and local import store shared by both gallery URLs. */
 export class Gallery extends EventTarget {
-  constructor({ catalogURL = new URL('library.json', MODULE_BASE), maxItems = 48, maxDimension = 1600, includeLocal = true } = {}) {
+  constructor({ catalogURL = photoLibraryURL, maxItems = 48, maxDimension = 1600, includeLocal = true } = {}) {
     super();
     this.catalogURL = new URL(catalogURL, MODULE_BASE);
     this.includeLocal = includeLocal;
@@ -121,8 +122,8 @@ export class Gallery extends EventTarget {
     this._manifestError = null;
     this._queue = Promise.resolve();
     this._abort = new AbortController();
-    this._selectionKey = `muse:selection:${this.base.pathname}`;
-    this._dbName = `muse:photos:${this.base.pathname}`;
+    this._selectionKey = `muse:selection:${MODULE_BASE.pathname}`;
+    this._dbName = `muse:photos:${MODULE_BASE.pathname}`;
     this._destroyed = false;
   }
 
@@ -248,11 +249,7 @@ export class Gallery extends EventTarget {
     this._abort.signal.addEventListener('abort', abort, { once: true });
     const timer = setTimeout(abort, 15000);
     try {
-      const response = await fetch(this.catalogURL, { cache: 'no-cache', signal: controller.signal });
-      if (!response.ok) throw error('catalog_http', `照片目录暂时不可用（${response.status}）。`);
-      const data = await response.json();
-      const rows = Array.isArray(data) ? data : data.photos;
-      if (!Array.isArray(rows)) throw error('catalog_format', '照片目录格式不正确。');
+      const rows = photosFor(await readPhotoLibrary({ url: this.catalogURL, signal: controller.signal }), 'muse');
       const ids = new Set();
       const entries = [];
       for (const [index, row] of rows.entries()) {

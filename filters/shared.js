@@ -1,8 +1,10 @@
-export const demoUrl = new URL('./assets/seorina-kpopit-8.jpg', import.meta.url).href;
+import { photoFor } from '../assets/photos/library.js';
 
-export function saveFrame(canvas, name, isDemo, effect, notice) {
+export const filterDemo = () => photoFor('kpopit-2025-8', 'filter-demo');
+
+export function saveFrame(canvas, name, demo, effect, notice) {
   let out = canvas;
-  if (isDemo) {
+  if (demo) {
     out = document.createElement('canvas');
     out.width = Math.max(720, canvas.width);
     out.height = canvas.height + 78;
@@ -12,10 +14,10 @@ export function saveFrame(canvas, name, isDemo, effect, notice) {
     ctx.drawImage(canvas, (out.width - canvas.width) / 2, 0);
     ctx.font = '13px sans-serif';
     ctx.fillStyle = '#fff';
-    ctx.fillText('K-POPIT 케이팝잇 · Seol In-ah · ' + effect, 14, canvas.height + 19);
-    ctx.fillText('CC BY 4.0 · https://creativecommons.org/licenses/by/4.0/', 14, canvas.height + 39);
+    ctx.fillText(demo.sourceAttribution + ' · ' + demo.title + ' · ' + effect, 14, canvas.height + 19);
+    ctx.fillText(demo.license ? demo.license.name + ' · ' + demo.license.url : 'Used with permission', 14, canvas.height + 39);
     ctx.font = '11px sans-serif';
-    ctx.fillText('https://commons.wikimedia.org/wiki/File:18102025_Seol_In-ah_8.jpg', 14, canvas.height + 59);
+    ctx.fillText(demo.source, 14, canvas.height + 59);
   }
   out.toBlob(blob => {
     if (!blob) { notice.textContent = '暂时无法保存，请重试。'; return; }

@@ -6,9 +6,9 @@ outside the repository, then run:
 
     python muse/tools/generate-depth.py --model /path/to/model.onnx
 
-The default catalog is muse/library.json, resolved relative to this script.
+The default catalog is assets/photos/library.json, resolved relative to this script.
 No network requests, Instagram access, image uploads, or model downloads occur.
-The exact model source and SHA-256 are documented in photos/depth/MODEL.md.
+The exact model source and SHA-256 are documented in assets/photos/depth/MODEL.md.
 """
 
 from __future__ import annotations
@@ -92,7 +92,7 @@ def atomic_json(path: Path, value: dict) -> None:
 def arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--model", type=Path, required=True, help="Local verified Depth Anything V2 Small FP32 ONNX file; kept outside the repository")
-    parser.add_argument("--catalog", type=Path, default=Path(__file__).resolve().parents[1] / "library.json", help="Catalog JSON; image paths are relative to its parent (default: muse/library.json)")
+    parser.add_argument("--catalog", type=Path, default=Path(__file__).resolve().parents[2] / "assets/photos/library.json", help="Catalog JSON; image paths are relative to its parent (default: assets/photos/library.json)")
     parser.add_argument("--overwrite", action="store_true", help="Regenerate existing mapped depth textures; default is to skip them")
     parser.add_argument("--max-side", type=int, default=512, help="Maximum output texture dimension, without upscaling (default: 512)")
     parser.add_argument("--threads", type=int, default=4, help="ONNX Runtime CPU intra-op threads (default: 4)")
@@ -111,7 +111,7 @@ def run(args: argparse.Namespace) -> int:
     catalog = json.loads(catalog_path.read_text(encoding="utf-8"))
     if not isinstance(catalog, dict) or not isinstance(catalog.get("photos"), list):
         raise ValueError("Catalog must contain a photos array")
-    destination = local_path(root, "photos/depth", "output directory")
+    destination = local_path(root, "depth", "output directory")
     provenance_path = destination / "model-provenance.json"
     previous = json.loads(provenance_path.read_text(encoding="utf-8")) if provenance_path.exists() else {}
     if not isinstance(previous, dict):
@@ -121,6 +121,8 @@ def run(args: argparse.Namespace) -> int:
     for index, entry in enumerate(catalog["photos"]):
         if not isinstance(entry, dict):
             raise ValueError(f"photos[{index}] must be an object")
+        if "muse" not in entry.get("uses", []):
+            continue
         source = local_path(root, entry.get("src"), f"photos[{index}].src")
         if not source.is_file():
             raise ValueError(f"Missing source image: {source}")

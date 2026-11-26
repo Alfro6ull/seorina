@@ -1,4 +1,4 @@
-import {demoUrl, saveFrame} from './shared.js?v=clear-ribs';
+import {filterDemo, saveFrame} from './shared.js?v=shared-photos';
 import {renderGlass} from './art-effects.js?v=clear-ribs';
 
 const el=id=>document.getElementById(id);
@@ -42,14 +42,17 @@ async function choose(file,useDemo=false){
   if(file&&(!/\.(png|jpe?g|webp|gif|avif|bmp)$/i.test(file.name)||file.size>24*1024*1024)){
     notice.textContent='请选择不超过 24 MB 的 JPG、PNG、WebP、GIF、AVIF 或 BMP。';return;
   }
-  const next=useDemo?demoUrl:URL.createObjectURL(file);
-  const img=new Image();img.src=next;notice.textContent='';
+  let next, entry;notice.textContent='';
   try{
+    entry=useDemo?await filterDemo():null;
+    if(id!==serial)return;
+    next=entry?.src||URL.createObjectURL(file);
+    const img=new Image();img.src=next;
     await img.decode();
     if(id!==serial){if(!useDemo)URL.revokeObjectURL(next);return;}
     if(!img.naturalWidth||!img.naturalHeight||img.naturalWidth*img.naturalHeight>55000000)throw Error();
     if(src?.startsWith('blob:'))URL.revokeObjectURL(src);
-    src=next;original.src=src;demo=useDemo;compare=false;photoName=useDemo?'seorina-kpopit':file.name.replace(/\.[^.]+$/,'');
+    src=next;original.src=src;demo=entry;compare=false;photoName=useDemo?'seorina-kpopit':file.name.replace(/\.[^.]+$/,'');
     const scale=Math.min(1,1100/Math.max(img.naturalWidth,img.naturalHeight));
     canvas.width=Math.max(2,Math.round(img.naturalWidth*scale));canvas.height=Math.max(2,Math.round(img.naturalHeight*scale));
     const source=document.createElement('canvas');source.width=canvas.width;source.height=canvas.height;
@@ -58,9 +61,9 @@ async function choose(file,useDemo=false){
     image=input.getImageData(0,0,source.width,source.height);
     buffer=ctx.createImageData(source.width,source.height);
     loadDefaults();
-    el('image-info').textContent=(demo?'仁雅 · K-POPIT　/　':'')+img.naturalWidth+' × '+img.naturalHeight+' px';
+    el('image-info').textContent=(demo?demo.title+'　/　':'')+img.naturalWidth+' × '+img.naturalHeight+' px';
     sync();
-  }catch{if(!useDemo)URL.revokeObjectURL(next);if(id===serial){notice.textContent='无法读取图片，请试试较小的 JPG 或 PNG。';sync();}}
+  }catch{if(next&&!useDemo)URL.revokeObjectURL(next);if(id===serial){notice.textContent='无法读取图片，请试试较小的 JPG 或 PNG。';sync();}}
 }
 const clamp01=v=>Math.max(0,Math.min(1,v));
 canvas.addEventListener('click',e=>{

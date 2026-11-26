@@ -1,4 +1,4 @@
-import { Gallery } from './gallery.js';
+import { Gallery } from './gallery.js?v=shared-photos';
 import { MuseRenderer } from './renderer.js?v=3';
 const $=id=>document.getElementById(id);
 const gallery=new Gallery({includeLocal:false});

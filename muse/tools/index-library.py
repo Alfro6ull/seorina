@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build the shared MUSE catalog from local files and a reviewed CSV.
 
-CSV: filename,id,title,source,date,tags,publish,rights. Tags use |; publish must
+CSV: filename,id,title,source,date,tags,publish,rights,uses,license_name,license_url,permission_reference. Tags use |; publish must
 equal true; rights records the actual rights status, not an inferred license.
 Optional: depth_filename (copy from --source) OR depth_src/depthSrc (reference
 an existing map relative to the catalog), plus depth_model, depth_type,
@@ -110,21 +110,52 @@ def run(args: argparse.Namespace) -> int:
             path = local_asset(source, name, "filename")
             if not rights or post_url.scheme != "https" or not post_url.netloc or post_url.username or post_url.password:
                 raise ValueError(f"Missing rights note or valid HTTPS source: {name}")
+            use = (row.get('uses') or 'muse').strip()
+            if use not in ('muse', 'filter-demo'):
+                raise ValueError(f"Unsupported use: {use!r}")
+            label = row.get('license_name', '').strip()
+            license_url = row.get('license_url', '').strip()
+            permission = row.get('permission_reference', '').strip()
+            parsed_license = urlsplit(license_url)
+            license_ok = bool(label and parsed_license.scheme == 'https' and parsed_license.netloc and not parsed_license.username and not parsed_license.password)
+            if (label or license_url) and not license_ok:
+                raise ValueError(f"Invalid license name or HTTPS link: {name}")
+            if not (license_ok or permission):
+                raise ValueError(f"New public entries need a license or documented permission: {name}")
+            if permission and (urlsplit(permission).scheme or '/' in permission):
+                raise ValueError("Use a non-sensitive permission reference, not a private path or URL.")
             if ident in ids or name in names:
                 raise ValueError(f"Duplicate ID or filename: {name}")
             ids.add(ident)
             names.add(name)
             old = previous.get(ident, {})
-            item = dict(old) if same_asset(path, root, old.get("src"), old.get("sha256")) else {}
+            old_file = next((x for x in previous.values() if x.get('src') == 'files/' + name), None)
+            if old_file is not None and old_file.get('id') != ident:
+                raise ValueError(f"Filename already assigned to another ID: {name}")
+            if old and old.get('src') != 'files/' + name:
+                raise ValueError("Keep the existing file name when updating an ID.")
+            unchanged = same_asset(path, root, old.get("src"), old.get("sha256"))
+            item = dict(old) if unchanged else {}
+            same_grant = unchanged and ((license_ok and old.get('license') == {'name': label, 'url': license_url}) or
+                                        (not license_ok and old.get('permissionReference') == permission))
+            retained_uses = old.get('uses', []) if same_grant else []
             item.update({
-                "id": ident, "src": "photos/" + name,
+                "id": ident, "src": "files/" + name,
                 "title": row.get("title", "").strip() or ident,
                 "source": post, "date": row.get("date", "").strip(),
                 "tags": [tag.strip() for tag in row.get("tags", "").split("|") if tag.strip()],
                 "publish": True, "rights": rights,
+                "rightsStatus": "license-documented" if license_ok else "permission-documented",
+                "uses": list(dict.fromkeys([*retained_uses, use])),
                 "sha256": digest(path), "bytes": path.stat().st_size,
             })
-            schedule_copy(path, root / "photos" / name)
+            if license_ok:
+                item['license'] = {'name': label, 'url': license_url}
+                item.pop('permissionReference', None)
+            else:
+                item['permissionReference'] = permission
+                item.pop('license', None)
+            schedule_copy(path, root / "files" / name)
             depth_name = row.get("depth_filename", "").strip()
             depth_src = (row.get("depth_src", "") or row.get("depthSrc", "")).strip()
             if depth_name and depth_src:
@@ -132,7 +163,7 @@ def run(args: argparse.Namespace) -> int:
             if depth_name or depth_src:
                 if depth_name:
                     depth_path = local_asset(source, depth_name, "depth_filename")
-                    depth_value = "photos/depth/" + depth_path.name
+                    depth_value = "depth/" + depth_path.name
                     schedule_copy(depth_path, root / depth_value)
                 else:
                     depth_path = local_asset(root, depth_src, "depth_src")
@@ -162,8 +193,9 @@ def run(args: argparse.Namespace) -> int:
         if target != path:
             shutil.copy2(path, target)
     data = dict(existing)
-    version = existing.get("version", 1)
-    data.update({"version": max(2, version if isinstance(version, int) else 1), "photos": rows})
+    updates = {item['id']: item for item in rows}
+    merged = [updates.pop(ident, item) for ident, item in previous.items()] + list(updates.values())
+    data.update({"version": 3, "photos": merged})
     atomic_json(catalog, data)
     print(f"Indexed {len(rows)} photos ({sum(bool(item.get('depthSrc')) for item in rows)} with depth maps): {catalog}")
     return 0
@@ -173,7 +205,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source", required=True, type=Path)
     parser.add_argument("--csv", required=True, type=Path)
-    parser.add_argument("--catalog", type=Path, default=Path(__file__).resolve().parents[1] / "library.json")
+    parser.add_argument("--catalog", type=Path, default=Path(__file__).resolve().parents[2] / "assets/photos/library.json")
     try:
         return run(parser.parse_args())
     except (OSError, ValueError, csv.Error) as failure:

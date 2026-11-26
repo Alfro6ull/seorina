@@ -42,7 +42,7 @@ Add local photographs and their metadata to the catalog, then run:
 /tmp/muse-depth-env/bin/python muse/tools/generate-depth.py --model /path/outside/repository/model.onnx
 ```
 
-The default catalog is `muse/library.json`, resolved relative to the script rather than the current directory. For another catalog:
+The default catalog is `assets/photos/library.json`, resolved relative to the script rather than the current directory. For another catalog:
 
 ```sh
 /tmp/muse-depth-env/bin/python muse/tools/generate-depth.py --model /path/outside/repository/model.onnx --catalog /path/to/gallery/library.json

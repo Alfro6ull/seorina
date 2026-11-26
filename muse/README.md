@@ -18,76 +18,18 @@ Opening the HTML through `file://` will not reliably load the ES modules or cata
 
 ## Photo collection
 
-`gallery.js` reads `library.json` and loads only reviewed public entries from `library.json`; the exhibition has no visitor upload feature. The particle renderer consumes this collection without a hardcoded image list. `/muse/` and `/muse/particles/` use the same store.
+MUSE reads the site-wide [photo library](../assets/photos/README.md) with the
+`muse` use, loading at most 48 items. The current six photos and their hashes,
+source records and depth maps were migrated without expanding their existing
+MUSE use. They have not been granted a general reuse license. The exhibition
+has no visitor upload feature; if the catalog cannot load, original
+architectural light studies provide a fallback.
 
-The initial catalog contains **six everyday photographs associated with @_seorina's Instagram posts**, together with small precomputed depth textures. Two images come from the exact posts' public photographic previews; the other four come from an attributed Sports Donga article associated with an official post by its caption. The individual carousel positions for those article images were not inspected. The manifest retains those distinctions, source links, asset URLs, publication dates, image checksums, and depth provenance. See `credits.html`, `library.json`, and `photos/depth/MODEL.md` for the corresponding records.
-
-The `rights` field records actual provenance and rights status. A source link or `publish: true` flag does not create a reuse license; no new license or permission is claimed for these photographs.
-
-### Catalog format
-
-Paths resolve relative to `muse/`. Public image and optional depth paths must remain on the same origin. Entries require `publish: true`, an image `src`, and a nonempty `rights` note. HTTPS source links are retained for the viewer. JPEG, PNG, WebP, AVIF, GIF, and BMP paths are recognized; actual decoding depends on the browser.
-
-Example schema, with illustrative filenames:
-
-```json
-{
-  "version": 2,
-  "photos": [{
-    "id": "photo-001",
-    "src": "photos/photo-001.webp",
-    "title": "A quiet afternoon",
-    "source": "https://www.instagram.com/p/ACTUAL_POST_ID/",
-    "date": "2026-01-01",
-    "tags": ["daily"],
-    "publish": true,
-    "rights": "Record the actual source and rights status here.",
-    "depthSrc": "photos/depth/photo-001.png",
-    "depthDirection": "white-near",
-    "depthModel": "Record the model actually used, if applicable."
-  }]
-}
-```
-
-Depth fields are optional. When a photo has no usable depth map, Particles uses an explicitly artistic curved sheet and identifies that presentation in the interface. It does not infer facial depth from brightness. If neither public photos nor local imports can be loaded, `demo.js` supplies four original architectural light studies, clearly labeled as studies and not as photographs of Seorina. Their depth textures describe their constructed artwork, not measured real-world geometry.
-
-### Public catalog only
-
-The public exhibit does not provide a visitor upload control or accept local imports. Add new photographs by reviewing their source and rights, placing the image and optional depth map in the repository, then updating `library.json`.
-
-- The gallery reads up to 48 approved public entries from the catalog in stable order.
-- Public source images are loaded directly from same-origin repository assets; the renderer limits oversized GPU textures.
-- 
-- 
-- 
-- 
-
-
-
-## Add photos with a CSV
-
-`tools/index-library.py` builds the shared catalog from local image files and explicit CSV records. It does not download Instagram content or determine a license. Start with these columns:
-
-```text
-filename,id,title,source,date,tags,publish,rights,depth_filename,depth_src,depth_model,depth_type,depth_direction
-```
-
-Only `publish=true` rows are included. Tags use `|` separators. `filename` is a plain filename under `--source`; `source` is the actual HTTPS source URL and `rights` describes the actual status.
-
-For optional depth, choose one approach:
-
-- `depth_filename`: a relative image path beneath `--source`. The map is copied to `photos/depth/` beside the catalog.
-- `depth_src` or `depthSrc`: an existing image path relative to the catalog directory. It is referenced without copying. The indexer rejects external URLs and paths escaping that directory.
-
-A row must not use both approaches. Depth values must be **white near / black far**. Optional metadata columns are `depth_model`, `depth_type`, `depth_direction`, `depth_normalization`, `depth_kind`, and `depth_description`; their camel-case manifest names are also accepted. No model name is invented for a map without model provenance.
-
-```sh
-python3 muse/tools/index-library.py \
-  --source /path/to/local/photos \
-  --csv /path/to/reviewed-photos.csv
-```
-
-`--catalog /path/to/gallery/library.json` targets another collection. Existing descriptive metadata and depth fields are preserved when the photograph is byte-identical. Replacing the photograph clears stale image/depth provenance; replacing a depth map clears its previous depth metadata unless supplied again. All input validation precedes asset copying or catalog replacement. JSON replacement is atomic. Assets omitted from the CSV are not automatically deleted from disk.
+Use `tools/index-library.py` to add documented photos without overwriting
+entries used by other sections. Optional depth maps use white near, black far;
+without a map, Memory Particles uses an artistic curved sheet rather than
+inferring depth from the image brightness. See the shared photo library README
+for the CSV fields and validation commands.
 
 ## Generate depth for new photos
 

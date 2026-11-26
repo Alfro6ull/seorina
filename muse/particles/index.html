@@ -3,13 +3,14 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#03080c"><meta name="color-scheme" content="dark">
 <meta name="description" content="MUSE — Memory Particles, an unofficial fan-made interactive photo artwork.">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none';">
-<title>MUSE — Memory Particles</title><link rel="stylesheet" href="../style.css?v=site-footer"><link rel="stylesheet" href="../../assets/copyright.css?v=shared-footer"></head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none';">
+<title>MUSE — Memory Particles</title><link rel="stylesheet" href="../style.css?v=local-try"><link rel="stylesheet" href="../../assets/copyright.css?v=shared-footer"></head>
 <body data-scene="particles"><main id="exhibit">
 <canvas id="stage" aria-label="MUSE Memory Particles interactive photo artwork"></canvas><img id="fallback" alt="" hidden><div class="vignette" aria-hidden="true"></div>
 <header class="exhibit-title"><a href="../" aria-label="MUSE exhibition index">MUSE</a><span>/</span><strong>MEMORY PARTICLES</strong></header>
 <a id="back-index" class="back-index" href="../" aria-label="返回 MUSE 索引" title="返回 MUSE 索引"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m7-7-7 7 7 7"/></svg></a>
 <div class="photo-meta"><span id="photo-title"></span><span id="source-attribution"></span><a id="source-article" target="_blank" rel="noopener noreferrer" hidden>图片出处 ↗</a><a id="source" target="_blank" rel="noopener noreferrer" hidden>Instagram 原帖 ↗</a></div>
+<div class="local-photo-tools"><button id="local-choose" type="button" disabled>本机试图</button><button id="local-exit" type="button" hidden>返回站内照片</button><input id="local-files" type="file" accept="image/*" multiple hidden></div>
 <div class="tools" aria-label="Scene controls">
 <button id="prev" class="icon-button" aria-label="Previous photograph"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6"/></svg></button>
 <span id="counter" class="counter" aria-live="polite">01 / 01</span>
@@ -25,4 +26,4 @@
 <!-- SITE-FOOTER:END --></footer>
 <p id="status" class="status" role="status" hidden></p><div id="loading" class="loading" role="status"><span></span></div>
 <dialog id="viewer" aria-label="Photograph"><button class="viewer-close" data-close="viewer" aria-label="Close">×</button><img id="view-image" class="view-image" alt=""></dialog>
-<noscript>JavaScript is required.</noscript></main><script type="module" src="../app.js?v=gallery-selection"></script></body></html>
+<noscript>JavaScript is required.</noscript></main><script type="module" src="../app.js?v=local-try"></script></body></html>

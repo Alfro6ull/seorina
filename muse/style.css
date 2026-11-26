@@ -58,3 +58,9 @@ dialog{color:var(--paper);border:1px solid #c9c1b33b;background:#1c1c1a;padding:
  #exhibit .tools{bottom:112px}
  #exhibit .photo-meta{bottom:176px;right:5%;flex-wrap:wrap}
 }
+
+.local-photo-tools{position:absolute;z-index:4;right:3.5%;top:max(20px, env(safe-area-inset-top));display:flex;align-items:center;gap:12px;color:#e3edf0;text-shadow:0 2px 12px #000}
+.local-photo-tools button{font:inherit;font-size:.75rem;min-height:44px;padding-inline:5px;white-space:nowrap;border:0;background:none;text-decoration:underline;text-underline-offset:.24em}
+.local-photo-tools button:disabled{opacity:.45}
+.local-photo-tools [hidden]{display:none}
+@media(max-width:440px){.local-photo-tools{top:max(55px,calc(env(safe-area-inset-top) + 36px));right:5%}}

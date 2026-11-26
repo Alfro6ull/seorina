@@ -22,8 +22,12 @@ MUSE reads the site-wide [photo library](../assets/photos/README.md) with the
 `muse` use, loading at most 48 items. The current six photos and their hashes,
 source records and depth maps were migrated without expanding their existing
 MUSE use. They have not been granted a general reuse license. The exhibition
-has no visitor upload feature; if the catalog cannot load, original
-architectural light studies provide a fallback.
+allows visitors to select multiple local files with 本机试图. This is an
+in-memory preview: it decodes one selection at a time and never uploads or
+persists the files. Local photos use the curved-sheet particle mode rather
+than inferred depth. Returning to the public collection releases the current
+local object URL. If the catalog cannot load, original architectural light
+studies provide a fallback.
 
 Use `tools/index-library.py` to add documented photos without overwriting
 entries used by other sections. Optional depth maps use white near, black far;

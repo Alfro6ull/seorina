@@ -5,9 +5,9 @@
   const w=world.clientWidth,h=world.clientHeight,iw=plate.naturalWidth,ih=plate.naturalHeight;
   if(!iw)return;
   const s=Math.max(w/iw,h/ih);
-  const x=(w-iw*s)*(w<=680?.6:.5)+iw*s*.572;
-  const y=(h-ih*s)*.54+ih*s*.512;
-  focus={w,h,x,y,gw:iw*s*.288,gh:ih*s*.55};
+  const x=(w-iw*s)*(w<=680?.68:.5)+iw*s*.624;
+  const y=(h-ih*s)*.54+ih*s*.363;
+  focus={w,h,x,y,gw:iw*s*.302,gh:ih*s*.51};
   for(const [key,num] of Object.entries({'--gx':x,'--gy':y,'--gw':focus.gw,'--gh':focus.gh}))world.style.setProperty(key,num+'px');
  }
  if(plate.complete)layout();else plate.addEventListener('load',layout,{once:true});

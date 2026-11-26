@@ -1,25 +1,19 @@
-:root{--paper:#171921;--line:#ead2b435;--gold:#dcb796;--soft:#d2bbb0}
-body{min-height:100svh;display:flex;flex-direction:column;background:radial-gradient(ellipse at 74% 15%,#292228 2%,#1c1d26 47%,#171921 82%)}
-.indexbar,.catalog,.index-footer{width:min(1200px,100% - var(--edge)*2);margin-inline:auto}
-.indexbar{display:flex;justify-content:space-between;align-items:center;gap:20px;min-height:64px;border-bottom:1px solid var(--line);color:var(--soft)}
-.return-home{display:inline-flex;align-items:center;min-height:44px;gap:10px;font-size:.83rem;text-decoration:none}.return-home:hover,.return-home:focus-visible{color:#fae9d9}
+:root{--paper:#171921;--line:#ead2b435;--gold:#ddba98;--soft:#d3c1b7}
+body{min-height:100svh;display:flex;flex-direction:column;background:#171921}
+.indexbar,.catalog,.index-footer{width:min(780px,100% - var(--edge)*2);margin-inline:auto}
+.indexbar{display:flex;justify-content:space-between;align-items:center;gap:20px;min-height:61px;border-bottom:1px solid var(--line);color:var(--soft)}
+.return-home{display:inline-flex;align-items:center;min-height:44px;gap:9px;font-size:.83rem;text-decoration:none}.return-home:hover,.return-home:focus-visible{color:#fae9d9}
 .site-name{font:500 1.46rem/1 Cormorant,Georgia,serif;color:var(--cream)}
-.catalog{margin-block:clamp(24px,6vh,73px) clamp(24px,5vh,55px);display:grid;grid-template-columns:minmax(0,1fr) minmax(200px,.79fr);gap:clamp(34px,7.5vw,112px);align-items:stretch}
-.catalog-content{min-width:0}
-.catalog h1{margin:0 0 clamp(22px,5vh,45px);color:var(--gold);font:500 clamp(81px,12vw,166px)/.69 Cormorant,Georgia,serif;letter-spacing:-.066em}
+.catalog{margin-block:clamp(25px,5.6vh,61px) clamp(20px,3.5vh,39px)}
+.catalog h1{margin:0 0 clamp(24px,4.4vh,40px);color:var(--gold);font:500 clamp(80px,12vw,149px)/.73 Cormorant,Georgia,serif;letter-spacing:-.067em}
 .catalog ol{list-style:none;padding:0;margin:0;border-top:1px solid var(--line)}
 .catalog li{border-bottom:1px solid var(--line)}
-.catalog li a{display:grid;grid-template-columns:minmax(0,1fr) auto 22px;gap:clamp(8px,2.2vw,27px);align-items:center;min-height:clamp(75px,12vh,105px);color:var(--cream);text-decoration:none;transition:background .25s,color .25s;position:relative}
-.catalog li a:hover,.catalog li a:focus-visible{background:#f2b8910c;color:#f5c299}
-.entry-title{font:500 clamp(47px,6vw,85px)/.95 Cormorant,Georgia,serif;letter-spacing:-.045em}
-.entry-label{color:#d4bcb4;font-size:.82rem;white-space:nowrap}
+.catalog li a{display:grid;grid-template-columns:minmax(0,1fr) 23px;gap:12px;align-items:center;min-height:clamp(85px,12vh,106px);padding:9px 2px 12px;color:var(--cream);text-decoration:none;transition:color .25s,background .25s}
+.catalog li a:hover,.catalog li a:focus-visible{color:#f5c299;background:#f2b8910b}
+.entry-text{display:grid;gap:5px;align-content:center;justify-items:start}
+.entry-title{font:500 clamp(47px,6vw,79px)/.82 Cormorant,Georgia,serif;letter-spacing:-.045em}
+.entry-label{display:block;color:#d4bcb4;font-size:.79rem;line-height:1.35;padding-left:.16em}
 .catalog li svg{width:21px;height:21px;color:var(--gold);transition:transform .22s}.catalog li a:hover svg{transform:translateX(3px)}
-.catalog-scene{min-height:100%;position:relative;overflow:hidden;border:1px solid #ead2b438;background:#2b2332}
-.catalog-scene img{position:absolute;width:100%;height:100%;object-fit:cover;object-position:73% 50%;filter:saturate(.79) brightness(.86)}
-.catalog-scene::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#1a152224 0%,transparent 37%,#17162250 100%);pointer-events:none}
 .index-footer{margin-top:auto;color:#cfbdaf}.index-footer .archive-copyright h2{color:#f0d7c4}
-@media(max-width:780px){
- .catalog{display:block;margin-block:0 20px;position:relative;padding-top:clamp(39px,7vh,61px)}
- .catalog-scene{display:none}.catalog h1{margin-bottom:27px;font-size:clamp(75px,18.5vw,148px)}
- .catalog li a{min-height:78px}.entry-title{font-size:clamp(46px,12vw,78px)}.indexbar{min-height:57px}
-}
+@media(max-width:600px){.catalog{margin-block:36px 22px}.catalog h1{font-size:clamp(77px,20vw,112px)}.catalog li a{min-height:83px}.entry-title{font-size:clamp(47px,12vw,70px)}.indexbar{min-height:55px}}
+@media(prefers-reduced-motion:reduce){.catalog li a,.catalog li svg{transition:none}}

@@ -29,3 +29,7 @@
 .world[data-motion="living"] .living-plate{display:block}
 .world[data-motion="living"] .cave-target::before{display:none}
 @media(prefers-reduced-motion:reduce){.living-plate{display:none!important}}
+
+.cutout-flora{display:none;position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+.world[data-motion="living"] .cutout-flora{display:block}
+@media(prefers-reduced-motion:reduce){.cutout-flora{display:none!important}}

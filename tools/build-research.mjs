@@ -40,6 +40,23 @@ function escape(value) {
   return value.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
 }
 
+function createParser() {
+  const parser = new Marked({ gfm: true, breaks: false });
+  // Chinese and Korean prose joins emphasized punctuation directly to the next
+  // word. Treat that authored **text** as strong without changing the source.
+  parser.use({ extensions: [{
+    name: 'cjkStrong',
+    level: 'inline',
+    start(source) { return source.indexOf('**'); },
+    tokenizer(source) {
+      const match = /^\*\*([^*\n]+)\*\*(?=[\p{Script=Han}\p{Script=Hangul}])/u.exec(source);
+      if (match) return { type: 'cjkStrong', raw: match[0], tokens: this.lexer.inlineTokens(match[1]) };
+    },
+    renderer(token) { return `<strong>${this.parser.parseInline(token.tokens)}</strong>`; },
+  }] });
+  return parser;
+}
+
 function markdownLinks(tokens) {
   const result = [];
   const walk = token => {
@@ -61,7 +78,7 @@ for (const locale of languages) {
   const source = `research${locale.suffix}.md`;
   const output = `research${locale.suffix}.html`;
   const markdown = await readFile(path.join(root, 'life', source), 'utf8');
-  const parser = new Marked({ gfm: true, breaks: false });
+  const parser = createParser();
   const tokens = parser.lexer(markdown);
   const titleToken = tokens.find(token => token.type === 'heading' && token.depth === 1);
   if (!titleToken) throw new Error(`${source}: missing title`);
@@ -99,7 +116,7 @@ for (const locale of languages) {
   };
   parser.use({ renderer });
   const body = parser.parser(bodyTokens);
-  const copyright = new Marked().parser(copyrightTokens).replace('<h2>', '<h2 id="archive-copyright-title">');
+  const copyright = createParser().parser(copyrightTokens).replace('<h2>', '<h2 id="archive-copyright-title">');
   const structure = { sections: sectionCount, tables: tableCount, rows: tableRows };
   if (expectedStructure && JSON.stringify(structure) !== JSON.stringify(expectedStructure)) {
     throw new Error(`${source}: heading/table structure differs across translations`);

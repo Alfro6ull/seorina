@@ -56,7 +56,7 @@ a:focus-visible, .research-table:focus-visible { outline: 2px solid #345876; out
   letter-spacing: -.025em;
   overflow-wrap: anywhere;
 }
-.research-body h1 { max-width: 21ch; margin: 40px 0 24px; font-size: clamp(36px, 5vw, 64px); }
+.research-body h1 { max-width: 21ch; margin: 40px 0 24px; font-size: clamp(36px, 5vw, 64px); text-wrap: balance; }
 .research-body h2 { margin: 56px 0 20px; font-size: clamp(25px, 3vw, 34px); }
 .research-body h3 { margin: 36px 0 16px; font-size: 1.35rem; }
 .research-body > p, .research-body > ul, .research-body > ol { max-width: 80ch; }

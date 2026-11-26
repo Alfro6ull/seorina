@@ -25,3 +25,7 @@
 .quick-index nav a:hover{color:#ffd6a3}.quick-index .full-index{border-top:1px solid var(--rule);color:#e9c6a8;font-size:12px}
 .quick-index summary:focus-visible{outline:2px solid #fff2db;outline-offset:5px}
 @media(max-width:680px){.quick-index{top:max(12px,env(safe-area-inset-top));right:calc(var(--edge) - 2px)}}
+.living-plate{display:none;position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.world[data-motion="living"] .living-plate{display:block}
+.world[data-motion="living"] .cave-target::before{display:none}
+@media(prefers-reduced-motion:reduce){.living-plate{display:none!important}}

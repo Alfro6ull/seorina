@@ -45,6 +45,11 @@ function attach(avatar, banner, reduce) {
   let landingStart = null;
   let frame = 0;
   let previousFrame = 0;
+  let idlePhase = 0;
+  let lastIdlePaint = 0;
+  let inside = false;
+  let destroyed = false;
+  const idleInterval = 1000 / 30;
 
   function reactWord(progress, light, shineX) {
     const acting = progress > 0 && progress < 1;
@@ -145,6 +150,11 @@ function attach(avatar, banner, reduce) {
     const shineX = mix(scene.shineFrom, scene.shineTo, travel);
     reactWord(progress, light, shineX);
     paintLights(light, shineX, pulse, progress);
+    paintActor(progress, light, moving);
+  }
+
+  function paintActor(progress = 0, light = 0, moving = 0) {
+    if (!scene) return;
     if (!mode || !scene.actorWidth || !scene.actorHeight) return;
 
     actor.clearRect(0, 0, scene.actorWidth, scene.actorHeight);
@@ -163,7 +173,8 @@ function attach(avatar, banner, reduce) {
       }
       actor.restore();
     }
-    const options = {x, y, height:actorHeight, phase, moving, facing};
+    const options = {x, y, height:actorHeight, phase, moving, facing,
+      idle:reduce.matches ? 0 : 1, idlePhase};
     if (mode === 'figure') drawFigure(actor, {...options, outfit, action:progress});
     else drawActivity(actor, {...options, mode, action:progress});
   }
@@ -175,6 +186,7 @@ function attach(avatar, banner, reduce) {
   }
 
   function measure() {
+    if (destroyed) return;
     const heroBox = banner.getBoundingClientRect();
     const avatarBox = avatar.getBoundingClientRect();
     if (!heroBox.width || !avatarBox.height) return;
@@ -204,7 +216,36 @@ function attach(avatar, banner, reduce) {
     lightCanvas.style.height = height + 'px';
     sizeCanvas(lightCanvas, lighting, width, height, ratio);
     if (mode) sizeCanvas(actorCanvas, actor, actorBox.width, actorBox.height, ratio);
+    inside = viewportVisible();
     if (!frame) paint();
+    syncPlayback();
+  }
+
+  function viewportVisible() {
+    const box = avatar.getBoundingClientRect();
+    return box.width > 0 && box.height > 0 && box.bottom > 0 && box.right > 0 &&
+      box.top < (window.innerHeight || document.documentElement.clientHeight) &&
+      box.left < (window.innerWidth || document.documentElement.clientWidth);
+  }
+
+  function canAnimate() {
+    return !destroyed && Boolean(mode && scene) && inside && !document.hidden &&
+      !reduce.matches && avatar.isConnected !== false;
+  }
+
+  function syncPlayback() {
+    if (canAnimate()) { queue(); return; }
+    cancelAnimationFrame(frame);
+    frame = 0;
+    previousFrame = lastIdlePaint = 0;
+    actionStart = sweepStart = landingStart = null;
+    walking = false;
+    if (!destroyed) paint();
+  }
+
+  function viewportChanged() {
+    inside = viewportVisible();
+    syncPlayback();
   }
 
   function progress(start, now, duration) {
@@ -213,11 +254,23 @@ function attach(avatar, banner, reduce) {
 
   function tick(now) {
     frame = 0;
+    if (!canAnimate()) { syncPlayback(); return; }
+    const delta = previousFrame ? Math.min(64, Math.max(0, now - previousFrame)) : 0;
+    previousFrame = now;
+    idlePhase += delta * .001 * Math.PI * 2 / 4.4;
+    const active = walking || actionStart !== null || sweepStart !== null || landingStart !== null;
+    if (!active) {
+      if (!lastIdlePaint || now - lastIdlePaint >= idleInterval) {
+        paintActor();
+        lastIdlePaint = now;
+      }
+      queue();
+      return;
+    }
     const action = progress(actionStart, now, actionDuration);
     const sweep = progress(sweepStart, now, sweepDuration);
     const landing = progress(landingStart, now, landingDuration) ?? 1;
     const moving = walking ? 1 : 1 - landing;
-    previousFrame = now;
     const actionLight = action === null ? 0 : Math.sin(action * Math.PI);
     const sweepLight = sweep === null ? 0 : Math.sin(sweep * Math.PI);
     const pulse = Math.sin(landing * Math.PI);
@@ -227,15 +280,15 @@ function attach(avatar, banner, reduce) {
     if (action === 1) actionStart = null;
     if (sweep === 1) sweepStart = null;
     if (landing === 1) landingStart = null;
-    if (walking || actionStart !== null || sweepStart !== null || landingStart !== null) queue();
-    else {
-      previousFrame = 0;
+    lastIdlePaint = now;
+    if (!walking && actionStart === null && sweepStart === null && landingStart === null) {
       paint();
     }
+    queue();
   }
 
   function queue() {
-    if (!frame) frame = requestAnimationFrame(tick);
+    if (!frame && canAnimate()) frame = requestAnimationFrame(tick);
   }
 
   function replay() {
@@ -260,6 +313,7 @@ function attach(avatar, banner, reduce) {
     } else if (!frame) {
       paint();
     }
+    queue();
   }
 
   function walk(distance, advance = true) {
@@ -280,21 +334,34 @@ function attach(avatar, banner, reduce) {
     walking = false;
     if (landingStart !== null) queue();
     else if (!frame) paint();
+    queue();
   }
 
   const observer = new ResizeObserver(measure);
   observer.observe(banner);
   observer.observe(avatar);
-  reduce.addEventListener('change', () => {
-    if (!reduce.matches) return;
-    cancelAnimationFrame(frame);
-    frame = 0;
-    previousFrame = 0;
-    actionStart = sweepStart = landingStart = null;
-    walking = false;
-    paint();
-  });
-  return {show, walk, settle, replay};
+  let intersectionObserver = null;
+  if (typeof IntersectionObserver === 'function') {
+    intersectionObserver = new IntersectionObserver(entries => {
+      for (const entry of entries) if (entry.target === avatar) {
+        inside = entry.isIntersecting && entry.intersectionRatio > 0;
+      }
+      syncPlayback();
+    }, {threshold:0});
+    intersectionObserver.observe(avatar);
+  } else window.addEventListener('scroll', viewportChanged, {passive:true});
+  document.addEventListener('visibilitychange', syncPlayback);
+  reduce.addEventListener('change', syncPlayback);
+  function destroy() {
+    destroyed = true;
+    syncPlayback();
+    observer.disconnect();
+    intersectionObserver?.disconnect();
+    window.removeEventListener('scroll', viewportChanged);
+    document.removeEventListener('visibilitychange', syncPlayback);
+    reduce.removeEventListener('change', syncPlayback);
+  }
+  return {show, walk, settle, replay, destroy};
 }
 
 return {attach};

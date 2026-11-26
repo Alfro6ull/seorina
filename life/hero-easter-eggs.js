@@ -253,8 +253,9 @@
       ctx.save();
       ctx.globalAlpha=opacity;
       ctx.fillStyle='rgba(22,23,29,.10)';
-      ctx.beginPath();ctx.ellipse(x,geometry.ground+1,spot.height*.16,1.8,0,Math.PI*2);ctx.fill();
-      const args={x,y:geometry.ground,height:spot.height,phase:visit.phase,moving,action,facing};
+      ctx.beginPath();ctx.ellipse(x,geometry.ground+1,spot.height*.16,1.8,0,0,Math.PI*2);ctx.fill();
+      const args={x,y:geometry.ground,height:spot.height,phase:visit.phase,moving,action,facing,
+        idle:entering || leaving ? 0 : 1,idlePhase:elapsed*.001*Math.PI*2/4.4};
       if (mode==='dog' || mode==='bike' || mode==='skate') renderPose(mode,args,1);
       else {
         const blend=entering ? clamp((elapsed-ENTER+140)/140) : leaving ? 1-clamp((elapsed-DURATION+EXIT)/140) : 1;

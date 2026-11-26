@@ -14,12 +14,13 @@
  * phase: radians for locomotion; advance by distance / (0.75*height) * 2π.
  * moving: 0..1 walk/trot/push blend. Set 0 when resting.
  * action: 0..1 progress through one gesture, then stop at 1.
+ * idle: 0..1 resting motion, off by default; idlePhase is a separate breath clock.
  * facing: -1 left / 1 right. Color and accent are canvas color strings.
  *
  * Keep one requestAnimationFrame owner in the host. This module neither
  * starts a timer nor clears/resizes the canvas. Set the host's DPR transform
  * before drawing. Respect reduced motion in the host by drawing action=0,
- * moving=0 once. Ground glow, rail, labels and hit target belong to the host.
+ * moving=0 and idle=0 once. Ground glow, rail, labels and hit target belong to the host.
  *
  * Leave at least 0.50*height behind the anchor and 0.85*height in front
  * (the dog's leash is the widest pose), plus 1.20*height above the ground.
@@ -45,6 +46,13 @@
   const modeIds = new Set(modes.map(mode => mode.id));
   const finite = (value, fallback) => Number.isFinite(Number(value)) ? Number(value) : fallback;
   const clamp = value => Math.max(0, Math.min(1, finite(value, 0)));
+  // Joint offsets, never a translation of the entire figure: feet stay planted.
+  function idleMotion(options = {}) {
+    const phase=finite(options.idlePhase,0);
+    const strength=clamp(options.idle)*(1-clamp(options.moving))*(1-Math.sin(clamp(options.action)*Math.PI)*.65);
+    return {phase,strength,breath:Math.sin(phase)*.9*strength,
+      sway:Math.sin(phase*.5)*1.6*strength,tilt:Math.sin(phase*.5)*.016*strength};
+  }
 
   /**
    * Draw a single pose without modifying the host's canvas state.
@@ -57,6 +65,8 @@
    * @param {number} [options.phase=0]
    * @param {number} [options.moving=0]
    * @param {number} [options.action=0]
+   * @param {number} [options.idle=0]
+   * @param {number} [options.idlePhase=0]
    * @param {number} [options.facing=1]
    * @param {string} [options.color='#16171d']
    * @param {string} [options.accent='#2628ef']
@@ -70,6 +80,7 @@
       x: finite(options.x, 0), y: finite(options.y, 0),
       height: Math.max(0, finite(options.height, 60)),
       phase: finite(options.phase, 0),
+      idle: clamp(options.idle), idlePhase: finite(options.idlePhase,0),
       moving: mode === 'idle' ? 0 : clamp(options.moving),
       action: clamp(options.action), facing: finite(options.facing, 1) < 0 ? -1 : 1,
       mode,
@@ -158,13 +169,14 @@
   }
 
 
-    return { ctx, ink, accent:blue, point, normal, limb, knee, line, ellipse,
+    return { ctx, ink, accent:blue, rest:idleMotion(options), point, normal, limb, knee, line, ellipse,
       shoe, leg, torso, head, hand, wheel };
   }
 
   /**
    * Draw a custom pose with exactly the same anatomy as the core modes.
    * The callback receives local-coordinate painters and the original ctx.
+   * painter.rest exposes idle joint offsets; custom poses choose how to apply them.
    * Example: drawPose(ctx, {x:100,y:140,height:60}, p => {
    *   p.leg(p.point(-1.6,-51.7),p.point(-4.2,0));
    *   p.leg(p.point(1.6,-51.7),p.point(3.5,0));
@@ -205,8 +217,9 @@ function drawFigure(ctx, options = {}) {
   const turn = facing < 0 ? -1 : 1;
   const tau = Math.PI * 2;
   const cycle = ((phase / tau) % 1 + 1) % 1;
-  const bob = m * (2.7 + 1.8 * Math.cos(phase * 2));
-  const hip = { x: m * 0.8, y: -51.7 + bob };
+  const rest=idleMotion(options);
+  const bob = m * (2.7 + 1.8 * Math.cos(phase * 2))+rest.breath*.55;
+  const hip = { x: m * 0.8+rest.sway, y: -51.7 + bob };
   const mix = (a, b, t) => a + (b - a) * t;
 
   function footAt(t, idleX) {
@@ -287,7 +300,7 @@ function drawFigure(ctx, options = {}) {
 
   function arm(offset, rear) {
     const swing = Math.sin(phase + offset);
-    const shoulder = { x: rear ? -2.8 : 3.0, y: -74.3 + bob };
+    const shoulder = { x: (rear ? -2.8 : 3.0)+rest.sway, y: -74.3 + bob };
     const hand = {
       x: shoulder.x + mix(rear ? -1.8 : 2.8, swing * 11, m),
       y: -47.0 + bob - m * (2.7 + 3 * Math.abs(swing))
@@ -311,7 +324,7 @@ function drawFigure(ctx, options = {}) {
 
   // One flowing shoulder–waist–hip shape, with no internal outfit details.
   ctx.save();
-  ctx.translate(m * 0.8, bob);
+  ctx.translate(m * 0.8+rest.sway, bob);
   ctx.beginPath();
   ctx.moveTo(-3.4, -78.1);
   ctx.quadraticCurveTo(1.0, -80.2, 5.3, -76.8);
@@ -365,18 +378,19 @@ function drawActivity(ctx, options = {}) {
   const point=(x,y)=>({x,y});
   const pulse=(start,end)=>a>start&&a<end?Math.sin(Math.PI*(a-start)/(end-start)):0;
   const first=Math.pow(pulse(.14,.42),1.3), second=Math.pow(pulse(.47,.73),1.3);
+  const rest=idleMotion(options), sway=rest.sway, breath=rest.breath;
 
   const {normal, limb, knee, line, ellipse, shoe, leg, torso, head, hand, wheel}=createPainter(ctx,{color:ink,accent:blue,phase,action:a});
 
   if(mode==='dog'){
-    drawFigure(ctx,{x,y,height,phase,moving:m,facing:turn,color:ink});
+    drawFigure(ctx,{...options,x,y,height,phase,moving:m,facing:turn,color:ink});
     ctx.save();ctx.translate(x,y);ctx.scale(turn*scale,scale);
     const tug=Math.sin(a*Math.PI)*5;
     const dogX=49+tug, trot=phase*1.35;
     const bounce=m*Math.abs(Math.sin(trot))*1.5;
     // Hand and leash remain visibly connected while the human arm swings.
-    const handX=3+mix(2.8,-Math.sin(phase)*11,m);
-    const handY=-47+m*(2.7+1.8*Math.cos(phase*2))-m*(2.7+3*Math.abs(Math.sin(phase)));
+    const handX=3+sway+mix(2.8,-Math.sin(phase)*11,m);
+    const handY=-47+m*(2.7+1.8*Math.cos(phase*2))+breath*.55-m*(2.7+3*Math.abs(Math.sin(phase)));
     ctx.strokeStyle=blue;ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(handX,handY);
     ctx.quadraticCurveTo(24+tug*.5,-11-tug*.55,dogX+11,-23+bounce);ctx.stroke();
     // A compact dog, with a readable muzzle, folded ear and raised tail.
@@ -393,27 +407,27 @@ function drawActivity(ctx, options = {}) {
     ellipse(dogX+16.3,-24.4+bounce,6.7,3.5,ink,-.13);
     ctx.fillStyle=ink;ctx.beginPath();ctx.moveTo(dogX+8,-27+bounce);ctx.quadraticCurveTo(dogX+4,-31+bounce,dogX+7,-17+bounce);ctx.quadraticCurveTo(dogX+11,-18+bounce,dogX+8,-27+bounce);ctx.fill();
     ctx.strokeStyle=ink;ctx.lineWidth=3.3;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(dogX-11,-17+bounce);
-    ctx.quadraticCurveTo(dogX-20,-20+bounce,dogX-19+Math.sin(trot+a*Math.PI*4)*2.2,-29+bounce);ctx.stroke();
+    ctx.quadraticCurveTo(dogX-20,-20+bounce,dogX-19+Math.sin(trot+a*Math.PI*4)*2.2+Math.sin(rest.phase*2)*rest.strength*1.2,-29+bounce);ctx.stroke();
     line([[dogX+8,-26+bounce],[dogX+13,-24+bounce]],blue,1.8);
     ctx.restore();return;
   }
 
   ctx.save();ctx.translate(x,y);ctx.scale(turn*scale,scale);
   if(mode==='boxing'){
-    const jab=first+second*.7, bounce=m*1.8*Math.abs(Math.sin(phase));
-    const hip=point(-3+jab*2,-48+bounce), shoulder=point(-2+jab*5,-73+bounce);
+    const jab=first+second*.7, bounce=m*1.8*Math.abs(Math.sin(phase))+breath*.55;
+    const hip=point(-3+jab*2+sway*.65,-48+bounce), shoulder=point(-2+jab*5+sway,-73+bounce);
     const back=point(-18-m*Math.sin(phase)*3,0), front=point(19+m*Math.sin(phase)*3,0);
     leg(point(hip.x-2,hip.y),back);leg(point(hip.x+2,hip.y),front);
-    const rearHand=point(10+second*34,-82+bounce+second*3);
-    ctx.fillStyle=ink;limb(point(shoulder.x-3,shoulder.y),point(7+second*15,-65+bounce-second*12),rearHand,3.5,2.7,2);
+    const rearHand=point(10+second*34+sway,-82+bounce+second*3);
+    ctx.fillStyle=ink;limb(point(shoulder.x-3,shoulder.y),point(7+second*15+sway,-65+bounce-second*12),rearHand,3.5,2.7,2);
     torso(hip,shoulder);head(shoulder.x+2,shoulder.y-13,-jab*.035);
     ellipse(rearHand.x+2,rearHand.y,6.1,5.5,blue,-.22);
-    const fist=point(14+first*35,-78+bounce-first*2);
-    ctx.fillStyle=ink;limb(point(shoulder.x+3,shoulder.y+1),point(10+first*14,-62+bounce-first*14),fist,3.8,2.8,2.2);
+    const fist=point(14+first*35+sway,-78+bounce-first*2);
+    ctx.fillStyle=ink;limb(point(shoulder.x+3,shoulder.y+1),point(10+first*14+sway,-62+bounce-first*14),fist,3.8,2.8,2.2);
     ellipse(fist.x+2.3,fist.y,6.8,5.8,blue,-.1);
   }else if(mode==='bike'){
     const pedal=m>.001?phase:Math.PI*.16+tau*a*2;
-    const bob=m*Math.sin(phase*2)*.7;
+    const bob=m*Math.sin(phase*2)*.7+breath*.45;
     const hip=point(-10,-47+bob), shoulder=point(9,-68+bob);
     const rearFoot=point(-3+9*Math.cos(pedal+Math.PI),-18+9*Math.sin(pedal+Math.PI));
     const frontFoot=point(-3+9*Math.cos(pedal),-18+9*Math.sin(pedal));
@@ -433,10 +447,10 @@ function drawActivity(ctx, options = {}) {
     limb(hip,knee(hip,frontFoot,23,23),frontFoot,4.8,3.2,2.2);shoe(frontFoot);
   }else if(mode==='skate'){
     const hop=Math.pow(pulse(.2,.78),1.15)*13;
-    const crouch=pulse(.03,.23)*5+pulse(.78,.98)*4;
+    const crouch=pulse(.03,.23)*5+pulse(.78,.98)*4+breath*.65;
     const push=m*Math.max(0,Math.sin(phase));
     ctx.translate(0,-hop);
-    const hip=point(-3,-46+crouch+push*2), shoulder=point(-6,-71+crouch+push*2);
+    const hip=point(-3+sway*.5,-46+crouch+push*2), shoulder=point(-6+sway,-71+crouch+push*2);
     const rearFoot=point(-12-push*20,-9+push*9), frontFoot=point(14,-9);
     // Each wheel touches the ground at rest; the whole board follows the hop.
     ellipse(-14,-3,3,3);ellipse(17,-3,3,3);
@@ -446,38 +460,38 @@ function drawActivity(ctx, options = {}) {
     ctx.fillStyle=ink;
     limb(point(hip.x-2,hip.y),point(-19-push*3,-26+crouch),point(rearFoot.x,rearFoot.y-3),4.6,3.2,2);shoe(rearFoot);
     limb(point(hip.x+2,hip.y),point(8,-28+crouch),point(frontFoot.x,frontFoot.y-3),4.8,3.2,2.1);shoe(frontFoot);
-    const backHand=point(-26-push*3,-49+crouch-hop*.35);
+    const backHand=point(-26-push*3+sway,-49+crouch-hop*.35);
     limb(point(shoulder.x-3,shoulder.y+1),point(-23,-59+crouch-hop*.2),backHand,3,2.4,1.6);hand(backHand);
     torso(hip,shoulder);head(shoulder.x+2,shoulder.y-13,.04);
-    const forwardHand=point(23+push*4,-48+crouch-hop*.55);
+    const forwardHand=point(23+push*4+sway,-48+crouch-hop*.55);
     ctx.fillStyle=ink;limb(point(shoulder.x+3,shoulder.y+1),point(12,-59+crouch-hop*.25),forwardHand,3.3,2.4,1.7);hand(forwardHand);
   }else if(mode==='wave'){
     // The same head, torso and tapered limbs as the sports poses.
     const lift = Math.pow(Math.sin(a*Math.PI), .65);
     const wiggle = Math.sin(a*tau*3)*lift;
-    const hip=point(0,-51.7), shoulder=point(0,-75);
-    leg(point(-1.6,hip.y),point(-4.2,0));
-    leg(point(1.6,hip.y),point(3.5,0));
-    const rear=point(-5,-47);
+    const hip=point(sway*.65,-51.7+breath*.25), shoulder=point(sway,-75+breath);
+    leg(point(hip.x-1.6,hip.y),point(-4.2,0));
+    leg(point(hip.x+1.6,hip.y),point(3.5,0));
+    const rear=point(-5+sway,-47+breath);
     ctx.fillStyle=ink;
-    limb(point(-3,-74),point(-7,-61),rear,3.1,2.4,1.6);hand(rear);
-    torso(hip,shoulder);head(1.2,-88.8,-.045*lift);
-    const elbow=point(mix(8,20,lift),mix(-61,-78,lift));
-    const wrist=point(mix(6,24,lift)+wiggle*3.3,mix(-47,-98,lift));
+    limb(point(-3+sway,-74+breath),point(-7+sway,-61+breath),rear,3.1,2.4,1.6);hand(rear);
+    torso(hip,shoulder);head(1.2+sway,-88.8+breath,-.045*lift+rest.tilt);
+    const elbow=point(mix(8,20,lift)+sway,mix(-61,-78,lift)+breath);
+    const wrist=point(mix(6,24,lift)+wiggle*3.3+sway,mix(-47,-98,lift)+breath);
     ctx.fillStyle=ink;
-    limb(point(3,-74),elbow,wrist,3.2,2.4,1.55);
+    limb(point(3+sway,-74+breath),elbow,wrist,3.2,2.4,1.55);
     ellipse(wrist.x+.2, wrist.y-1.1*lift, 1.85, 3.6, ink, wiggle*.22);
   }else if(mode==='script'){
     const nod=Math.sin(a*Math.PI);
-    const hip=point(0,-51.7), shoulder=point(.6,-75);
-    leg(point(-1.6,hip.y),point(-4.2,0));
-    leg(point(1.6,hip.y),point(3.5,0));
-    const rear=point(23,-57);
+    const hip=point(sway*.65,-51.7+breath*.25), shoulder=point(.6+sway,-75+breath);
+    leg(point(hip.x-1.6,hip.y),point(-4.2,0));
+    leg(point(hip.x+1.6,hip.y),point(3.5,0));
+    const rear=point(23+sway,-57+breath);
     ctx.fillStyle=ink;
-    limb(point(-2.5,-74),point(4,-56.5),rear,3.1,2.4,1.6);hand(rear);
-    torso(hip,shoulder);head(3,-88.2,.11+nod*.10);
+    limb(point(-2.5+sway,-74+breath),point(4+sway,-56.5+breath),rear,3.1,2.4,1.6);hand(rear);
+    torso(hip,shoulder);head(3+sway,-88.2+breath,.11+nod*.10+rest.tilt);
     // Small open pages; no invented words or extra symbols.
-    ctx.save();ctx.translate(18,-61);ctx.rotate(-.13);
+    ctx.save();ctx.translate(18+sway,-61+breath);ctx.rotate(-.13);
     const turnPage=Math.sin(a*Math.PI)*5;
     ctx.fillStyle=blue;ctx.globalAlpha=.15;
     ctx.beginPath();ctx.moveTo(-6,-10);ctx.lineTo(3,-8);ctx.lineTo(13,-12);
@@ -491,12 +505,12 @@ function drawActivity(ctx, options = {}) {
       ctx.lineTo(3-turnPage*1.5,10);ctx.quadraticCurveTo(3-turnPage,10,3,11);ctx.stroke();
     }
     ctx.restore();
-    const near=point(18,-54);
+    const near=point(18+sway,-54+breath);
     ctx.fillStyle=ink;
-    limb(point(3.5,-74),point(9,-55.5),near,3.2,2.4,1.7);hand(near);
+    limb(point(3.5+sway,-74+breath),point(9+sway,-55.5+breath),near,3.2,2.4,1.7);hand(near);
   }else if(mode==='bow'){
     const depth=Math.pow(Math.sin(a*Math.PI),1.6);
-    const hip=point(-depth*2,-51.7+depth*.8);
+    const hip=point(-depth*2+sway*.6,-51.7+depth*.8+breath*.35);
     leg(point(hip.x-1.6,hip.y),point(-3,0));
     leg(point(hip.x+1.6,hip.y),point(3.5,0));
     // Upper body bends as one unit at the hip; feet never leave the rail.
@@ -510,7 +524,7 @@ function drawActivity(ctx, options = {}) {
     limb(point(3,-23.2),point(6,-7),near,3.2,2.4,1.6);hand(near);
     ctx.restore();
   }else{
-    ctx.restore();drawFigure(ctx,{x,y,height,phase,moving:m,facing:turn,color:ink});return;
+    ctx.restore();drawFigure(ctx,{...options,x,y,height,phase,moving:m,facing:turn,color:ink});return;
   }
   ctx.restore();
 }

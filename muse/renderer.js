@@ -46,7 +46,7 @@ export class MuseRenderer{
  setMode(mode){this.mode=mode;this.reset();if(mode==='particles'&&this.images.length){this.buildPoints(this.index);this.progress=this.reduced?1:.04;}}
  setIndex(i){if(!this.images.length)return;this.index=mod(i,this.images.length);if(this.mode==='particles'){if(this.pointIndex===this.index){this.pending=null;this.target=1;}else if(this.reduced){this.pending=null;this.buildPoints(this.index);this.progress=this.target=1;}else{this.pending=this.index;this.target=0;}}else if(this.mode==='infinite'){this.travel=this.travelTo=-.72;}}
  reset(){this.travel=this.travelTo=-.72;this.pan=[0,0];this.panTo=[0,0];this.phase=this.phaseTo=0;this.pointer.active=false;this.target=1;this.pending=null;}
- action(){if(this.mode==='particles'){if(this.pending!==null){this.buildPoints(this.pending);this.pending=null;}this.target=this.target===1?0:1;return this.target===1?'Dissolve':'Reassemble';}this.reset();return 'Reset view';}
+ action(){if(this.mode==='particles'){if(this.pending!==null){this.buildPoints(this.pending);this.pending=null;}this.target=this.target===1?0:1;return this.target===1?'散开':'聚合';}this.reset();return '重置视角';}
  bind(){
   const c=this.canvas;let down=null;const pos=e=>{const r=c.getBoundingClientRect();return [(e.clientX-r.left)/r.width*2-1,1-(e.clientY-r.top)/r.height*2];};
   c.addEventListener('pointerdown',e=>{if(e.button!==0)return;const [x,y]=pos(e);down={id:e.pointerId,x:e.clientX,y:e.clientY,px:e.clientX,py:e.clientY,moved:false};this.pointer={x,y,active:true};c.setPointerCapture(e.pointerId);c.classList.add('dragging');});

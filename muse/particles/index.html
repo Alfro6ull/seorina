@@ -1,46 +1,46 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-Hans">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="color-scheme" content="dark"><meta name="description" content="A fan-made collection of four interactive photographic experiments.">
+<meta name="color-scheme" content="dark"><meta name="description" content="薛仁雅非官方粉丝制作的四种交互影像实验。">
 <title>MUSE — Seorina</title><link rel="stylesheet" href="../style.css?v=rights">
 </head>
 <body data-scene="particles">
 <main id="exhibit">
-  <canvas id="stage" aria-label="Interactive photographic artwork"></canvas>
-  <img id="fallback" alt="Current photograph" hidden>
+  <canvas id="stage" aria-label="交互影像"></canvas>
+  <img id="fallback" alt="当前照片" hidden>
   <div class="grain" aria-hidden="true"></div>
   <header class="top">
-    <a class="brand" href="../">M<span>U</span>SE<span class="mark">✳</span><small>SEORINA / IMAGE EXPERIMENTS</small></a>
-    <nav class="site-nav" aria-label="Archive"><a href="../../life/">Life</a><a href="../../filters/">Filters</a><button id="library-open">Library <span id="count">00</span></button></nav>
+    <a class="brand" href="../">M<span>U</span>SE<span class="mark">✳</span><small>薛仁雅 / 影像实验</small></a>
+    <nav class="site-nav" aria-label="站点导航"><a href="../../life/">时间线</a><a href="../../filters/">滤镜</a><a href="../../index/">站点索引</a><button id="library-open">图库 <span id="count">00</span></button></nav>
   </header>
-  <div class="coordinates" aria-hidden="true"><span>X / Y / Z</span><span class="line"></span><span id="clock">FRAME 01</span></div>
+  <div class="coordinates" aria-hidden="true"><span>X / Y / Z</span><span class="line"></span><span id="clock">第 01 帧</span></div>
   <div class="art-copy">
-    <div class="chapter"><span id="chapter">01</span> <span class="chapter-rule"></span> <span>STUDIES IN LOOKING</span></div>
-    <h1 id="scene-title">Infinite<br>Archive</h1>
-    <p id="description">A constellation of moments, suspended in space.</p>
-    <div class="caption-row"><span id="photo-title">Loading collection…</span><span id="demo-label"></span><a id="source" target="_blank" rel="noopener noreferrer" hidden>Original ↗</a></div>
+    <div class="chapter"><span id="chapter">01</span> <span class="chapter-rule"></span> <span>影像实验</span></div>
+    <h1 id="scene-title">无限影像<br>宇宙</h1>
+    <p id="description">穿过悬浮的照片，在记忆的纵深中漫游。</p>
+    <div class="caption-row"><span id="photo-title">正在加载图库…</span><span id="demo-label"></span><a id="source" target="_blank" rel="noopener noreferrer" hidden>原帖 ↗</a></div>
   </div>
-  <div class="tools" aria-label="Image controls">
-    <button id="prev" aria-label="Previous photograph">←</button><span id="counter">01 / 01</span><button id="next" aria-label="Next photograph">→</button>
-    <button id="action" class="action">Reset view</button><button id="inspect" aria-label="View original photograph" title="View original photograph">⤢</button><button id="fullscreen" aria-label="Toggle fullscreen" title="Fullscreen">⛶</button>
+  <div class="tools" aria-label="影像操作">
+    <button id="prev" aria-label="上一张照片">←</button><span id="counter">01 / 01</span><button id="next" aria-label="下一张照片">→</button>
+    <button id="action" class="action">重置视角</button><button id="inspect" aria-label="查看原图" title="查看原图">⤢</button><button id="fullscreen" aria-label="切换全屏" title="全屏">⛶</button>
   </div>
-  <nav class="scenes" aria-label="Exhibitions">
-    <a data-mode="infinite" href="../infinite/"><span>01</span><strong>Infinite archive</strong><i>↗</i></a>
-    <a data-mode="prism" href="../prism/"><span>02</span><strong>Optical prism</strong><i>↗</i></a>
-    <a data-mode="ribbon" href="../ribbon/"><span>03</span><strong>Film ribbon</strong><i>↗</i></a>
-    <a data-mode="particles" href="../particles/"><span>04</span><strong>Memory particles</strong><i>↗</i></a>
+  <nav class="scenes" aria-label="影像展厅">
+    <a data-mode="infinite" href="../infinite/"><span>01</span><strong>无限影像宇宙</strong><i>↗</i></a>
+    <a data-mode="prism" href="../prism/"><span>02</span><strong>光学影像实验室</strong><i>↗</i></a>
+    <a data-mode="ribbon" href="../ribbon/"><span>03</span><strong>流动胶卷</strong><i>↗</i></a>
+    <a data-mode="particles" href="../particles/"><span>04</span><strong>记忆粒子</strong><i>↗</i></a>
   </nav>
-  <footer><div class="footer-controls"><span id="hint">DRAG TO EXPLORE · SCROLL TO TRAVEL</span><span id="status" role="status">INITIALIZING</span><a href="https://www.instagram.com/_seorina/" target="_blank" rel="noopener noreferrer">Instagram ↗</a></div><div class="muse-rights"><strong>版权声明 · 非官方 · 粉丝制作</strong><span>第三方素材版权归各权利人 · <a href="mailto:alfro6ull@gmail.com">版权联系</a> · <a href="../../filters/image-rights.html">图片出处与许可笔记</a></span></div></footer>
+  <footer><div class="footer-controls"><span id="hint">拖动探索 · 滚动漫游</span><span id="status" role="status">正在初始化</span><a href="https://www.instagram.com/_seorina/" target="_blank" rel="noopener noreferrer">Instagram ↗</a></div><div class="muse-rights"><strong>版权声明 · 非官方 · 粉丝制作</strong><span>第三方素材版权归各权利人 · <a href="mailto:alfro6ull@gmail.com">版权联系</a> · <a href="../../filters/image-rights.html">图片出处与许可笔记</a></span></div></footer>
 </main>
 <dialog id="library" aria-labelledby="lib-title">
-  <div class="dialog-head"><h2 id="lib-title">Image library</h2><button data-close="library" aria-label="Close library">×</button></div>
-  <p>All four experiments draw from the same collection. Import your own permitted photos locally; nothing is uploaded. Demo graphics appear only when the library is empty.</p>
-  <div class="drop" id="drop"><label for="files">Choose photographs <span>＋</span></label><input id="files" type="file" accept="image/jpeg,image/png,image/webp,image/avif" multiple><small>or drag and drop JPEG, PNG, WebP or AVIF</small></div>
-  <div class="library-info"><span id="library-count"></span><button id="clear-local">Clear local imports</button></div><div id="library-grid"></div>
-  <p class="fine">Public collection: only entries selected for publication in library.json are loaded. A public Instagram post is not automatically licensed for reposting. Keep original post URLs and rights records.</p>
+  <div class="dialog-head"><h2 id="lib-title">图库</h2><button data-close="library" aria-label="关闭图库">×</button></div>
+  <p>四个展厅共用同一图库。可导入有权使用的照片，仅在本地处理。图库为空时显示图形示例。</p>
+  <div class="drop" id="drop"><label for="files">选择照片 <span>＋</span></label><input id="files" type="file" accept="image/jpeg,image/png,image/webp,image/avif" multiple><small>也可以拖入 JPEG、PNG、WebP 或 AVIF</small></div>
+  <div class="library-info"><span id="library-count"></span><button id="clear-local">清空本地导入</button></div><div id="library-grid"></div>
+  <p class="fine">公开图库只显示明确选入的素材。公开发表的 Instagram 帖文不自动授予转载许可，请保留原帖与许可记录。</p>
 </dialog>
-<dialog id="viewer" aria-labelledby="view-title"><button class="viewer-close" data-close="viewer" aria-label="Close photograph">×</button><img id="view-image" alt=""><div class="viewer-caption"><span id="view-title"></span><a id="view-source" target="_blank" rel="noopener noreferrer" hidden>Original post ↗</a></div></dialog>
-<noscript>Enable JavaScript to explore MUSE. <a href="../../life/">Return to Life.</a></noscript>
-<script type="module" src="../app.js"></script>
+<dialog id="viewer" aria-labelledby="view-title"><button class="viewer-close" data-close="viewer" aria-label="关闭照片">×</button><img id="view-image" alt=""><div class="viewer-caption"><span id="view-title"></span><a id="view-source" target="_blank" rel="noopener noreferrer" hidden>原帖 ↗</a></div></dialog>
+<noscript>请启用 JavaScript 体验影像展。<a href="../../index/">返回站点索引</a>。</noscript>
+<script type="module" src="../app.js?v=zh"></script>
 </body></html>

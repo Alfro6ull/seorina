@@ -25,6 +25,9 @@
   glow.onfinish=next;setTimeout(next,1280);
  });
  addEventListener('pageshow',event=>{if(event.persisted){sequence++;busy=false;world.classList.remove('going');for(const el of [frame,iris])el.getAnimations().forEach(anim=>anim.cancel());}});
+ const menu=document.querySelector('.quick-index'), toggle=menu.querySelector('summary');
+ document.addEventListener('pointerdown',e=>{if(menu.open&&!menu.contains(e.target))menu.open=false;});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&menu.open){menu.open=false;toggle.focus();}});
  // Preserve old bookmarked event and year anchors without redirecting the homepage itself.
  if(/^#(?:e\d{3}|year-\d{4})$/.test(location.hash))location.replace('life/'+location.hash);
 })();

@@ -17,3 +17,11 @@
 @media(max-width:680px){.plate{object-position:60% 54%}.title{left:var(--edge);top:15%;transform:none;font-size:clamp(63px,17vw,114px)}.index-shortcut{top:max(12px,env(safe-area-inset-top));right:calc(var(--edge) - 2px)}}
 @media(max-height:500px) and (min-width:681px){.title{font-size:min(11vw,25vh)}}
 @media(prefers-reduced-motion:reduce){*,*::before{animation:none!important;transition:none!important}}
+.quick-index{position:absolute;z-index:5;top:max(17px,env(safe-area-inset-top));right:var(--edge)}
+.quick-index .index-shortcut{position:relative;inset:auto;cursor:pointer;list-style:none}.quick-index .index-shortcut::-webkit-details-marker{display:none}
+.quick-index .index-shortcut svg{transition:transform .2s}.quick-index[open] .index-shortcut svg{transform:rotate(45deg)}
+.quick-index nav{position:absolute;top:calc(100% + 10px);right:0;width:clamp(148px,14vw,210px);display:grid;padding:7px 14px;border:1px solid #fff2df4d;border-radius:8px;background:#131727ee;backdrop-filter:blur(12px);box-shadow:0 14px 25px #07091477}
+.quick-index nav a{font-size:14px;line-height:1.25;display:flex;align-items:center;justify-content:space-between;text-decoration:none;padding:12px 4px}
+.quick-index nav a:hover{color:#ffd6a3}.quick-index .full-index{border-top:1px solid var(--rule);color:#e9c6a8;font-size:12px}
+.quick-index summary:focus-visible{outline:2px solid #fff2db;outline-offset:5px}
+@media(max-width:680px){.quick-index{top:max(12px,env(safe-area-inset-top));right:calc(var(--edge) - 2px)}}

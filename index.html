@@ -1,20 +1,25 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-Hans">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#131725"><meta name="description" content="Seorina · independent fan archive.">
-<title>Seorina</title><link rel="stylesheet" href="assets/home/home.css">
+<meta name="theme-color" content="#131725"><meta name="description" content="Seorina · 非官方粉丝档案。">
+<title>Seorina</title><link rel="stylesheet" href="assets/home/home.css?v=light-index">
 <link rel="preload" href="assets/home/cave.jpg" as="image">
-<script defer src="assets/home/entrance.js"></script><script defer src="assets/home/flowers.js"></script>
+<script defer src="assets/home/entrance.js?v=light-index"></script><script defer src="assets/home/flowers.js"></script>
 </head>
 <body>
 <main class="world">
   <div class="frame"><img class="plate" src="assets/home/cave.jpg" alt=""></div>
   <div class="wash"></div>
   <h1 class="title">Seorina</h1>
-  <a class="cave-target" href="index/" aria-label="Walk through the cave to the archive index"></a>
-  <a class="index-shortcut" href="index/" aria-label="Open the archive index"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true"><path d="M5 12h14M12 5v14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></a>
-  <p class="sr-only">Unofficial, fan-made archive. <a href="filters/image-rights.html" tabindex="-1">Copyright notice</a>.</p>
+  <a class="cave-target" href="index/" aria-label="穿过花洞，打开站点索引"></a>
+  <details class="quick-index">
+    <summary class="index-shortcut" aria-label="快速索引"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true"><path d="M5 12h14M12 5v14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></summary>
+    <nav aria-label="快速索引菜单">
+      <a href="life/">时间线</a><a href="filters/">滤镜</a><a href="muse/">影像展</a><a class="full-index" href="index/">完整索引 <span aria-hidden="true">↗</span></a>
+    </nav>
+  </details>
+  <p class="sr-only">非官方 · 粉丝制作。 <a href="filters/image-rights.html" tabindex="-1">版权声明</a>.</p>
   <div class="arrival"></div>
 </main>
 </body></html>

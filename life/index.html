@@ -215,7 +215,6 @@ a:hover { color:var(--accent); }
 .info-body,.evidence-notes { background:rgba(246,247,249,.89); border-radius:12px; border:1px solid #e1e4e9; }
 .timeline::before { width:1px; }
 .year-heading h3 { white-space:nowrap; }
-@media(max-width:700px){.timeline{--companion-size:34px}.date-companion{height:40px}}
 
 .info-trigger::before { border-radius:18px; box-shadow:none; }
 .category-label,.status { border-radius:4px; }
@@ -5245,6 +5244,8 @@ a:hover { color:var(--accent); }
   const monthField = document.getElementById("month-field");
   const monthJump = document.getElementById("month-jump");
   const notes = document.getElementById("evidence-notes");
+  const banner = document.querySelector(".year-banner");
+  const bannerYear = banner.querySelector(".hero-year");
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
   let railControl = null;
   const hero = typeof seorinaHero === "undefined" ? null : seorinaHero.attach(walker, banner, reducedMotion);

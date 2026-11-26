@@ -22,7 +22,7 @@ function tick(t){raf=requestAnimationFrame(tick);const dt=Math.min(.04,(t-last)/
  renderer.render(scene,camera);
 }
 function navigate(delta){select(index+delta);if(mode==='camille')scrollTarget+=delta*110;}
-async function init(){const rows=await readPhotoLibrary();photos=rows.filter(p=>p.publish&&p.galleryFeatured&&p.uses?.includes('muse')&&p.rightsStatus==='existing-muse-only').map(p=>({...p,src:new URL('../assets/photos/'+p.src,new URL('../gallery/',location.href)).href}));if(!photos.length)throw Error('No reviewed photos in shared gallery collection.');
+async function init(){const rows=await readPhotoLibrary();photos=rows.filter(p=>p.publish&&p.galleryFeatured&&p.uses?.includes('muse')&&p.rightsStatus==='existing-muse-only').map(p=>({...p,src:new URL('../assets/photos/'+p.src,import.meta.url).href}));if(!photos.length)throw Error('No reviewed photos in shared gallery collection.');
  renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.setSize(innerWidth,innerHeight);scene=new THREE.Scene();scene.background=new THREE.Color(palette[mode][0]);camera=new THREE.PerspectiveCamera(43,innerWidth/innerHeight,.1,100);const loader=new THREE.TextureLoader();
  const loaded=await Promise.all(photos.map(p=>new Promise((resolve,reject)=>loader.load(p.src,resolve,undefined,reject))));
  planes=loaded.map((tex,i)=>{tex.colorSpace=THREE.SRGBColorSpace;const p=photos[i],m=material(tex),mesh=new THREE.Mesh(new THREE.PlaneGeometry(1,1,24,24),m);mesh.userData.ratio=p.width/p.height;scene.add(mesh);return mesh;});

@@ -39,6 +39,10 @@
   if (!languages.includes(preferred)) preferred = "zh";
 
   function updateDocumentLinks(language) {
+    for (const link of document.querySelectorAll(".archive-language a[data-language]")) {
+      if (link.dataset.language === language) link.setAttribute("aria-current", "page");
+      else link.removeAttribute("aria-current");
+    }
     for (const link of document.querySelectorAll("a[href]:not([data-language])")) {
       const url = localURL(link);
       if (!url) continue;

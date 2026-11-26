@@ -264,7 +264,7 @@ export class Gallery extends EventTarget {
         ids.add(id);
         entries.push({
           id, src, title: String(row.title || row.id || 'Photograph'),
-          source: sourceURL(row.source), date: String(row.date || ''),
+          source: sourceURL(row.source), sourceArticle: sourceURL(row.sourceArticle), sourceAttribution: String(row.sourceAttribution || ''), date: String(row.date || ''),
           tags: Array.isArray(row.tags) ? row.tags.filter(tag => typeof tag === 'string') : [],
           rights: row.rights.trim(), publish: true,
           depthSrc: imageURL(row.depthSrc, this.base),

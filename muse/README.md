@@ -1,8 +1,8 @@
 # MUSE — SEORINA / Particles
 
-An interactive particle portrait gallery made from Seorina's everyday photographs. `/muse/` is the collection index and links to each published experiment. `/muse/particles/` opens the current particle experience. New experiments can be added as separate entries without replacing the index. Both entry points use one photo catalog and the same browser-local collection.
+An interactive particle portrait gallery made from Seorina's everyday photographs. `/muse/` is the collection index and links to each published experiment. `/muse/particles/` opens the current particle experience. New experiments can be added as separate entries without replacing the index. Both entry points use one photo catalog and the same public photo catalog.
 
-Photographic color samples become a point sculpture, with relative depth supplying bounded displacement. Drag to change the viewpoint, move the pointer to disturb nearby points, or dissolve and reassemble the photograph. The interface also supports touch, keyboard photo selection, an image viewer, and local imports.
+Photographic color samples become a point sculpture, with relative depth supplying bounded displacement. Drag to change the viewpoint, move the pointer to disturb nearby points, or dissolve and reassemble the photograph. The interface also supports touch, keyboard photo selection, an image viewer, and an original-image viewer.
 
 `renderer.js` owns the GPU context, input handling, and resizing. `scenes/particles.js` owns the particle scene, camera, geometry, materials, interaction state, and disposal. The bundled Three.js revision is r170; its license is retained under `vendor/`. No external JavaScript CDN or build step is needed.
 
@@ -18,7 +18,7 @@ Opening the HTML through `file://` will not reliably load the ES modules or cata
 
 ## Photo collection
 
-`gallery.js` reads `library.json` and combines its usable public entries with the current browser's local imports. The particle renderer consumes this collection without a hardcoded image list. `/muse/` and `/muse/particles/` use the same store.
+`gallery.js` reads `library.json` and loads only reviewed public entries from `library.json`; the exhibition has no visitor upload feature. The particle renderer consumes this collection without a hardcoded image list. `/muse/` and `/muse/particles/` use the same store.
 
 The initial catalog contains **six everyday photographs associated with @_seorina's Instagram posts**, together with small precomputed depth textures. Two images come from the exact posts' public photographic previews; the other four come from an attributed Sports Donga article associated with an official post by its caption. The individual carousel positions for those article images were not inspected. The manifest retains those distinctions, source links, asset URLs, publication dates, image checksums, and depth provenance. See `credits.html`, `library.json`, and `photos/depth/MODEL.md` for the corresponding records.
 
@@ -51,18 +51,18 @@ Example schema, with illustrative filenames:
 
 Depth fields are optional. When a photo has no usable depth map, Particles uses an explicitly artistic curved sheet and identifies that presentation in the interface. It does not infer facial depth from brightness. If neither public photos nor local imports can be loaded, `demo.js` supplies four original architectural light studies, clearly labeled as studies and not as photographs of Seorina. Their depth textures describe their constructed artwork, not measured real-world geometry.
 
-### Local imports and persistence
+### Public catalog only
 
-Local photos are processed entirely in the browser. They are not uploaded, added to the public catalog, or committed to the repository.
+The public exhibit does not provide a visitor upload control or accept local imports. Add new photographs by reviewing their source and rights, placing the image and optional depth map in the repository, then updating `library.json`.
 
-- The default budget is **48 real photographs in the active collection**, with local imports taking precedence. Public entries stay in stable catalog order.
-- Imported images are normalized to a maximum side of **1600 pixels** and stored as browser-encoded image blobs in IndexedDB. Up to two images are decoded at once. The collection budget is reserved before processing a large import batch.
-- Successfully saved images survive reloads and navigation between the two entry points on the same origin and browser profile. Clearing site data, private-browsing policies, or storage eviction can remove them. The selected image ID is also retained when storage permits it.
-- If IndexedDB is unavailable or a write fails, including a quota failure, usable imports remain in the current page and the store reports that they are **session-only**. They must be imported again after leaving or refreshing that page.
-- A local file must be nonempty and no larger than 40 MB. Unsupported, unreadable, oversized, duplicate, and capacity-exceeding files receive separate result codes. HEIC/HEIF files work only when the browser can decode them; no external service converts them.
-- Clear local imports removes the saved local records and restores the public collection. Failed deletion is reported rather than silently discarding visible saved records.
+- The gallery reads up to 48 approved public entries from the catalog in stable order.
+- Public source images are loaded directly from same-origin repository assets; the renderer limits oversized GPU textures.
+- 
+- 
+- 
+- 
 
-The browser normalizes the imported image used by both the renderer and viewer; it does not retain an additional full-resolution original. Public images retain their original `src` for the viewer while oversized rendering inputs are limited to the same 1600-pixel maximum side. Depth input images are limited to 640 pixels inside the store.
+
 
 ## Add photos with a CSV
 
@@ -104,32 +104,8 @@ python3 -m venv /tmp/muse-depth-env
 
 Download instructions, pinned revision and SHA-256, map orientation, preprocessing, actual inference records, and `--overwrite` behavior are documented in [photos/depth/MODEL.md](photos/depth/MODEL.md). The script verifies the model and writes aligned maps plus provenance. Keep model weights outside the website repository. A changed photo crop or orientation requires a new map or the identical transformation applied to both inputs.
 
-## Shared store API
-
-```js
-import { Gallery } from './gallery.js';
-
-const gallery = new Gallery();
-gallery.addEventListener('change', event => {
-  const { items, index, status } = event.detail;
-  // Update the renderer and display meaningful status messages.
-});
-gallery.addEventListener('select', event => {
-  const { item, index } = event.detail;
-  // Update the selected photograph.
-});
-await gallery.init();
-gallery.select(1);
-const result = await gallery.importFiles(fileInput.files);
-// result: { added, failed, skipped, persisted, errors }
-// Display gallery.status.message, especially when persisted < added.
-await gallery.clearLocal();
-```
-
-The store exposes `items`, `index`, `current`, `status`, `localCount`, and `publicCount`. Both events carry `{ items, index, item, status }`. `init()` is idempotent; import and clear operations are serialized. `destroy()` aborts pending image loads, closes IndexedDB, and releases owned images and object URLs.
-
 ## Controls and fallback
 
-Arrow buttons and left/right keys select a photo. The expand control opens the photo viewer. Library selects or imports photos. The motion control and reduced-motion preference stop optional idle movement while retaining direct manipulation. Dialogs, hidden tabs, and page transitions pause GPU work.
+Arrow buttons and left/right keys select a photo. The expand control opens the original photograph. Drag to change the viewpoint, move the pointer to disturb nearby points, and use the action control to dissolve or reassemble the image. The exhibition shows the source post and, where applicable, the source publication, plus a persistent non-commercial fan-made copyright notice.
 
-If WebGL cannot initialize, the static-photo fallback retains the collection and viewer. Selecting another photograph replaces the previous point geometry. Disposing the renderer releases its GPU resources; disposing the collection releases its decoded images and object URLs.
+If WebGL cannot initialize, a static-photo fallback retains the public collection. Selecting another photograph replaces the previous point geometry. Disposing the renderer releases its GPU resources.

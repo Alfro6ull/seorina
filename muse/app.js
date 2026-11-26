@@ -9,7 +9,9 @@ function update(){
  const photo=gallery.current;if(!photo)return;
  $('counter').textContent=two(gallery.index+1)+' / '+two(gallery.items.length);
  $('photo-title').textContent=photo.title||'';
+ $('source-attribution').textContent=photo.sourceAttribution||'';
  const source=$('source');source.hidden=!photo.source;if(photo.source)source.href=photo.source;else source.removeAttribute('href');
+ const article=$('source-article');article.hidden=!photo.sourceArticle;if(photo.sourceArticle)article.href=photo.sourceArticle;else article.removeAttribute('href');
  if(failed)$('fallback').src=photo.src;
 }
 function openViewer(){const photo=gallery.current;if(!photo)return;$('view-image').src=photo.src;$('view-image').alt=photo.title;$('viewer').showModal();renderer?.setPaused(true);}

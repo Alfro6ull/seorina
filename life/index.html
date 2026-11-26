@@ -47,7 +47,7 @@ a:hover { color:var(--accent); }
  .year-display { background:none; color:CanvasText; }
 }
 @media(hover:hover) {
- .event-body h4:hover { color:var(--title-hover); }
+ .event-title:hover { color:var(--title-hover); }
 }
 @media(prefers-reduced-motion:no-preference) {
  .year-display { animation:year-enter 280ms ease-out both; }
@@ -125,6 +125,8 @@ a:hover { color:var(--accent); }
 .event-date.undated { color:var(--muted); }
 .event-body { grid-column:3; grid-row:1; position:relative; min-width:0; margin-left:var(--indent); padding:0 0 12px; }
 .event-body h4 { padding-right:80px; color:var(--ink); font:630 clamp(1.05rem,1.55vw,1.48rem)/1.48 var(--sans); letter-spacing:-.027em; overflow-wrap:anywhere; }
+.event-title { display:inline-block; max-inline-size:100%; padding:0; border:0; background:none; color:inherit; font:inherit; letter-spacing:inherit; text-align:start; overflow-wrap:inherit; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+.event-title:active { color:var(--title-hover); }
 .title-alias { position:relative; display:inline-block; max-inline-size:100%; margin-inline-start:.18em; padding-inline-start:.52em; overflow-wrap:anywhere; }
 .title-alias::before { content:""; position:absolute; inset-inline-start:0; inset-block-start:.36em; inline-size:1px; block-size:.78em; background:currentColor; opacity:.36; }
 .title-note { display:block; margin-top:2px; color:var(--muted); font:440 .71rem/1.35 var(--sans); }
@@ -275,7 +277,15 @@ a:hover { color:var(--accent); }
  .calendar-year .event-date.month-precision::after { content:"—"; color:var(--muted); font-size:.67em; }
  .calendar-year .event > .dot { margin-top:13px; width:11px; height:11px; background:var(--ink); }
  .calendar-year .event.date-reached > .dot { background:var(--lamp); }
+ .calendar-year .event.current-date > .dot { position:relative; background:var(--paper); }
+ .calendar-year .event.current-date > .dot::before {
+   content:""; position:absolute; inset:-3px; background:var(--lamp);
+   clip-path:polygon(50% 0,64% 36%,100% 50%,64% 64%,50% 100%,36% 64%,0 50%,36% 36%);
+ }
  .calendar-year .event.current-date .event-date { font-weight:680; }
+}
+@media(forced-colors:active) {
+ .calendar-year .event.current-date > .dot::before { forced-color-adjust:none; background:CanvasText; }
 }
 @media screen and (max-width:700px) {
  .timeline.has-calendar { --date-w:clamp(73px,24vw,116px); --month-top:19px; }
@@ -5269,6 +5279,23 @@ a:hover { color:var(--accent); }
     if (viewport.clientWidth !== railWidth) centerYear(false);
     else updateArrows();
   }).observe(viewport);
+
+  for (const event of archive.querySelectorAll(".event")) {
+    const heading = event.querySelector(".event-body > h4");
+    const details = event.querySelector(".event-info");
+    const content = details.querySelector(".info-body");
+    const title = document.createElement("button");
+    title.type = "button";
+    title.className = "event-title";
+    content.id = `${event.id}-info`;
+    title.setAttribute("aria-controls", content.id);
+    const syncExpanded = () => title.setAttribute("aria-expanded", String(details.open));
+    syncExpanded();
+    title.append(...heading.childNodes);
+    heading.append(title);
+    title.addEventListener("click", () => { details.open = !details.open; });
+    details.addEventListener("toggle", syncExpanded);
+  }
 
   timeline.classList.add("is-ready");
   stage.hidden = false;

@@ -3,10 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="refresh" content="0; url=时间线/薛仁雅时间线.html">
-  <title>薛仁雅时间线</title>
+  <title>薛仁雅｜生平档案</title>
+  <script>
+    const archivePath = location.protocol === "file:" ? "life/index.html" : "life/";
+    location.replace(archivePath + location.hash);
+  </script>
+  <noscript><meta http-equiv="refresh" content="0; url=life/"></noscript>
 </head>
 <body>
-  <a href="时间线/薛仁雅时间线.html">打开薛仁雅时间线</a>
+  <a href="life/index.html">打开薛仁雅生平档案</a>
 </body>
 </html>

@@ -20,3 +20,5 @@ body{min-height:100svh;display:flex;flex-direction:column;background:#171921}
 
 .catalog--section .entry-title{font-size:clamp(26px,6vw,66px)}
 @media(max-width:600px){.catalog--section .entry-title{font-size:clamp(20px,6.4vw,37px)}.catalog--section .entry-label{font-size:.69rem}.catalog--section li a{min-height:66px;gap:7px}.catalog--section .entry-text{gap:8px}.catalog--section li svg{width:17px;height:17px}}
+
+.catalog h1{text-align:center}

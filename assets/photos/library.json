@@ -48,7 +48,8 @@
       ],
       "instagramPosition": 2,
       "archivePhotoId": "ig-DIQEMtFMx_J-2",
-      "depthSha256": "7494064e1019cdc8bd2cf0e915ed7bfb0c82460f74304c5b0adf3ae97bc5eb0d"
+      "depthSha256": "7494064e1019cdc8bd2cf0e915ed7bfb0c82460f74304c5b0adf3ae97bc5eb0d",
+      "galleryFeatured": true
     },
     {
       "id": "ig-daily-08-guitar",
@@ -91,7 +92,8 @@
       ],
       "instagramPosition": 1,
       "archivePhotoId": "ig-DFU3RZPSTcx-1",
-      "depthSha256": "c634d5a9be7db22b147e2d258f8d7969540b8efde40d1c242d3560da129bd20c"
+      "depthSha256": "c634d5a9be7db22b147e2d258f8d7969540b8efde40d1c242d3560da129bd20c",
+      "galleryFeatured": true
     },
     {
       "id": "ig-daily-01-rain",
@@ -177,7 +179,8 @@
       ],
       "instagramPosition": 1,
       "archivePhotoId": "ig-DISswkTSm2V-1",
-      "depthSha256": "45320aa105e1aea95667188573b5c926c5b8bb665e716a72522e53f6abdc8641"
+      "depthSha256": "45320aa105e1aea95667188573b5c926c5b8bb665e716a72522e53f6abdc8641",
+      "galleryFeatured": true
     },
     {
       "id": "ig-daily-03-night",
@@ -268,7 +271,8 @@
       ],
       "instagramPosition": 1,
       "archivePhotoId": "ig-DIQEMtFMx_J-1",
-      "depthSha256": "89699742134dd7bd326d002df5209b37ad468006efc2a93dd01abb58833561eb"
+      "depthSha256": "89699742134dd7bd326d002df5209b37ad468006efc2a93dd01abb58833561eb",
+      "galleryFeatured": true
     }
   ]
 }

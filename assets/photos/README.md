@@ -18,3 +18,5 @@
 python3 muse/tools/index-library.py --source /path/to/local/photos --csv /path/to/reviewed.csv
 node tools/check-photo-library.mjs
 ```
+
+- `/gallery/` 从同一清单展示 `galleryFeatured: true` 的已核对、已在 MUSE 上线的公开 Instagram 日常图片。涉及商业活动、广告、杂志、剧宣或第三方人物的素材不纳入。编码和图片文件不复制到页面目录；清单字段不是对站外再使用的授权。

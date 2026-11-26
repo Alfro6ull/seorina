@@ -1,15 +1,15 @@
 // Provide a direct link fallback when JavaScript is unavailable.
 for(const original of document.querySelectorAll('a[data-quick-index]')){
  const root=new URL('../',original.href);
- const wrap=document.createElement('div');wrap.className='quick-index';
+ const icon=original.dataset.quickIndex==='icon';
+ const wrap=document.createElement('div');wrap.className=icon?'quick-index timeline-quick-index':'quick-index';
  const button=document.createElement('button');button.type='button';button.className='quick-toggle';
- button.textContent='站点索引';button.setAttribute('aria-expanded','false');button.setAttribute('aria-controls','filter-quick-nav');
- const nav=document.createElement('nav');nav.id='filter-quick-nav';nav.className='quick-panel';nav.setAttribute('aria-label','站点索引');nav.hidden=true;
- for(const [href,label] of [['','开场'],['life/','时间线'],['filters/','滤镜'],['muse/','MUSE']]){
-  const a=document.createElement('a');a.href=new URL(href,root);a.textContent=label;nav.append(a);
+ button.textContent=icon?'+':'站点索引';if(icon)button.setAttribute('aria-label','站点索引');button.setAttribute('aria-expanded','false');button.setAttribute('aria-controls','section-quick-nav');
+ const nav=document.createElement('nav');nav.id='section-quick-nav';nav.className='quick-panel';nav.setAttribute('aria-label','站点索引');nav.hidden=true;
+ for(const [href,label] of [['','开场'],['life/','时间线'],['filters/','滤镜'],['muse/','Muse'],['gallery/','图库']]){
+  const a=document.createElement('a');a.href=new URL(href,root);a.textContent=label;
+  if(location.pathname.replace(/index\.html$/,'')===new URL(a.href).pathname)a.setAttribute('aria-current','page');nav.append(a);
  }
- // Include the current section as a way back to the filter list.
- if(location.pathname===new URL('filters/',root).pathname)nav.children[2].setAttribute('aria-current','page');
  function toggle(open,focus){
   nav.hidden=!open;button.setAttribute('aria-expanded',String(open));
   if(focus)(open?nav.firstElementChild:button).focus();

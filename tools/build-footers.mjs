@@ -9,7 +9,7 @@ const opening=await readFile(path.join(root,'index.html'),'utf8');
 if(opening.includes('SITE-FOOTER:START')) throw new Error('The opening scene must not have a shared visible footer.');
 const marker=/<!-- SITE-FOOTER:START -->[\s\S]*?<!-- SITE-FOOTER:END -->/g;
 let count=0;
-for(const section of ['filters','index','life','muse']){
+for(const section of ['filters','index','life','muse','gallery']){
  const dir=path.join(root,section);
  for(const name of await readdir(dir,{recursive:true})){
   if(!name.endsWith('.html')||name.startsWith('templates/'))continue;

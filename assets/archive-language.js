@@ -40,7 +40,7 @@
 
   function updateDocumentLinks(language) {
     for (const link of document.querySelectorAll(".archive-language a[data-language]")) {
-      if (link.dataset.language === language) link.setAttribute("aria-current", "page");
+      if (link.dataset.language === (page === "timeline" ? current : language)) link.setAttribute("aria-current", "page");
       else link.removeAttribute("aria-current");
     }
     for (const link of document.querySelectorAll("a[href]:not([data-language])")) {

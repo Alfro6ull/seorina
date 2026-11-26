@@ -12,7 +12,7 @@ varying vec3 vColor;
 varying float vAlpha;
 void main() {
   vec3 home = position;
-  float breath = sin(uTime*.5+aSeed*6.283)*.012*uMotion;
+  float breath = sin(uTime*.82+aSeed*6.283)*.038*uMotion;
   home.z += breath;
   vec3 spread = aScatter;
   float angle = uTime*.06*uMotion;
@@ -137,15 +137,15 @@ export class ParticlesScene {
     const lerp=1-Math.exp(-dt*5);
     this.yaw+=(this.yawTarget-this.yaw)*lerp;this.pitch+=(this.pitchTarget-this.pitch)*lerp;this.scatter+=(this.scatterTarget-this.scatter)*lerp;
     this.zoom+=(this.zoomTarget-this.zoom)*lerp;
-    this.group.rotation.y=this.yaw+(this.reducedMotion?0:Math.sin(time*.24)*.08);
-    this.group.rotation.x=this.pitch;
+    this.group.rotation.y=this.yaw+(this.reducedMotion?0:Math.sin(time*.42)*.22);
+    this.group.rotation.x=this.pitch+(this.reducedMotion?0:Math.sin(time*.31)*.055);
     this.uniforms.uTime.value=time;
     this.uniforms.uScatter.value=this.scatter;
     this.uniforms.uMotion.value=this.reducedMotion?0:1;
     this.uniforms.uPointer.value.set(input.x*(this.photoWidth||4)*.6,input.y*3.4);
     this.uniforms.uPointerActive.value+=((input.active&&!input.down?1:0)-this.uniforms.uPointerActive.value)*lerp;
     this.camera.position.z=this.zoom;
-    if(!this.reducedMotion){this.dust.rotation.y=time*.012;this.dust.rotation.z=Math.sin(time*.1)*.015;}
+    if(!this.reducedMotion){this.group.position.x=(this.mobile?0:.45)+Math.sin(time*.29)*.105;this.group.position.y=(this.mobile?.65:.8)+Math.sin(time*.37)*.065;this.dust.rotation.y=time*.035;this.dust.rotation.z=Math.sin(time*.34)*.035;}
   }
   drag(dx,dy){this.yawTarget=THREE.MathUtils.clamp(this.yawTarget+dx*4.2,-1.28,1.28);this.pitchTarget=THREE.MathUtils.clamp(this.pitchTarget+dy*2,-.5,.5);}
   wheel(delta){this.zoomTarget=THREE.MathUtils.clamp(this.zoomTarget+delta*.012,this.mobile?9.2:6.4,this.mobile?18:16);}

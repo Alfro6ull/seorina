@@ -81,6 +81,7 @@ try{renderer=new MuseRenderer($('stage'),{onError:showFallback});}catch(error){s
 $('motion').setAttribute('aria-pressed',String(!!renderer?.motion));
 $('motion').setAttribute('aria-label',renderer?.motion?'暂停自动运动':'启用自动运动');
 $('motion-label').textContent=renderer?.motion?'自动运动：开':'自动运动：暂停';
+$('motion-label').textContent=renderer?.motion?'自动运动：开':'自动运动：暂停';
 
 $('library-open').addEventListener('click',openLibrary);
 $('files').addEventListener('change',event=>{importFiles(event.target.files);event.target.value='';});

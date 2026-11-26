@@ -215,6 +215,21 @@ a:hover { color:var(--accent); }
 .info-body,.evidence-notes { background:rgba(246,247,249,.89); border-radius:12px; border:1px solid #e1e4e9; }
 .timeline::before { width:1px; }
 .year-heading h3 { white-space:nowrap; }
+/* Reading companion: a small seated silhouette follows the active date, never the month watermark. */
+.timeline { --companion-size:42px; }
+.date-companion { position:absolute; z-index:3; width:var(--companion-size); height:48px; left:0; top:0; opacity:0; pointer-events:none; transform:translate3d(0,7px,0) scale(.94); transform-origin:50% 100%; transition:left .42s cubic-bezier(.2,.8,.2,1),top .42s cubic-bezier(.2,.8,.2,1),opacity .2s ease,transform .35s cubic-bezier(.2,.8,.2,1); }
+.date-companion.is-visible { opacity:1; transform:translate3d(0,0,0) scale(1); }
+.date-companion svg { display:block; width:100%; height:100%; overflow:visible; }
+.date-companion .companion-body { transform-origin:31px 40px; animation:companion-breathe 3.2s ease-in-out infinite; }
+.date-companion .companion-leg { transform-origin:30px 48px; animation:companion-foot 4.4s ease-in-out infinite; }
+.date-companion .companion-head { transform-origin:28px 16px; animation:companion-nod 5.2s ease-in-out infinite; }
+.date-companion .companion-shadow { fill:#000; opacity:.08; }
+@keyframes companion-breathe { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-1px)} }
+@keyframes companion-foot { 0%,86%,100%{transform:rotate(0)} 92%{transform:rotate(3deg)} }
+@keyframes companion-nod { 0%,90%,100%{transform:rotate(0)} 94%{transform:rotate(2deg)} }
+@media(prefers-reduced-motion:reduce){.date-companion,.date-companion *{animation:none!important;transition:none!important}}
+@media(max-width:700px){.timeline{--companion-size:34px}.date-companion{height:40px}}
+
 .info-trigger::before { border-radius:18px; box-shadow:none; }
 .category-label,.status { border-radius:4px; }
 @media(max-width:700px) {
@@ -5240,6 +5255,11 @@ a:hover { color:var(--accent); }
   const monthField = document.getElementById("month-field");
   const monthJump = document.getElementById("month-jump");
   const notes = document.getElementById("evidence-notes");
+  const dateCompanion = document.createElement("div");
+  dateCompanion.className = "date-companion";
+  dateCompanion.setAttribute("aria-hidden", "true");
+  dateCompanion.innerHTML = `<svg viewBox="0 0 64 72" role="presentation"><ellipse class="companion-shadow" cx="34" cy="67" rx="20" ry="3.5"/><g fill="currentColor"><g class="companion-leg"><path d="M25 42c-2 7-1 12 5 16l12 5c3 1 5-2 2-4l-9-7 2-10z"/><path d="M35 42c2 6 7 8 13 11l5 5c2 3-1 5-4 3l-12-5c-7-3-10-7-10-13z"/></g><g class="companion-body"><path d="M22 22c-5 2-8 8-7 15l2 10c1 3 5 4 8 3l15-5c4-2 5-6 2-9l-7-12z"/><path d="M20 28c-5 5-7 10-5 15l-6 9c-2 3 1 5 4 3l10-9 4-12z"/><path d="M37 29c5 3 8 7 9 12l5 6c2 3-1 5-4 3l-9-6-7-9z"/></g><g class="companion-head"><path d="M20 7c5-4 13-2 16 4 3 7-1 14-8 15-7 1-12-5-11-12z"/><path d="M18 10c-1-7 8-12 16-8 4 2 6 6 6 10-4-2-7-4-11-4-4 3-7 4-11 4z"/></g></g></svg>`;
+  timeline.append(dateCompanion);
   const banner = document.querySelector(".year-banner");
   const bannerYear = banner.querySelector(".hero-year");
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
@@ -5484,6 +5504,25 @@ a:hover { color:var(--accent); }
     return bounds.top + (entry.dot ? bounds.height / 2 : 0);
   }
 
+  function positionDateCompanion(entry) {
+    if (!entry?.element || entry.element.hidden || !archive.contains(entry.element)) {
+      dateCompanion.classList.remove("is-visible");
+      return;
+    }
+    const date = entry.element.querySelector(".event-date");
+    if (!date) { dateCompanion.classList.remove("is-visible"); return; }
+    const dateRect = date.getBoundingClientRect();
+    const timelineRect = timeline.getBoundingClientRect();
+    const size = dateCompanion.getBoundingClientRect().width || 42;
+    // Keep the figure inside the date column: beside/below the black date, away from the month watermark.
+    const dateColumn = Math.max(48, timelineRect.width * (innerWidth <= 700 ? .0 : .0) + (innerWidth <= 700 ? 66 : Math.min(156, Math.max(90, innerWidth * .112))));
+    const left = Math.min(dateColumn - size - 2, Math.max(28, dateRect.left - timelineRect.left + dateRect.width + 3));
+    const top = dateRect.top - timelineRect.top + Math.max(0, (dateRect.height - 38) * .55);
+    dateCompanion.style.left = left + "px";
+    dateCompanion.style.top = top + "px";
+    dateCompanion.classList.add("is-visible");
+  }
+
   function updateCurrentDate() {
     highlightFrame = 0;
     const dated = selected.visibleDates;
@@ -5515,6 +5554,7 @@ a:hover { color:var(--accent); }
       trail = Math.max(0, tip - timeline.getBoundingClientRect().top);
     }
     timeline.style.setProperty("--date-trail", trail + "px");
+    positionDateCompanion(entry);
     const currentIndex = dated.indexOf(entry);
     if (dateProgress.entries === dated && dateProgress.index === currentIndex) return;
     if (dateProgress.entries !== dated) {

@@ -40,7 +40,15 @@ function depth(){
   for(let k=0;k<p.length;k+=4)d.push([p[k],p[k+1],p[k+2]]);
   d.sort((a,b)=>a.reduce((x,y)=>x+y)-b.reduce((x,y)=>x+y));
   const mean=(a,b)=>[0,1,2].map(c=>d.slice(a,b).reduce((s,p)=>s+p[c],0)/(b-a));
-  palettes.set(i,[mean(9,45),mean(60,105),mean(109,143)]);
+  const lift=(a,f,offset)=>{const m=(a[0]+a[1]+a[2])/3;return a.map((v,j)=>clamp(m+(v-m)*f+offset[j],0,255))};
+  const dark=mean(9,45),mid=mean(60,105),light=mean(109,143);
+  const saturation=mid=>Math.max(...mid)-Math.min(...mid);
+  const neutral=saturation(mid)<22;
+  palettes.set(i,[
+   lift(dark,1.4,neutral?[35,32,58]:[28,25,27]),
+   lift(mid,1.82,neutral?[37,18,35]:[24,19,18]),
+   lift(light,1.46,neutral?[17,15,37]:[5,4,4])
+  ]);
  }
  function apply(i){
   const q=palettes.get(i);if(!q)return;

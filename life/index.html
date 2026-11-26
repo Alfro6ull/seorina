@@ -5209,12 +5209,14 @@ a:hover { color:var(--accent); }
         <a href="research.html">文字考据 <span aria-hidden="true">↗</span></a>
         <a href="#top">返回页首 ↑</a>
       </nav>
-      <nav class="archive-language archive-language--entry" aria-label="切换资料语言">
-        
-        <a href="names.html" lang="zh-Hans" hreflang="zh-Hans" data-language="zh" title="中文语名索引与考据">中文</a><span aria-hidden="true">·</span>
-        <a href="names.ko.html" lang="ko" hreflang="ko" data-language="ko" title="한국어 색인·자료">한국어</a><span aria-hidden="true">·</span>
-        <a href="names.en.html" lang="en" hreflang="en" data-language="en" title="English names and research">English</a>
-      </nav>
+      <details class="archive-language-menu archive-language-menu--entry">
+        <summary>语言</summary>
+        <nav class="archive-language" aria-label="切换资料语言">
+          <a href="names.html" lang="zh-Hans" hreflang="zh-Hans" data-language="zh" title="中文语名索引与考据">中文</a>
+          <a href="names.ko.html" lang="ko" hreflang="ko" data-language="ko" title="한국어 색인·자료">한국어</a>
+          <a href="names.en.html" lang="en" hreflang="en" data-language="en" title="English names and research">English</a>
+        </nav>
+      </details>
     </div>
   </footer>
     <section class="archive-copyright archive-copyright--detached" aria-labelledby="archive-copyright-title">

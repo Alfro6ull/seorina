@@ -1,18 +1,9 @@
-# Seorina Gallery Experiments
+# Seorina photo studies
 
-Three separate gallery studies, each driven by the existing shared photo catalog at `assets/photos/library.json`. No image files are copied into this folder.
+Three independent experiences reuse the shared public MUSE photo catalog. Page load shuffles a new order from the catalog. The depth room loads its local stack only, the film rail keeps a bounded image window around its scroll position, and the wall only mounts images near the current scroll position. All photo details link to the original post.
 
-- `/gallery/depth/` — Atmospheric Depth: depth-layered Three.js planes, scroll-driven camera travel, palette atmosphere and velocity-reactive image shaders. Reference: Houmahani Kane / Codrops Atmospheric Depth Gallery. Original source is MIT; this is an independent adaptation, not a copy of its source assets.
-- `/gallery/aristide/` — Motion Index: one full-frame image at a time, numbered sequence, restrained monochrome stage, hold-to-reveal metadata and keyboard navigation. Reference: Aristide Benoist portfolio's full-bleed paginated image/project interaction.
-- `/gallery/camille/` — Horizontal Parallax: horizontal spatial strip, wheel/drag travel, pointer parallax and velocity-driven shader displacement. Reference: Camille Mormal portfolio's horizontal image browsing / Codrops horizontal WebGL gallery technique.
+- `/gallery/depth/`: color sampled from the current photograph lights a perspective room. Reference: [Atmospheric Depth Gallery, Houmahani Kane](https://github.com/houmahani/codrops-depth-gallery).
+- `/gallery/aristide/`: a rail of narrow, muted photo slices leads to a full image. Reference: [Aristide Benoist](https://aristidebenoist.com/).
+- `/gallery/camille/`: a horizontally browsable, staggered wall with mild column parallax. Reference: [Camille Mormal’s Portfolio 22](https://www.behance.net/gallery/156454485/Camille-Mormal-Portfolio-22).
 
-All three read the shared MUSE photo catalog. The active photo is loaded first, and only a small neighbourhood of textures is kept in memory. New photos without depth maps still participate in the layered and horizontal layouts. Each photograph links back to its source. The standard `/gallery/` photo grid remains separate.
-
-## References
-- https://tympanus.net/Tutorials/DepthGallery/
-- https://github.com/houmahani/codrops-depth-gallery (MIT)
-- https://aristidebenoist.com/
-- https://camillemormal.com/
-- https://tympanus.net/codrops/2026/02/19/creating-a-smooth-horizontal-parallax-gallery-from-dom-to-webgl/
-
-The source sites' names and visual patterns are credited as inspiration. No third-party photos, video, or proprietary code/assets are copied.
+Independent HTML, CSS and JavaScript implementations. No code, photographs, video, branding or typefaces taken from the references. The classic gallery grid remains at `/gallery/`.

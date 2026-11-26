@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark"><meta name="description" content="A fan-made collection of four interactive photographic experiments.">
+<title>MUSE — Seorina</title><link rel="stylesheet" href="../style.css">
+</head>
+<body data-scene="particles">
+<main id="exhibit">
+  <canvas id="stage" aria-label="Interactive photographic artwork"></canvas>
+  <img id="fallback" alt="Current photograph" hidden>
+  <div class="grain" aria-hidden="true"></div>
+  <header class="top">
+    <a class="brand" href="../">M<span>U</span>SE<span class="mark">✳</span><small>SEORINA / IMAGE EXPERIMENTS</small></a>
+    <nav class="site-nav" aria-label="Archive"><a href="../../life/">Life</a><a href="../../filters/">Filters</a><button id="library-open">Library <span id="count">00</span></button></nav>
+  </header>
+  <div class="coordinates" aria-hidden="true"><span>X / Y / Z</span><span class="line"></span><span id="clock">FRAME 01</span></div>
+  <div class="art-copy">
+    <div class="chapter"><span id="chapter">01</span> <span class="chapter-rule"></span> <span>STUDIES IN LOOKING</span></div>
+    <h1 id="scene-title">Infinite<br>Archive</h1>
+    <p id="description">A constellation of moments, suspended in space.</p>
+    <div class="caption-row"><span id="photo-title">Loading collection…</span><span id="demo-label"></span><a id="source" target="_blank" rel="noopener noreferrer" hidden>Original ↗</a></div>
+  </div>
+  <div class="tools" aria-label="Image controls">
+    <button id="prev" aria-label="Previous photograph">←</button><span id="counter">01 / 01</span><button id="next" aria-label="Next photograph">→</button>
+    <button id="action" class="action">Reset view</button><button id="inspect" aria-label="View original photograph" title="View original photograph">⤢</button><button id="fullscreen" aria-label="Toggle fullscreen" title="Fullscreen">⛶</button>
+  </div>
+  <nav class="scenes" aria-label="Exhibitions">
+    <a data-mode="infinite" href="../infinite/"><span>01</span><strong>Infinite archive</strong><i>↗</i></a>
+    <a data-mode="prism" href="../prism/"><span>02</span><strong>Optical prism</strong><i>↗</i></a>
+    <a data-mode="ribbon" href="../ribbon/"><span>03</span><strong>Film ribbon</strong><i>↗</i></a>
+    <a data-mode="particles" href="../particles/"><span>04</span><strong>Memory particles</strong><i>↗</i></a>
+  </nav>
+  <footer><div class="footer-controls"><span id="hint">DRAG TO EXPLORE · SCROLL TO TRAVEL</span><span id="status" role="status">INITIALIZING</span><a href="https://www.instagram.com/_seorina/" target="_blank" rel="noopener noreferrer">Instagram ↗</a></div><div class="muse-rights"><strong>非官方 · 粉丝制作</strong><span>版权声明：不商用不等于可以转载或二改。第三方素材权利归相应权利人所有；本站不接收、存储或代发本地导入照片及处理结果。来源、署名或移除事宜请联系 <a href="mailto:alfro6ull@gmail.com">alfro6ull@gmail.com</a>。</span></div></footer>
+</main>
+<dialog id="library" aria-labelledby="lib-title">
+  <div class="dialog-head"><h2 id="lib-title">Image library</h2><button data-close="library" aria-label="Close library">×</button></div>
+  <p>All four experiments draw from the same collection. Import your own permitted photos locally; nothing is uploaded. Demo graphics appear only when the library is empty.</p>
+  <div class="drop" id="drop"><label for="files">Choose photographs <span>＋</span></label><input id="files" type="file" accept="image/jpeg,image/png,image/webp,image/avif" multiple><small>or drag and drop JPEG, PNG, WebP or AVIF</small></div>
+  <div class="library-info"><span id="library-count"></span><button id="clear-local">Clear local imports</button></div><div id="library-grid"></div>
+  <p class="fine">Public collection: only entries selected for publication in library.json are loaded. A public Instagram post is not automatically licensed for reposting. Keep original post URLs and rights records.</p>
+</dialog>
+<dialog id="viewer" aria-labelledby="view-title"><button class="viewer-close" data-close="viewer" aria-label="Close photograph">×</button><img id="view-image" alt=""><div class="viewer-caption"><span id="view-title"></span><a id="view-source" target="_blank" rel="noopener noreferrer" hidden>Original post ↗</a></div></dialog>
+<noscript>Enable JavaScript to explore MUSE. <a href="../../life/">Return to Life.</a></noscript>
+<script type="module" src="../app.js"></script>
+</body></html>

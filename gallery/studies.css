@@ -27,3 +27,5 @@ dialog{max-width:min(900px,92vw);max-height:92svh;border:1px solid #fff4;backgro
 @property --accent{syntax:"<color>";inherits:true;initial-value:#9b9376}
 .depth-world{transition:--base .48s,--light .54s,--accent .57s}
 @media(prefers-reduced-motion:reduce){.depth-world{transition:none}}
+.slices-stage{display:flex;align-items:center}
+.film-strip{flex:none}

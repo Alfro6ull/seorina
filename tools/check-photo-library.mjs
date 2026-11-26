@@ -33,5 +33,5 @@ for (const sub of ['files','depth']) {
     assert.ok(assets.has(sub+'/'+name), 'unregistered public asset '+name);
   }
 }
-assert.ok(photosFor(photos,'filter-demo').some(x=>x.id==='kpopit-2025-8'), 'Missing filter default');
+assert.equal(photosFor(photos,'filter-demo').length,0,'Filters must not ship preset portraits');
 console.log(`Shared photo library: ${photos.length} photos and ${assets.size-photos.length} depth maps validated`);

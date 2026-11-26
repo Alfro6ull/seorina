@@ -92,10 +92,5 @@ details{border-block:1px solid var(--line);margin:22px 0 36px;color:var(--muted)
 #copy-rights-email{font:inherit;color:var(--ink);border:1px solid var(--line);border-radius:3px;background:#25221f;padding:4px 8px}
 
 .example-credit,#photo-credit{font-size:.72rem;color:var(--muted)}
-.quick-index{position:relative}
-.quick-toggle{display:flex;align-items:center;gap:6px;border:0;background:transparent;color:inherit;padding:7px 1px;white-space:nowrap}
-.quick-toggle::after{content:"+";font-size:1rem;font-weight:400;line-height:1;color:#d8c2a0}
-.quick-toggle[aria-expanded="true"]::after{content:"−"}
-.quick-panel{position:absolute;z-index:20;top:calc(100% + 4px);left:-8px;min-width:150px;border:1px solid var(--line);border-radius:4px;background:#201e1c;box-shadow:0 12px 30px #0007;padding:6px}
-.quick-panel a{display:block;color:var(--ink);padding:8px 11px;border-radius:2px;white-space:nowrap}
-.quick-panel a:hover,.quick-panel a:focus-visible,.quick-panel a[aria-current="page"]{background:#322d26}
+
+.gallery-add{display:flex;align-items:center;gap:9px;margin-bottom:12px}.gallery-add button,.gallery-remove{color:var(--ink);background:#25221f;border:1px solid var(--line);border-radius:3px;padding:6px 10px}.gallery-add small{color:var(--muted)}.gallery-remove{align-self:flex-start;font-size:.73rem}

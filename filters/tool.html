@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#141414">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' blob: data:; connect-src 'self'; media-src blob:; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' blob: data:; connect-src 'none'; media-src blob:; base-uri 'none'; form-action 'none'">
 <title>长虹玻璃 · 薛仁雅档案</title>
-<link rel="stylesheet" href="./style.css?v=quick-index">
-<script type="module" src="./art-tools.js?v=source-credit"></script>
+<link rel="stylesheet" href="./style.css?v=local-gallery">
+<script type="module" src="./art-tools.js?v=local-gallery"></script>
 <link rel="stylesheet" href="../assets/copyright.css?v=shared-footer">
-<script type="module" src="./quick-index.js"></script>
+<link rel="stylesheet" href="./quick-index.css"><script type="module" src="./quick-index.js"></script>
 </head>
 <body>
 <header class="bar"><a href="./">← 滤镜列表</a><a href="../index/" data-quick-index>站点索引</a><h1 id="tool-name">长虹玻璃</h1></header>
@@ -26,7 +26,6 @@
         <canvas id="preview" tabindex="0" hidden aria-label="效果画布。用方向键移动清晰区"></canvas>
         <img id="original" hidden alt="你选择的原图">
       </div>
-      <div class="viewer-foot"><a id="image-source" target="_blank" rel="noopener noreferrer" hidden></a><span id="image-info"></span><span id="photo-credit" hidden></span></div>
     </div>
     <aside class="controls" aria-label="滤镜设置">
       <h2>调整</h2>
@@ -49,7 +48,6 @@
         <button type="button" id="save" disabled>保存图片</button>
         <button type="button" id="change" data-pick>上传照片</button>
         <button type="button" id="open-gallery">图库</button>
-        <button type="button" id="reset-demo" hidden>恢复示例</button>
       </div>
       <p class="local"><i aria-hidden="true"></i>在浏览器内处理，不上传图片。</p>
     </aside>
@@ -57,6 +55,7 @@
   <dialog id="photo-gallery" aria-labelledby="photo-gallery-title">
     <div class="photo-gallery-head"><h2 id="photo-gallery-title">图库</h2><button type="button" id="close-gallery" aria-label="关闭图库" autofocus>×</button></div>
     <p id="gallery-status" role="status" hidden></p>
+    <div class="gallery-add"><button type="button" data-pick="gallery">添加照片</button><small>仅存本机</small></div>
     <div id="gallery-photos" class="gallery-photos"></div>
   </dialog>
   <p id="notice" role="status" aria-live="polite"></p>

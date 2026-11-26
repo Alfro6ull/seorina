@@ -1,10 +1,11 @@
 import {drawCRT,drawPoster} from './digital-art.js?v=art';
-import {defaultFilterPhotoId, filterDemo, filterPhotos, photoSource, saveFrame} from './shared.js?v=photo-picker';
+import {saveFrame} from './shared.js?v=local-gallery';
+import {addLocal,listLocal,removeLocal} from './local-gallery.js';
 import {renderGlass,createStretchBrush,renderRGBGlitch} from './art-effects.js?v=rgb-and-stretch';
 
 const el=id=>document.getElementById(id);
 const canvas=el('preview'), ctx=canvas.getContext('2d'), stage=el('stage'), original=el('original'), notice=el('notice');
-let image,buffer,focus,src,photoName='',demo=false,compare=false,serial=0,frame=0;
+let image,buffer,focus,src,photoName='',compare=false,serial=0,frame=0;
 const requested=new URLSearchParams(location.search).get('effect');
 const rgb=requested==='rgb',stretch=requested==='stretch',crt=requested==='crt',poster=requested==='poster';
 const effect=rgb?'rgb':stretch?'stretch':crt?'crt':poster?'poster':'glass';
@@ -31,8 +32,8 @@ if(effect!=='glass'){
 
 function loadDefaults() {
   el('amp').value=rgb||crt?68:stretch?75:poster?65:66;el('detail').value=rgb?50:stretch?29:crt?55:poster?52:41;seed=97;
-  if(poster)el('poster-title').value=demo?'SEORINA':'POSTER';
-  focus=demo?.id===defaultFilterPhotoId?{x:.47,y:.257}:{x:.50,y:.34};
+  if(poster)el('poster-title').value='POSTER';
+  focus={x:.50,y:.34};
   document.querySelector('input[name=tone][value=a]').checked=true;
   el('coverage-full').checked=true;
 }
@@ -58,56 +59,41 @@ function sync(){
   canvas.hidden=!image||compare;original.hidden=!image||!compare;
   el('empty').hidden=Boolean(image);
   el('compare').disabled=el('save').disabled=el('clean').disabled=!image;
-  el('reset-demo').hidden=!image||demo?.id===defaultFilterPhotoId;
   if(stretch)el('undo').hidden=!image||compare;
   el('compare').textContent=compare?'返回滤镜':'看原图';
   el('compare').setAttribute('aria-pressed',String(compare));
 
   queue();
 }
-async function choose(file,useDemo=false,selected=null){
-  if(!file&&!useDemo&&!selected)return;
-  const id=++serial;
-  if(file&&(!/\.(png|jpe?g|webp|gif|avif|bmp)$/i.test(file.name)||file.size>24*1024*1024)){
-    notice.textContent='请选择不超过 24 MB 的 JPG、PNG、WebP、GIF、AVIF 或 BMP。';return;
+let activePhoto=null;
+async function choose(file,selection=null,saveToGallery=false){
+ if(!file)return;
+ if(!/\.(png|jpe?g|webp|gif|avif|bmp)$/i.test(file.name)||file.size>24*1024*1024){
+   notice.textContent='请选择不超过 24 MB 的图片。';return;
+ }
+ const id=++serial,next=URL.createObjectURL(file),img=new Image();
+ img.src=next;notice.textContent='';
+ try{
+  await img.decode();
+  if(id!==serial){URL.revokeObjectURL(next);return;}
+  if(!img.naturalWidth||!img.naturalHeight||img.naturalWidth*img.naturalHeight>55000000)throw Error();
+  const scale=Math.min(1,1100/Math.max(img.naturalWidth,img.naturalHeight));
+  const source=document.createElement('canvas');source.width=Math.max(2,Math.round(img.naturalWidth*scale));source.height=Math.max(2,Math.round(img.naturalHeight*scale));
+  const input=source.getContext('2d',{willReadFrequently:true});
+  input.fillStyle='#151413';input.fillRect(0,0,source.width,source.height);input.drawImage(img,0,0,source.width,source.height);
+  const decoded=input.getImageData(0,0,source.width,source.height);
+  if(src)URL.revokeObjectURL(src);
+  src=next;original.src=src;compare=false;photoName=file.name.replace(/\.[^.]+$/,'');
+  image=decoded;canvas.width=poster?1080:source.width;canvas.height=poster?1080:source.height;
+  buffer=ctx.createImageData(source.width,source.height);
+  if(poster)artworkSource=source;
+  loadDefaults();brush?.set(image);sync();
+  const row=selection||(saveToGallery?await addLocal(file):null);
+  if(id===serial){
+   activePhoto=row?.id||null;
+   if(gallery.open)void refreshGallery();
   }
-  let next, entry;notice.textContent='';
-  try{
-    entry=selected||(useDemo?await filterDemo():null);
-    if(id!==serial)return;
-    next=entry?.src||URL.createObjectURL(file);
-    const img=new Image();img.src=next;
-    await img.decode();
-    if(id!==serial){if(!entry)URL.revokeObjectURL(next);return;}
-    if(!img.naturalWidth||!img.naturalHeight||img.naturalWidth*img.naturalHeight>55000000)throw Error();
-    if(src?.startsWith('blob:'))URL.revokeObjectURL(src);
-    src=next;original.src=src;demo=entry;compare=false;photoName=entry?(entry.id===defaultFilterPhotoId?'seorina-kpopit':entry.id):file.name.replace(/\.[^.]+$/,'');
-    const scale=Math.min(1,1100/Math.max(img.naturalWidth,img.naturalHeight));
-    canvas.width=Math.max(2,Math.round(img.naturalWidth*scale));canvas.height=Math.max(2,Math.round(img.naturalHeight*scale));
-    const source=document.createElement('canvas');source.width=canvas.width;source.height=canvas.height;
-    const input=source.getContext('2d',{willReadFrequently:true});
-    input.fillStyle='#151413';input.fillRect(0,0,source.width,source.height);input.drawImage(img,0,0,source.width,source.height);
-    image=input.getImageData(0,0,source.width,source.height);
-    buffer=ctx.createImageData(source.width,source.height);
-    if(poster){artworkSource=source;canvas.width=canvas.height=1080}
-    loadDefaults();brush?.set(image);
-    const link=el('image-source'), href=photoSource(demo);
-    link.hidden=!href;
-    if(href){link.href=href;link.textContent=demo.title}
-    else{link.removeAttribute('href');link.textContent=''}
-    el('image-info').textContent=demo&&!href?demo.title+' · '+img.naturalWidth+' × '+img.naturalHeight:img.naturalWidth+' × '+img.naturalHeight;
-    const credit=el('photo-credit');
-    credit.replaceChildren();credit.hidden=!demo;
-    if(demo){
-      credit.append(demo.sourceAttribution||'');
-      if(demo.license?.url){
-        const license=document.createElement('a');license.href=demo.license.url;
-        license.textContent=demo.license.name;license.target='_blank';license.rel='noopener noreferrer';
-        credit.append(' · ',license,' · 已应用滤镜');
-      }
-    }
-    sync();
-  }catch{if(next&&!entry)URL.revokeObjectURL(next);if(id===serial){notice.textContent='无法读取图片，请试试较小的 JPG 或 PNG。';sync();}}
+ }catch{if(src!==next)URL.revokeObjectURL(next);if(id===serial){notice.textContent='无法读取这张图片。';sync();}}
 }
 const clamp01=v=>Math.max(0,Math.min(1,v));
 function pointAt(e,limit=false){
@@ -142,8 +128,9 @@ canvas.addEventListener('keydown',e=>{
  if(stretch)keyboardPoint=keyboardPoint.map((v,i)=>clamp01(v+d[i]));
  else{focus={x:clamp01(focus.x+d[0]),y:clamp01(focus.y+d[1])};queue()}
 });
-for(const b of document.querySelectorAll('[data-pick]'))b.addEventListener('click',()=>el('file').click());
-el('file').addEventListener('change',e=>{void choose(e.target.files[0]);e.target.value='';});
+let addFromPicker=false;
+for(const b of document.querySelectorAll('[data-pick]'))b.addEventListener('click',()=>{addFromPicker=b.dataset.pick==='gallery';el('file').click()});
+el('file').addEventListener('change',e=>{const add=addFromPicker;addFromPicker=false;void choose(e.target.files[0],null,add);e.target.value='';});
 const hasFiles=e=>Array.from(e.dataTransfer?.types||[]).includes('Files');
 document.addEventListener('dragover',e=>{if(hasFiles(e))e.preventDefault();});
 document.addEventListener('drop',e=>{if(hasFiles(e))e.preventDefault();});
@@ -154,35 +141,29 @@ for(const id of ['amp','detail'])el(id).addEventListener('input',queue);
 for(const radio of document.querySelectorAll('input[type=radio]'))radio.addEventListener('change',queue);
 el('clean').addEventListener('click',()=>{if(stretch)brush.clear();else loadDefaults();sync();});
 el('compare').addEventListener('click',()=>{compare=!compare;sync();});
-el('save').addEventListener('click',()=>{if(stretch)brush.flush();else render();saveFrame(canvas,photoName+'-'+effect,demo,({'rgb':'RGB glitch filter','stretch':'Pixel stretch filter','crt':'CRT surveillance filter','poster':'Constructivist poster','glass':'Fluted glass filter'})[effect],notice);});
-const gallery=el('photo-gallery'), galleryGrid=el('gallery-photos'), galleryStatus=el('gallery-status');
-let photoOptions;
-function showGalleryPhotos(rows){
-  galleryStatus.hidden=rows.length>0;
-  galleryStatus.textContent=rows.length?'':'暂时没有可选照片。';
-  galleryGrid.replaceChildren(...rows.map(photo=>{
-    const item=document.createElement('article');
-    item.className='gallery-photo';
-    const pick=document.createElement('button');
-    pick.type='button';pick.className='gallery-pick';pick.setAttribute('aria-label','使用：'+photo.title);
-    if(demo?.id===photo.id)pick.classList.add('is-selected');
-    const img=document.createElement('img');img.src=photo.src;img.alt='';img.loading='lazy';img.decoding='async';
-    pick.append(img);pick.addEventListener('click',()=>{gallery.close();void choose(null,false,photo)});
-    const href=photoSource(photo);
-    const title=document.createElement(href?'a':'span');title.textContent=photo.title;
-    if(href){title.href=href;title.target='_blank';title.rel='noopener noreferrer'}
-    const credit=document.createElement('small');
-    credit.textContent=photo.sourceAttribution+(photo.license?' · '+photo.license.name:'');
-    item.append(pick,title,credit);return item;
-  }));
+el('save').addEventListener('click',()=>{if(stretch)brush.flush();else render();saveFrame(canvas,photoName+'-'+effect,notice);});
+const gallery=el('photo-gallery'),galleryGrid=el('gallery-photos'),galleryStatus=el('gallery-status');
+let thumbURLs=[],galleryUpdate=0;
+function clearThumbs(){for(const url of thumbURLs)URL.revokeObjectURL(url);thumbURLs=[]}
+async function refreshGallery(){
+ const epoch=++galleryUpdate, rows=await listLocal();
+ if(epoch!==galleryUpdate||!gallery.open)return;
+ clearThumbs();
+ galleryStatus.hidden=Boolean(rows.length);galleryStatus.textContent='还没有照片';
+ galleryGrid.replaceChildren(...rows.map(row=>{
+  const item=document.createElement('article');item.className='gallery-photo';
+  const pick=document.createElement('button');pick.type='button';pick.className='gallery-pick';pick.setAttribute('aria-label','使用 '+row.name);
+  if(row.id===activePhoto)pick.classList.add('is-selected');
+  const img=document.createElement('img');const url=URL.createObjectURL(row.file);thumbURLs.push(url);
+  img.src=url;img.alt='';img.loading='lazy';pick.append(img);
+  pick.addEventListener('click',()=>{gallery.close();void choose(row.file,row)});
+  const remove=document.createElement('button');remove.type='button';remove.className='gallery-remove';remove.textContent='移除';remove.setAttribute('aria-label','移除 '+row.name+'（仅从图库）');
+  remove.addEventListener('click',async()=>{await removeLocal(row.id);void refreshGallery()});
+  item.append(pick,remove);return item;
+ }));
 }
-el('open-gallery').addEventListener('click',async()=>{
-  gallery.showModal();
-  galleryStatus.hidden=false;galleryStatus.textContent='正在读取图库';
-  try{photoOptions ||= await filterPhotos();showGalleryPhotos(photoOptions)}
-  catch{galleryStatus.textContent='图库暂时打不开，仍可上传照片。'}
-});
+el('open-gallery').addEventListener('click',()=>{gallery.showModal();void refreshGallery()});
 el('close-gallery').addEventListener('click',()=>gallery.close());
-gallery.addEventListener('close',()=>el('open-gallery').focus());
-el('reset-demo').addEventListener('click',()=>void choose(null,true));
-loadDefaults();sync();void choose(null,true);
+gallery.addEventListener('close',()=>{galleryUpdate++;clearThumbs();galleryGrid.replaceChildren();el('open-gallery').focus()});
+window.addEventListener('pagehide',e=>{if(!e.persisted){clearThumbs();if(src)URL.revokeObjectURL(src)}});
+loadDefaults();sync();

@@ -307,11 +307,6 @@ a:hover { color:var(--accent); }
  .calendar-year .event > .dot { margin-top:13px; width:11px; height:11px; background:var(--ink); }
  .calendar-year .event.date-reached > .dot { background:var(--lamp); }
  .calendar-year .event.current-date .event-date { font-weight:680; }
- .date-companion { position:absolute; z-index:2; width:48px; height:66px; pointer-events:none; opacity:0; transform:translateY(5px); transition:top .38s cubic-bezier(.2,.8,.2,1),left .38s cubic-bezier(.2,.8,.2,1),opacity .2s ease; }
- .date-companion.is-visible { opacity:1; transform:translateY(0); }
- .date-companion canvas { display:block; width:100%; height:100%; }
- @media(max-width:700px){.date-companion{width:36px;height:52px}}
- @media(prefers-reduced-motion:reduce){.date-companion{transition:none}}
 
 }
 @media(forced-colors:active) {
@@ -5250,14 +5245,6 @@ a:hover { color:var(--accent); }
   const monthField = document.getElementById("month-field");
   const monthJump = document.getElementById("month-jump");
   const notes = document.getElementById("evidence-notes");
-  const dateCompanion = document.createElement("div");
-  dateCompanion.className = "date-companion";
-  dateCompanion.setAttribute("aria-hidden", "true");
-  const companionCanvas = document.createElement("canvas");
-  dateCompanion.append(companionCanvas);
-  timeline.append(dateCompanion);
-  const companionContext = companionCanvas.getContext("2d");
-  let companionOutfit = "";
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
   let railControl = null;
   const hero = typeof seorinaHero === "undefined" ? null : seorinaHero.attach(walker, banner, reducedMotion);
@@ -5500,38 +5487,6 @@ a:hover { color:var(--accent); }
     return bounds.top + (entry.dot ? bounds.height / 2 : 0);
   }
 
-  function drawDateCompanion(entry) {
-    if (!entry?.element || entry.element.hidden || !entry.month || !companionContext || typeof SeorinaYearCharacter === "undefined") {
-      dateCompanion.classList.remove("is-visible");
-      return;
-    }
-    const day = entry.element.querySelector(".event-date .day");
-    if (!day) { dateCompanion.classList.remove("is-visible"); return; }
-    const range = document.createRange();
-    range.selectNodeContents(day);
-    const glyph = range.getBoundingClientRect();
-    const bounds = timeline.getBoundingClientRect();
-    const width = dateCompanion.clientWidth || 48;
-    const height = dateCompanion.clientHeight || 66;
-    const year = selected.label;
-    const outfit = annualFigures[year]?.[0] || "script";
-    const dpr = Math.min(2, window.devicePixelRatio || 1);
-    if (companionCanvas.width !== Math.round(width*dpr) || companionCanvas.height !== Math.round(height*dpr)) {
-      companionCanvas.width = Math.round(width*dpr);
-      companionCanvas.height = Math.round(height*dpr);
-    }
-    companionContext.setTransform(dpr,0,0,dpr,0,0);
-    companionContext.clearRect(0,0,width,height);
-    // Reuse the exact annual silhouette renderer used by the top-year character.
-    SeorinaYearCharacter.draw(companionContext,{outfit,x:width*.58,y:height-3,height:height*.72,phase:0,moving:0,action:0,idle:0.35,idlePhase:performance.now()/1800,color:"#171717",accent:"#2628ef"});
-    const left = Math.max(2, glyph.left - bounds.left - width - 5);
-    const top = glyph.top - bounds.top - height*.42;
-    dateCompanion.style.left = left + "px";
-    dateCompanion.style.top = top + "px";
-    dateCompanion.classList.add("is-visible");
-    companionOutfit = outfit;
-  }
-
   function updateCurrentDate() {
     highlightFrame = 0;
     const dated = selected.visibleDates;
@@ -5563,7 +5518,6 @@ a:hover { color:var(--accent); }
       trail = Math.max(0, tip - timeline.getBoundingClientRect().top);
     }
     timeline.style.setProperty("--date-trail", trail + "px");
-    drawDateCompanion(entry);
     const currentIndex = dated.indexOf(entry);
     if (dateProgress.entries === dated && dateProgress.index === currentIndex) return;
     if (dateProgress.entries !== dated) {

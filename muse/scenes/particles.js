@@ -51,16 +51,16 @@ export class ParticlesScene {
     this.scene=new THREE.Scene();
     this.scene.background=new THREE.Color('#03080c');
     this.camera=new THREE.PerspectiveCamera(42,1,.1,80);
-    this.camera.position.set(0,.15,10.4);
+    this.camera.position.set(0,0,8.8);
     this.camera.lookAt(0,.1,0);
     this.group=new THREE.Group();
-    this.group.position.set(.45,.35,0);
+    this.group.position.set(0,0,0);
     this.scene.add(this.group);
     this.yaw=this.yawTarget=-.15;
     this.pitch=this.pitchTarget=.015;
     this.scatter=this.scatterTarget=0;
     this.depthStrength=3.15;
-    this.zoom=this.zoomTarget=10.4;
+    this.zoom=this.zoomTarget=8.8;
     this.uniforms={uTime:{value:0},uScatter:{value:0},uPointScale:{value:2.2},uMotion:{value:reducedMotion?0:1},uPointer:{value:new THREE.Vector2()},uPointerActive:{value:0}};
     this.material=new THREE.ShaderMaterial({uniforms:this.uniforms,vertexShader:vertex,fragmentShader:fragment,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,toneMapped:false});
     this.makeDust();
@@ -93,7 +93,7 @@ export class ParticlesScene {
     let depths;
     if(photo.depthImage){ctx.drawImage(photo.depthImage,0,0,cols,rows);depths=ctx.getImageData(0,0,cols,rows).data;}
     const positions=[],colors=[],scattered=[],depthValues=[],seeds=[];
-    const height=5.25,width=height*aspect;
+    const longSide=6.1;const height=aspect>=1?longSide/aspect:longSide,width=aspect>=1?longSide:longSide*aspect;
     this.photoWidth=width;this.photoHeight=height;
     const linear=new THREE.Color();
     let random=909;const rand=()=>{random=(random*1664525+1013904223)>>>0;return random/4294967296;};
@@ -104,7 +104,7 @@ export class ParticlesScene {
       // With no depth map, use a clearly artistic curved sheet, never luma-as-facial-depth.
       const depth=depths?depths[offset]/255:.48+.2*Math.cos((u-.5)*Math.PI)*Math.cos((v-.5)*Math.PI);
       const z=(depth-.5)*this.depthStrength;
-      const correction=1-z/10.4;
+      const correction=1-z/8.8;
       positions.push((u-.5)*width*correction,(.5-v)*height*correction,z);
       linear.setRGB(rgba[offset]/255,rgba[offset+1]/255,rgba[offset+2]/255,THREE.SRGBColorSpace);
       colors.push(linear.r,linear.g,linear.b);
@@ -127,10 +127,10 @@ export class ParticlesScene {
   resize(w,h){
     const wasMobile=this.mobile;this.mobile=w<700;this.width=w;this.height=h;
     this.camera.aspect=w/h;this.camera.fov=this.mobile?49:42;this.camera.updateProjectionMatrix();
-    this.zoomTarget=this.mobile?13.8:10.4;
+    this.zoomTarget=this.mobile?9.5:8.8;
     this.uniforms.uPointScale.value=(this.mobile?2.8:3.0)*Math.min(devicePixelRatio||1,this.mobile?1.35:1.75);
-    this.group.position.x=this.mobile?0:.45;
-    this.group.position.y=this.mobile?.65:.8;
+    this.group.position.x=0;
+    this.group.position.y=0;
     if(wasMobile!==undefined&&wasMobile!==this.mobile&&this.items?.length)this.setIndex(this.index);
   }
   update(dt,time,input){
@@ -145,10 +145,10 @@ export class ParticlesScene {
     this.uniforms.uPointer.value.set(input.x*(this.photoWidth||4)*.6,input.y*3.4);
     this.uniforms.uPointerActive.value+=((input.active&&!input.down?1:0)-this.uniforms.uPointerActive.value)*lerp;
     this.camera.position.z=this.zoom;
-    if(!this.reducedMotion){this.group.position.x=(this.mobile?0:.45)+Math.sin(time*.29)*.105;this.group.position.y=(this.mobile?.65:.8)+Math.sin(time*.37)*.065;this.dust.rotation.y=time*.035;this.dust.rotation.z=Math.sin(time*.34)*.035;}
+    if(!this.reducedMotion){this.group.position.x=Math.sin(time*.29)*.105;this.group.position.y=Math.sin(time*.37)*.065;this.dust.rotation.y=time*.035;this.dust.rotation.z=Math.sin(time*.34)*.035;}
   }
   drag(dx,dy){this.yawTarget=THREE.MathUtils.clamp(this.yawTarget+dx*4.2,-1.28,1.28);this.pitchTarget=THREE.MathUtils.clamp(this.pitchTarget+dy*2,-.5,.5);}
-  wheel(delta){this.zoomTarget=THREE.MathUtils.clamp(this.zoomTarget+delta*.012,this.mobile?9.2:6.4,this.mobile?18:16);}
+  wheel(delta){this.zoomTarget=THREE.MathUtils.clamp(this.zoomTarget+delta*.012,this.mobile?8.2:6.4,this.mobile?14:13);}
   action(){this.scatterTarget=this.scatterTarget>.5?0:1;return this.scatterTarget?'重新聚合':'散开';}
   dispose(){this.points?.geometry.dispose();this.material.dispose();this.dust.geometry.dispose();this.dust.material.dispose();}
 }

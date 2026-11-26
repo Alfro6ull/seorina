@@ -8,6 +8,8 @@ function notify(message){$('status').textContent=message||'';$('status').hidden=
 function update(){
  const photo=gallery.current;if(!photo)return;
  $('counter').textContent=two(gallery.index+1)+' / '+two(gallery.items.length);
+ $('photo-title').textContent=photo.title||'';
+ const source=$('source');source.hidden=!photo.source;if(photo.source)source.href=photo.source;else source.removeAttribute('href');
  if(failed)$('fallback').src=photo.src;
 }
 function openViewer(){const photo=gallery.current;if(!photo)return;$('view-image').src=photo.src;$('view-image').alt=photo.title;$('viewer').showModal();renderer?.setPaused(true);}

@@ -5,7 +5,7 @@
 
 ## 示例图片与维护
 
-默认示例是 CNTV 역사극채널 的《Oasis》访谈截图。Wikimedia Commons 附 2023 年的许可复核记录。CC BY 3.0；已重新编码、清除元数据；预览裁切、缩略图及导出标注滤镜改动。参见站内 `image-rights.html#cntv`。授权范围是版权，不等于肖像授权或官方背书。
+默认示例是 K-POPIT 케이팝잇 的《钢铁少女团2》电台上班路画面（图 8），核对 YouTube 原视频为 Creative Commons Attribution，Commons 文件页标 CC BY 4.0；重新编码并删除元数据，缩略图和导出标注滤镜改动。点画面或用方向键可手动移动清晰区，不识别人脸。见 `image-rights.html#demo-photo`。
 
 上一版可用备选：[Ten Asia BVLGARI 活动图](https://commons.wikimedia.org/wiki/File:Seol_In-ah_at_BVLGARI_photo_call_event.jpg)，复核为 CC BY 3.0，本版未收录。杂志、剧照、社媒按单图另查，不因公开或可嵌入而搬运。
 

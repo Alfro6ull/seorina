@@ -1,20 +1,20 @@
-import {demoUrl, saveFrame} from './shared.js';
-import {renderGlass} from './art-effects.js';
+import {demoUrl, saveFrame} from './shared.js?v=clear-ribs';
+import {renderGlass} from './art-effects.js?v=clear-ribs';
 
 const el=id=>document.getElementById(id);
 const canvas=el('preview'), ctx=canvas.getContext('2d'), stage=el('stage'), original=el('original'), notice=el('notice');
-let image,src,photoName='',demo=false,compare=false,serial=0,frame=0;
+let image,buffer,focus,src,photoName='',demo=false,compare=false,serial=0,frame=0;
 
 function loadDefaults() {
-  el('amp').value=70;el('detail').value=48;
+  el('amp').value=66;el('detail').value=41;
+  focus=demo?{x:.47,y:.257}:{x:.50,y:.34};
   document.querySelector('input[name=tone][value=a]').checked=true;
   el('coverage-full').checked=true;
 }
 function render(){
   if(!image)return;
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  ctx.drawImage(image,0,0);
-  renderGlass(ctx,image,{
+  renderGlass(ctx,image,buffer,{
+    focus,
     amount:Number(el('amp').value)/100,
     detail:Number(el('detail').value)/100,
     variant:document.querySelector('input[name=tone]:checked').value==='b'?'frost':'prism',
@@ -49,17 +49,32 @@ async function choose(file,useDemo=false){
     if(id!==serial){if(!useDemo)URL.revokeObjectURL(next);return;}
     if(!img.naturalWidth||!img.naturalHeight||img.naturalWidth*img.naturalHeight>55000000)throw Error();
     if(src?.startsWith('blob:'))URL.revokeObjectURL(src);
-    src=next;original.src=src;demo=useDemo;compare=false;photoName=useDemo?'seorina-cntv':file.name.replace(/\.[^.]+$/,'');
+    src=next;original.src=src;demo=useDemo;compare=false;photoName=useDemo?'seorina-kpopit':file.name.replace(/\.[^.]+$/,'');
     const scale=Math.min(1,1100/Math.max(img.naturalWidth,img.naturalHeight));
-    image=document.createElement('canvas');
-    canvas.width=image.width=Math.max(2,Math.round(img.naturalWidth*scale));canvas.height=image.height=Math.max(2,Math.round(img.naturalHeight*scale));
-    const input=image.getContext('2d');
-    input.fillStyle='#151413';input.fillRect(0,0,image.width,image.height);input.drawImage(img,0,0,image.width,image.height);
+    canvas.width=Math.max(2,Math.round(img.naturalWidth*scale));canvas.height=Math.max(2,Math.round(img.naturalHeight*scale));
+    const source=document.createElement('canvas');source.width=canvas.width;source.height=canvas.height;
+    const input=source.getContext('2d',{willReadFrequently:true});
+    input.fillStyle='#151413';input.fillRect(0,0,source.width,source.height);input.drawImage(img,0,0,source.width,source.height);
+    image=input.getImageData(0,0,source.width,source.height);
+    buffer=ctx.createImageData(source.width,source.height);
     loadDefaults();
-    el('image-info').textContent=(demo?'仁雅 · CNTV 2023　/　':'')+img.naturalWidth+' × '+img.naturalHeight+' px';
+    el('image-info').textContent=(demo?'仁雅 · K-POPIT　/　':'')+img.naturalWidth+' × '+img.naturalHeight+' px';
     sync();
   }catch{if(!useDemo)URL.revokeObjectURL(next);if(id===serial){notice.textContent='无法读取图片，请试试较小的 JPG 或 PNG。';sync();}}
 }
+const clamp01=v=>Math.max(0,Math.min(1,v));
+canvas.addEventListener('click',e=>{
+  if(!image||compare)return;
+  const box=canvas.getBoundingClientRect(), scale=Math.min(box.width/canvas.width,box.height/canvas.height);
+  const w=canvas.width*scale,h=canvas.height*scale;
+  const x=(e.clientX-box.left-(box.width-w)/2)/w,y=(e.clientY-box.top-(box.height-h)/2)/h;
+  if(x>=0&&x<=1&&y>=0&&y<=1){focus={x,y};queue();}
+});
+canvas.addEventListener('keydown',e=>{
+  const d={ArrowLeft:[-.04,0],ArrowRight:[.04,0],ArrowUp:[0,-.04],ArrowDown:[0,.04]}[e.key];
+  if(!image||compare||!d)return;
+  e.preventDefault();focus={x:clamp01(focus.x+d[0]),y:clamp01(focus.y+d[1])};queue();
+});
 for(const b of document.querySelectorAll('[data-pick]'))b.addEventListener('click',()=>el('file').click());
 el('file').addEventListener('change',e=>{void choose(e.target.files[0]);e.target.value='';});
 const hasFiles=e=>Array.from(e.dataTransfer?.types||[]).includes('Files');

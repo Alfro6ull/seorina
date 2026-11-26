@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' blob: data:; connect-src 'none'; media-src blob:; base-uri 'none'; form-action 'none'">
 <title>长虹玻璃 · 薛仁雅档案</title>
 <link rel="stylesheet" href="./style.css">
-<script type="module" src="./art-tools.js"></script>
+<script type="module" src="./art-tools.js?v=clear-ribs"></script>
 </head>
 <body>
 <header class="bar"><a href="./">← 滤镜列表</a><h1 id="tool-name">长虹玻璃</h1></header>
@@ -21,14 +21,14 @@
           <button type="button" class="file-primary" data-pick>选择本地图片</button>
           <p>也可以把图片拖到这里</p>
         </div>
-        <canvas id="preview" tabindex="0" hidden aria-label="滤镜预览"></canvas>
+        <canvas id="preview" tabindex="0" hidden aria-label="滤镜预览。用方向键移动清晰区"></canvas>
         <img id="original" hidden alt="你选择的原图">
       </div>
       <div class="viewer-foot"><span id="image-info">正在读取示例</span><span id="screen-status">未选图</span></div>
     </div>
     <aside class="controls" aria-label="滤镜设置">
       <h2>调整</h2>
-      <p class="tool-gesture">选择整张折射，或保留上半张原图。</p>
+      <p class="tool-gesture">点照片，移动清晰区。</p>
       <fieldset id="mode-wrap"><legend>样式</legend>
         <div class="modes"><label><input type="radio" name="tone" value="a" checked><span>棱镜</span></label><label><input type="radio" name="tone" value="b"><span>磨砂</span></label></div>
       </fieldset>

@@ -1,19 +1,29 @@
 <!doctype html><html lang="zh-Hans"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#141414">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; base-uri 'none'; form-action 'none'">
-<title>开源与致谢 · 薛仁雅档案</title><link rel="stylesheet" href="./style.css"><link rel="stylesheet" href="../assets/copyright.css?v=shared-footer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'">
+<title>开源致谢 · 薛仁雅档案</title><link rel="stylesheet" href="./style.css?v=quick-index"><link rel="stylesheet" href="../assets/copyright.css?v=shared-footer">
+<link rel="stylesheet" href="./info-pages.css"><script type="module" src="./quick-index.js"></script>
 </head>
-<body><header class="bar"><a href="./">← 滤镜列表</a><h1>开源与致谢</h1></header>
-<main class="legal">
-<section><h2>长虹玻璃</h2><p>本站以 Canvas 2D 独立实现竖纹折射，不调用生成式 AI，也未移植外部项目的代码或素材。<a href="./references.html#glass-reference">视觉参考与出处</a>单列。示例照片另见<a href="./image-rights.html#demo-photo">图片版权</a>。</p></section></main>
+<body><header class="bar"><a href="../index/" data-quick-index>站点索引</a></header>
+<main id="open-source" class="info-page">
+  <h1>开源致谢</h1>
+  <p class="info-intro">谢谢这些项目的作者和维护者，让本站能用上开放的工具和字体。</p>
+  <ul class="credit-list">
+    <li><div><a class="credit-name" href="https://github.com/mrdoob/three.js">Three.js ↗</a><p>Three.js 作者及贡献者 · MIT</p></div><nav aria-label="Three.js 使用页面"><a href="../">开场</a><a href="../muse/particles/">记忆粒子</a></nav></li>
+    <li><div><a class="credit-name" href="https://github.com/CatharsisFonts/Cormorant">Cormorant Garamond ↗</a><p>Cormorant 项目作者 · SIL OFL 1.1</p></div><nav aria-label="Cormorant 使用页面"><a href="../">开场</a><a href="../index/" data-quick-index>站点索引</a><a href="../muse/">MUSE 索引</a></nav></li>
+    <li><div><a class="credit-name" href="https://github.com/indestructible-type/Bodoni">Bodoni Moda ↗</a><p>Bodoni Moda 项目作者 · SIL OFL 1.1</p></div><nav aria-label="Bodoni Moda 使用页面"><a href="../muse/particles/">记忆粒子</a><a href="../muse/credits.html">展览说明</a></nav></li>
+    <li><div><a class="credit-name" href="https://github.com/googlefonts/dm-fonts">DM Sans ↗</a><p>DM Sans 项目作者 · SIL OFL 1.1</p></div><nav aria-label="DM Sans 使用页面"><a href="../muse/particles/">记忆粒子</a><a href="../muse/credits.html">展览说明</a></nav></li>
+    <li><div><a class="credit-name" href="https://github.com/markedjs/marked">Marked ↗</a><p>Marked 贡献者 · MIT · 用于构建考据页</p></div><nav aria-label="Marked 生成页面"><a href="../life/research.html">文字考据</a></nav></li>
+    <li><div><a class="credit-name" href="https://github.com/DepthAnything/Depth-Anything-V2">Depth Anything V2 Small ↗</a><p>Depth Anything 团队 · Apache 2.0 · 用于离线计算景深</p></div><nav aria-label="Depth Anything 使用页面"><a href="../muse/particles/">记忆粒子</a><a href="../muse/credits.html">展览说明</a></nav></li>
+  </ul>
+</main>
 <footer class="site-footer">
   <!-- SITE-FOOTER:START -->
 <section class="archive-copyright" aria-labelledby="archive-copyright-title">
   <h2 id="archive-copyright-title">版权声明</h2>
   <p><strong>非官方 · 粉丝制作。</strong> 本站为非营利的薛仁雅粉丝档案，与艺人、经纪公司及相关品牌无隶属关系。</p>
-  <p>第三方素材版权归各权利人。 <span class="archive-copyright-links"><a href="./image-rights.html">图片来源与署名</a> · <a href="./image-rights.html#contact">版权问题反馈</a></span></p>
-  <p>滤镜效果由浏览器在本地计算，不使用生成式 AI，照片也不会上传。</p>
+  <p>第三方素材版权归各权利人。 <span class="archive-copyright-links"><a href="#open-source">开源致谢</a> · <a href="./image-rights.html#contact">版权问题反馈</a></span></p>
 </section>
 <!-- SITE-FOOTER:END -->
 </footer>

@@ -1,0 +1,13 @@
+.info-page{width:min(730px, calc(100% - 38px));min-height:36vh;margin:28px auto 42px;color:var(--ink)}
+.info-page h1{font-size:clamp(24px,4.6vw,37px);font-weight:630;letter-spacing:.015em;margin:0 0 12px}
+.info-intro,.info-section p{font-size:.91rem;line-height:1.75;color:var(--muted);margin:8px 0}
+.info-section{margin-top:33px;border-top:1px solid var(--line);padding-top:17px;scroll-margin-top:16px}
+.info-section h2{font-size:1.05rem;margin:0 0 8px}.info-section:target h2{color:#dfbd8c}
+.contact-line{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:13px}
+#copy-rights-status[hidden]{display:none}#copy-rights-status{margin:6px 0 0;font-size:.79rem}
+.credit-list{padding:0;margin:23px 0 0;list-style:none}
+.credit-list li{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px 20px;border-top:1px solid var(--line);padding:13px 0}
+.credit-name{font-size:1rem;font-weight:600;text-decoration:none}.credit-name:hover{text-decoration:underline}
+.credit-list p{font-size:.77rem;line-height:1.55;color:var(--muted);margin:5px 0 0}
+.credit-list nav{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:5px 13px;font-size:.8rem}
+@media(max-width:620px){.info-page{margin:18px auto 30px}.credit-list li{grid-template-columns:1fr}.credit-list nav{justify-content:flex-start}}

@@ -23,7 +23,6 @@ if(effect!=='glass'){
   el('mode-wrap').hidden=el('coverage-wrap').hidden=true;
   document.querySelector('.tool-gesture').textContent=rgb?'点照片或按回车，换一帧故障。':stretch?'按住照片划动，拖影会实时出现。也可以用手指画。':crt?'调节青蓝显像和扫描线。':'调节半调网点，也可以换成自己的海报标题。';
   canvas.setAttribute('aria-label',rgb?'RGB 故障画布。按回车换一帧故障。':stretch?'像素拖影画布。按住划动，或用方向键移动画笔，回车落笔。':title+'预览');
-  document.querySelector('a[href*="glass-reference"]').hidden=true;
   if(poster){el('poster-title-wrap').hidden=false;el('poster-title').addEventListener('input',queue)}
   if(crt||poster)canvas.classList.add('static-art-canvas');
   if(stretch){el('clean').textContent='清空笔迹';canvas.classList.add('stretch-canvas')}
@@ -97,6 +96,16 @@ async function choose(file,useDemo=false,selected=null){
     if(href){link.href=href;link.textContent=demo.title}
     else{link.removeAttribute('href');link.textContent=''}
     el('image-info').textContent=demo&&!href?demo.title+' · '+img.naturalWidth+' × '+img.naturalHeight:img.naturalWidth+' × '+img.naturalHeight;
+    const credit=el('photo-credit');
+    credit.replaceChildren();credit.hidden=!demo;
+    if(demo){
+      credit.append(demo.sourceAttribution||'');
+      if(demo.license?.url){
+        const license=document.createElement('a');license.href=demo.license.url;
+        license.textContent=demo.license.name;license.target='_blank';license.rel='noopener noreferrer';
+        credit.append(' · ',license,' · 已应用滤镜');
+      }
+    }
     sync();
   }catch{if(next&&!entry)URL.revokeObjectURL(next);if(id===serial){notice.textContent='无法读取图片，请试试较小的 JPG 或 PNG。';sync();}}
 }

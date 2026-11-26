@@ -1,0 +1,23 @@
+:root{color-scheme:light;background:#a5b86c;color:#203017;--edge:clamp(22px,5.6vw,90px);font:16px/1.45 system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0}a{color:inherit;text-decoration:none}a:focus-visible{outline:1px solid #324717;outline-offset:3px}
+#frame{position:relative;isolation:isolate;min-height:max(100svh,710px);display:flex;flex-direction:column;overflow:hidden}
+#field{position:absolute;z-index:-2;inset:0;width:100%;height:100%;pointer-events:none}
+#frame::after{content:"";position:absolute;z-index:-1;inset:0;background:radial-gradient(ellipse at 3% 21%,#fff2bd61,transparent 65%),linear-gradient(99deg,#eeedb149 0%,#eeedb137 27%,#f5eabc13 59%,transparent 79%);pointer-events:none}
+#frame{padding-bottom:env(safe-area-inset-bottom,0px)}
+.meadow-bar{margin-inline:var(--edge);height:62px;border-bottom:1px solid #34462061;display:flex;align-items:center;justify-content:space-between;font-size:.76rem;color:#2e401d}
+.meadow-bar a{display:inline-flex;align-items:center;min-height:44px}
+.meadow-logo{font:500 24px Cormorant,Georgia,serif;color:#223119}
+.meadow-main{width:min(1160px,100% - var(--edge)*2);margin:auto;flex:1}
+.meadow-main h1{text-align:center;font:500 clamp(90px,11.5vw,150px)/.85 Cormorant,Georgia,serif;letter-spacing:-.065em;text-shadow:0 1px 22px #fff5bc50;margin:clamp(30px,6vh,65px) 0 clamp(38px,7vh,80px)}
+.meadow-main nav{width:min(390px,46%)}
+.meadow-main ol{list-style:none;margin:0;padding:0;border-top:1px solid #34462074}
+.meadow-main nav a{min-height:61px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 3px;border-bottom:1px solid #34462063;transition:color .2s,padding .2s}
+.meadow-main nav a:hover,.meadow-main nav a:focus-visible{color:#233814;padding-left:9px}
+.entry-text{display:flex;align-items:baseline;gap:11px}.entry-title{font:500 clamp(33px,4.4vw,58px)/.91 Cormorant,Georgia,serif;letter-spacing:-.04em}
+.entry-label{color:#364721;font-size:.71rem;white-space:nowrap}
+.meadow-main nav svg{width:20px;height:20px;flex:none}
+.index-footer{background:#edefdb;color:#3b462e;padding-inline:var(--edge);--line:#51643950}
+.index-footer .archive-copyright{width:min(780px,100%);margin:0 auto;border-top:0;padding-block:1.25rem 1.4rem}
+@media(max-width:650px){#frame{min-height:max(100svh,710px)}.meadow-bar{height:48px}.meadow-main h1{font-size:clamp(76px,21vw,115px);margin:25px 0 27px}.meadow-main nav{width:100%}.meadow-main nav a{min-height:46px}.entry-title{font-size:clamp(29px,8vw,43px)}
+#frame::after{background:radial-gradient(ellipse at 9% 11%,#fff2bc53,transparent 80%),linear-gradient(180deg,#f6ecb937 0%,#f3eab52a 42%,transparent 76%)}}
+@media(prefers-reduced-motion:reduce){.meadow-main nav a{transition:none}}

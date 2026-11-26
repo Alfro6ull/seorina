@@ -4,7 +4,7 @@
 <meta name="theme-color" content="#03080c"><meta name="color-scheme" content="dark">
 <meta name="description" content="MUSE — Memory Particles, an unofficial fan-made interactive photo artwork.">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none';">
-<title>MUSE — Memory Particles</title><link rel="stylesheet" href="../style.css?v=4"></head>
+<title>MUSE — Memory Particles</title><link rel="stylesheet" href="../style.css?v=site-footer"><link rel="stylesheet" href="../../assets/copyright.css?v=shared-footer"></head>
 <body data-scene="particles"><main id="exhibit">
 <canvas id="stage" aria-label="MUSE Memory Particles interactive photo artwork"></canvas><img id="fallback" alt="" hidden><div class="vignette" aria-hidden="true"></div>
 <header class="exhibit-title"><a href="../" aria-label="MUSE exhibition index">MUSE</a><span>/</span><strong>MEMORY PARTICLES</strong></header>
@@ -16,7 +16,13 @@
 <button id="next" class="icon-button" aria-label="Next photograph"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
 <button id="action" class="action-button" aria-label="Dissolve or reassemble">散开</button>
 </div>
-<footer class="exhibit-rights"><span>非官方 · 粉丝制作</span><span>图片版权归原作者及相关权利人</span><a href="../credits.html">图片出处与版权说明 ↗</a></footer>
+<footer class="exhibit-rights"><!-- SITE-FOOTER:START -->
+<section class="archive-copyright" aria-labelledby="archive-copyright-title">
+  <h2 id="archive-copyright-title">版权声明</h2>
+  <p><strong>非官方 · 粉丝制作。</strong> 本站为非营利的薛仁雅粉丝档案，与艺人、经纪公司及相关品牌无隶属关系。</p>
+  <p>第三方素材版权归各权利人。 <span class="archive-copyright-links"><a href="../credits.html">图片来源与署名</a> · <a href="../../filters/image-rights.html#contact">版权问题反馈</a></span></p>
+</section>
+<!-- SITE-FOOTER:END --></footer>
 <p id="status" class="status" role="status" hidden></p><div id="loading" class="loading" role="status"><span></span></div>
 <dialog id="viewer" aria-label="Photograph"><button class="viewer-close" data-close="viewer" aria-label="Close">×</button><img id="view-image" class="view-image" alt=""></dialog>
 <noscript>JavaScript is required.</noscript></main><script type="module" src="../app.js?v=shared-photos"></script></body></html>

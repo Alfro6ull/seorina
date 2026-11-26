@@ -14,3 +14,14 @@
 .site-footer > .archive-copyright:first-child { border-top: 0; margin-top: 0; padding-top: 0; }
 .archive-copyright--detached { margin-top: 0; padding-block: 1.25rem 1.5rem; }
 .archive-footer--standalone { width: calc(100% - 2rem); max-width: 760px; margin-inline: auto; }
+
+.archive-copyright-links { display: inline-block; }
+.exhibit-rights > .archive-copyright {
+  width: 100%;
+  margin: 0;
+  padding: .38rem 0 0;
+  font-size: .66rem;
+  line-height: 1.45;
+}
+.exhibit-rights > .archive-copyright h2 { font-size: .75rem; margin-bottom: .2rem; }
+.exhibit-rights > .archive-copyright p { margin-bottom: .2rem; }

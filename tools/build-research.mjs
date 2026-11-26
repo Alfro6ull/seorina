@@ -8,6 +8,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { Marked, Renderer } from 'marked';
+import { markedSiteFooter } from './site-footer.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const check = process.argv.includes('--check');
@@ -18,21 +19,21 @@ const languages = [
     description: '薛仁雅生平与作品的公开资料考据、日期核对、待考线索及多语种出处。',
     siteIndexLabel: '站点索引', navLabel: '档案导航', archiveLabel: '← 生平档案', namesLabel: '语名索引',
     topLabel: '返回页首 ↑', sourceLabel: 'Markdown 原文', 
-    tableLabel: '资料表，可横向滚动', copyrightHeading: '版权声明',
+    tableLabel: '资料表，可横向滚动',
   },
   {
     language: 'ko', htmlLang: 'ko', label: '한국어', menuLabel: '언어', suffix: '.ko',
     description: '설인아의 생애와 작품에 관한 공개 자료, 날짜 검증, 확인 대기 항목 및 다국어 출처.',
     siteIndexLabel: '사이트 목록 (중문)', navLabel: '아카이브 탐색', archiveLabel: '← 생애·활동 기록 (중문)', namesLabel: '이름·작품명 색인',
     topLabel: '맨 위로 ↑', sourceLabel: 'Markdown 원문', 
-    tableLabel: '자료 표, 가로로 스크롤 가능', copyrightHeading: '저작권 안내',
+    tableLabel: '자료 표, 가로로 스크롤 가능',
   },
   {
     language: 'en', htmlLang: 'en', label: 'English', menuLabel: 'Language', suffix: '.en',
     description: 'Public-source research on Seorina’s life and career, date checks, unresolved leads and multilingual references.',
     siteIndexLabel: 'Site index (Chinese)', navLabel: 'Archive navigation', archiveLabel: '← Life archive (Chinese)', namesLabel: 'Names & Titles Index',
     topLabel: 'Back to top ↑', sourceLabel: 'Markdown source', 
-    tableLabel: 'Research table, scroll horizontally', copyrightHeading: 'Copyright notice',
+    tableLabel: 'Research table, scroll horizontally',
   },
 ];
 
@@ -82,12 +83,7 @@ for (const locale of languages) {
   const tokens = parser.lexer(markdown);
   const titleToken = tokens.find(token => token.type === 'heading' && token.depth === 1);
   if (!titleToken) throw new Error(`${source}: missing title`);
-  const copyrightStart = tokens.findIndex(token => token.type === 'heading' && token.depth === 2 && token.text === locale.copyrightHeading);
-  if (copyrightStart < 0) throw new Error(`${source}: missing copyright section`);
-  const bodyTokens = tokens.slice(0, copyrightStart);
-  const copyrightTokens = tokens.slice(copyrightStart);
-  bodyTokens.links = tokens.links;
-  copyrightTokens.links = tokens.links;
+  const bodyTokens = tokens;
 
   let sectionCount = 0;
   let tableCount = 0;
@@ -116,7 +112,7 @@ for (const locale of languages) {
   };
   parser.use({ renderer });
   const body = parser.parser(bodyTokens);
-  const copyright = createParser().parser(copyrightTokens).replace('<h2>', '<h2 id="archive-copyright-title">');
+  const copyright = markedSiteFooter('life/'+output, locale.language);
   const structure = { sections: sectionCount, tables: tableCount, rows: tableRows };
   if (expectedStructure && JSON.stringify(structure) !== JSON.stringify(expectedStructure)) {
     throw new Error(`${source}: heading/table structure differs across translations`);
@@ -124,7 +120,7 @@ for (const locale of languages) {
   expectedStructure = structure;
 
   // Verify that the renderer keeps every original Markdown link in its order.
-  const renderedLinks = [...(body + copyright).matchAll(/href="([^"]*)"/g)].map(match => match[1].replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'"));
+  const renderedLinks = [...body.matchAll(/href="([^"]*)"/g)].map(match => match[1].replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'"));
   const sourceLinks = markdownLinks(tokens);
   if (JSON.stringify(sourceLinks) !== JSON.stringify(renderedLinks)) {
     const mismatch = sourceLinks.findIndex((link, index) => link !== renderedLinks[index]);

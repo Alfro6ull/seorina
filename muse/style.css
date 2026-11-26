@@ -50,3 +50,11 @@ dialog{color:var(--paper);border:1px solid #c9c1b33b;background:#1c1c1a;padding:
 }
 
 .back-index{position:absolute;z-index:4;top:28px;right:3%;width:38px;height:38px;display:grid;place-items:center;border:1px solid #ffffff38;border-radius:50%;background:#03080c55;backdrop-filter:blur(8px);color:#e3edf0;transition:background .2s,border-color .2s}.back-index svg{width:19px;height:19px;stroke:currentColor;stroke-width:1.4;fill:none}.back-index:hover{background:#d9e9a2;color:#071014;border-color:#d9e9a2}@media(max-width:700px){.back-index{top:max(16px,env(safe-area-inset-top));right:5%;width:34px;height:34px}}
+#exhibit .exhibit-rights{display:block;bottom:max(13px,env(safe-area-inset-bottom));pointer-events:none}
+#exhibit .exhibit-rights a{pointer-events:auto;margin-left:0}
+#exhibit .tools{bottom:102px}
+#exhibit .photo-meta{bottom:114px}
+@media(max-width:700px){
+ #exhibit .tools{bottom:112px}
+ #exhibit .photo-meta{bottom:176px;right:5%;flex-wrap:wrap}
+}

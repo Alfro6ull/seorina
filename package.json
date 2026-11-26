@@ -6,8 +6,10 @@
     "build:research": "node tools/build-research.mjs",
     "check:research": "node tools/build-research.mjs --check",
     "check:locales": "node tools/check-locales.mjs",
+    "build:footers": "node tools/build-footers.mjs",
+    "check:footers": "node tools/build-footers.mjs --check",
     "check:photos": "node tools/check-photo-library.mjs",
-    "check": "npm run check:research && npm run check:locales && npm run check:photos"
+    "check": "npm run check:research && npm run check:locales && npm run check:photos && npm run check:footers"
   },
   "engines": {
     "node": ">=20"

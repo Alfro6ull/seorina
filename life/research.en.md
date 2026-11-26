@@ -330,9 +330,3 @@ The timeline contains 156 records, with another 11 magazine-issue or appearance 
 Known start and end dates are displayed on the right. Filming or training and broadcast periods for Twinkling Watermelon, Iron Girls and Love in Disguise share a small Gantt bar for each project. Dashed lines indicate approximate dates or known upper bounds. Each small chart’s axis compares periods within that one project only.
 
 The main text and indexes contain 402 source destinations. Availability labels distinguish reference pages, public videos, viewing destinations restricted by region or account, and archives requiring verification. Use as evidence, access to the full programme, and reuse of material are labelled separately according to the available evidence. Actual playback conditions have not been individually tested across regions. Accessible programmes, reporting and pictorials can serve as references; reuse of original footage, stills and images is governed by the respective permissions. [YouTube video licence guidance](<https://support.google.com/youtube/answer/2797468>) · [Netflix permitted use](<https://help.netflix.com/en/node/633853347904100>) · [Prime Video terms of use](<https://www.primevideo.com/help?nodeId=202095490>) · [Viki regional availability guidance](<https://support.viki.com/hc/en-us/articles/200138684-Why-Is-the-Show-I-m-Trying-to-Watch-Not-Available-in-My-Region>)
-
-## Copyright notice
-
-**Unofficial · Fan-made.** This is a nonprofit Seorina fan archive and is not affiliated with the artist, her agency or the relevant brands.
-
-Copyright in third-party materials belongs to the respective rights holders. [Copyright contact](mailto:alfro6ull@gmail.com) · [Image sources and licensing notes](../filters/image-rights.html)

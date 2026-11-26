@@ -1,20 +1,20 @@
 <!doctype html><html lang="zh-Hans"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#141414">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; base-uri 'none'; form-action 'none'">
-<title>图片版权 · 薛仁雅档案</title><link rel="stylesheet" href="./style.css"><link rel="stylesheet" href="../assets/copyright.css?v=centered">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'">
+<title>图片来源与版权 · 薛仁雅档案</title><link rel="stylesheet" href="./style.css?v=rights-feedback"><script type="module" src="./copy-contact.js"></script><link rel="stylesheet" href="../assets/copyright.css?v=shared-footer">
 </head>
-<body><header class="bar"><a href="./">← 滤镜列表</a><h1>图片版权</h1></header>
+<body><header class="bar"><a href="./">← 滤镜列表</a><h1>图片来源与版权</h1></header>
 <main class="legal reference rights-page">
-<details class="rights-notes">
-<summary>查阅资料来源与许可笔记</summary>
-<nav class="quick-links" aria-label="许可笔记目录"><a href="#channels">按来源查</a><a href="#candidates">开放许可候选</a><a href="#usage">按用途查</a><a href="#license">许可证速查</a></nav>
 <section id="demo-photo"><span id="cntv" aria-hidden="true"></span>
 <h2>现有素材署名</h2>
 <p>薛仁雅《钢铁少女团2》电台上班路画面，作者：K-POPIT 케이팝잇。<a href="https://commons.wikimedia.org/wiki/File:18102025_Seol_In-ah_8.jpg">原文件</a> · <a href="https://www.youtube.com/watch?v=dOWe36HpLEM">原视频</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>。</p>
 <p>图库备选：薛仁雅《Oasis》访谈，作者：CNTV 역사극채널。<a href="https://commons.wikimedia.org/wiki/File:Seol_In-ah_interview_on_CNTV_with_Oasis_cast.jpg">原文件</a> · <a href="https://www.youtube.com/watch?v=0coyXuL-FJc">原视频</a> · <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>。</p>
 <p>本站对画面重新编码。列表封面、预览和导出按所用滤镜应用长虹玻璃折射、RGB 通道错位、像素拖影、CRT 显像或构成主义海报排版，属于对原画面的改动。滤镜代码的来源见<a href="./credits.html">开源与致谢</a>。</p>
 </section>
+<details class="rights-notes">
+<summary>查阅图片来源与授权记录</summary>
+<nav class="quick-links" aria-label="图片来源目录"><a href="#channels">按来源查</a><a href="#candidates">开放许可候选</a><a href="#usage">按用途查</a><a href="#license">许可证速查</a></nav>
 <section id="candidates">
 <h2>开放许可候选</h2>
 <p>以下是单张可追到出处的记录，不代表最终选图。入选前仍要核对具体用途中的肖像、同框人物和品牌元素。</p>
@@ -60,13 +60,24 @@
 <p><a href="https://creativecommons.org/share-your-work/cclicenses/">Creative Commons 许可分类</a> · <a href="https://creativecommons.org/reusing-cc-licensed-content/">署名说明</a>。这是本站选图规则，不是对任何单张图片在所有地区、场景的法律担保。</p>
 </section>
 </details>
+<section class="rights-policy">
+<p>不商用不等于可以转载或二改。访客自行选用的照片及处理结果只在浏览器内处理，本站不接收、不存储、不代发，也无法核验外部使用是否获授权。</p>
+    <div id="contact" class="rights-contact">
+      <h3>版权问题反馈</h3>
+      <p>如需更正署名、来源或申请移除，请发邮件给站主，并附上相关页面链接。</p>
+      <p class="contact-address"><span id="rights-email">alfro6ull@gmail.com</span> <button type="button" id="copy-rights-email" hidden>复制邮箱</button></p>
+      <p id="copy-rights-status" role="status" hidden></p>
+    </div>
+</section>
 </main>
 <footer class="site-footer">
-  <section id="contact" class="archive-copyright" aria-labelledby="archive-copyright-title">
-    <h2 id="archive-copyright-title">版权声明</h2>
-    <p><strong>非官方 · 粉丝制作</strong>。本站为非营利的薛仁雅粉丝档案，与艺人、经纪公司及相关品牌无隶属关系。</p>
-    <p>不商用不等于可以转载或二改。第三方素材的权利归相应权利人所有。关于素材使用、来源或署名，请发邮件至 <a href="mailto:alfro6ull@gmail.com">alfro6ull@gmail.com</a>，并附上相关页面链接。我会核实，并按情况更正或移除。</p>
-    <p id="local">访客自行选用的照片和处理结果只在其浏览器中处理，本站不接收、不存储、不代发，也无法核验选用素材及后续分享是否获授权。</p>
-  </section>
+  <!-- SITE-FOOTER:START -->
+<section class="archive-copyright" aria-labelledby="archive-copyright-title">
+  <h2 id="archive-copyright-title">版权声明</h2>
+  <p><strong>非官方 · 粉丝制作。</strong> 本站为非营利的薛仁雅粉丝档案，与艺人、经纪公司及相关品牌无隶属关系。</p>
+  <p>第三方素材版权归各权利人。 <span class="archive-copyright-links"><a href="#demo-photo">图片来源与署名</a> · <a href="#contact">版权问题反馈</a></span></p>
+  <p>滤镜效果由浏览器在本地计算，不使用生成式 AI，照片也不会上传。</p>
+</section>
+<!-- SITE-FOOTER:END -->
 </footer>
 </body></html>

@@ -1,46 +1,46 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-Hans">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="color-scheme" content="dark"><meta name="description" content="A fan-made collection of four interactive photographic experiments.">
-<title>MUSE — Seorina</title><link rel="stylesheet" href="./style.css">
+<meta name="theme-color" content="#101212"><meta name="description" content="MUSE — Four ways of seeing Seorina. 非官方粉丝影像实验。">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<title>MUSE — 薛仁雅影像实验</title><link rel="stylesheet" href="./lobby.css">
 </head>
-<body data-scene="infinite">
-<main id="exhibit">
-  <canvas id="stage" aria-label="Interactive photographic artwork"></canvas>
-  <img id="fallback" alt="Current photograph" hidden>
-  <div class="grain" aria-hidden="true"></div>
-  <header class="top">
-    <a class="brand" href="./">M<span>U</span>SE<span class="mark">✳</span><small>SEORINA / IMAGE EXPERIMENTS</small></a>
-    <nav class="site-nav" aria-label="Archive"><a href="./../life/">Life</a><a href="./../filters/">Filters</a><button id="library-open">Library <span id="count">00</span></button></nav>
-  </header>
-  <div class="coordinates" aria-hidden="true"><span>X / Y / Z</span><span class="line"></span><span id="clock">FRAME 01</span></div>
-  <div class="art-copy">
-    <div class="chapter"><span id="chapter">01</span> <span class="chapter-rule"></span> <span>STUDIES IN LOOKING</span></div>
-    <h1 id="scene-title">Infinite<br>Archive</h1>
-    <p id="description">A constellation of moments, suspended in space.</p>
-    <div class="caption-row"><span id="photo-title">Loading collection…</span><span id="demo-label"></span><a id="source" target="_blank" rel="noopener noreferrer" hidden>Original ↗</a></div>
-  </div>
-  <div class="tools" aria-label="Image controls">
-    <button id="prev" aria-label="Previous photograph">←</button><span id="counter">01 / 01</span><button id="next" aria-label="Next photograph">→</button>
-    <button id="action" class="action">Reset view</button><button id="inspect" aria-label="View original photograph" title="View original photograph">⤢</button><button id="fullscreen" aria-label="Toggle fullscreen" title="Fullscreen">⛶</button>
-  </div>
-  <nav class="scenes" aria-label="Exhibitions">
-    <a data-mode="infinite" href="./infinite/"><span>01</span><strong>Infinite archive</strong><i>↗</i></a>
-    <a data-mode="prism" href="./prism/"><span>02</span><strong>Optical prism</strong><i>↗</i></a>
-    <a data-mode="ribbon" href="./ribbon/"><span>03</span><strong>Film ribbon</strong><i>↗</i></a>
-    <a data-mode="particles" href="./particles/"><span>04</span><strong>Memory particles</strong><i>↗</i></a>
-  </nav>
-  <footer><div class="footer-controls"><span id="hint">DRAG TO EXPLORE · SCROLL TO TRAVEL</span><span id="status" role="status">INITIALIZING</span><a href="https://www.instagram.com/_seorina/" target="_blank" rel="noopener noreferrer">Instagram ↗</a></div><div class="muse-rights"><strong>非官方 · 粉丝制作</strong><span>版权声明：不商用不等于可以转载或二改。第三方素材权利归相应权利人所有；本站不接收、存储或代发本地导入照片及处理结果。来源、署名或移除事宜请联系 <a href="mailto:alfro6ull@gmail.com">alfro6ull@gmail.com</a>。</span></div></footer>
+<body>
+<header class="masthead">
+<a class="site" href="../">SEORINA<span> / </span>ARCHIVE</a>
+<nav aria-label="档案导航"><a href="../life/">Life</a><a href="../filters/">Filters</a><a href="./" aria-current="page">Muse</a></nav>
+<a class="ig" href="https://www.instagram.com/_seorina/" target="_blank" rel="noopener noreferrer">Instagram <span aria-hidden="true">↗</span></a>
+</header>
+<main>
+<section class="intro" aria-labelledby="title">
+<div class="intro-left"><p class="edition"><span></span> IMAGE EXPERIMENTS / VOL. 01</p><h1 id="title">MUSE<span>✳</span></h1></div>
+<div class="intro-right"><h2>Four ways<br>of seeing her.</h2><p>同一张照片，四种观看方式。<br>一座以薛仁雅为灵感的交互影像展。</p></div>
+</section>
+<section class="exhibitions" aria-label="四种影像实验">
+<a class="portal infinite" href="./infinite/">
+<div class="portal-head"><span>01 / 04</span><span class="gesture">DRAG / SCROLL</span></div>
+<div class="preview"><canvas data-preview="infinite" aria-hidden="true"></canvas><span class="preview-index" aria-hidden="true">01</span><span class="preview-label">GRAPHIC STUDY</span></div>
+<div class="portal-copy"><div><h3>Infinite Archive</h3><p class="cn">无限影像宇宙</p></div><span class="enter" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 19 19 5M5 5h14v14"/></svg></span></div><p class="description">穿过悬浮的照片，在记忆的纵深中漫游。</p>
+</a>
+<a class="portal prism" href="./prism/">
+<div class="portal-head"><span>02 / 04</span><span class="gesture">MOVE / TOUCH</span></div>
+<div class="preview"><canvas data-preview="prism" aria-hidden="true"></canvas><span class="preview-index" aria-hidden="true">02</span><span class="preview-label">GRAPHIC STUDY</span></div>
+<div class="portal-copy"><div><h3>Optical Prism</h3><p class="cn">光学影像实验室</p></div><span class="enter" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 19 19 5M5 5h14v14"/></svg></span></div><p class="description">移动光学透镜，让影像在折射与色散中变化。</p>
+</a>
+<a class="portal ribbon" href="./ribbon/">
+<div class="portal-head"><span>03 / 04</span><span class="gesture">DRAG / ROTATE</span></div>
+<div class="preview"><canvas data-preview="ribbon" aria-hidden="true"></canvas><span class="preview-index" aria-hidden="true">03</span><span class="preview-label">GRAPHIC STUDY</span></div>
+<div class="portal-copy"><div><h3>Film Ribbon</h3><p class="cn">流动胶卷</p></div><span class="enter" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 19 19 5M5 5h14v14"/></svg></span></div><p class="description">将瞬间卷入连续曲面，转动时间的胶卷。</p>
+</a>
+<a class="portal particles" href="./particles/">
+<div class="portal-head"><span>04 / 04</span><span class="gesture">DISSOLVE / REASSEMBLE</span></div>
+<div class="preview"><canvas data-preview="particles" aria-hidden="true"></canvas><span class="preview-index" aria-hidden="true">04</span><span class="preview-label">GRAPHIC STUDY</span></div>
+<div class="portal-copy"><div><h3>Memory Particles</h3><p class="cn">记忆粒子</p></div><span class="enter" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 19 19 5M5 5h14v14"/></svg></span></div><p class="description">把一张照片拆解成光点，再聚合成完整影像。</p>
+</a>
+</section>
+<div class="collection-note"><span id="collection-state">SHARED IMAGE COLLECTION</span><span>每个展厅均可导入本地照片 · 原图与视觉效果分离</span><a href="./infinite/">Enter exhibition <span aria-hidden="true">↗</span></a></div>
 </main>
-<dialog id="library" aria-labelledby="lib-title">
-  <div class="dialog-head"><h2 id="lib-title">Image library</h2><button data-close="library" aria-label="Close library">×</button></div>
-  <p>All four experiments draw from the same collection. Import your own permitted photos locally; nothing is uploaded. Demo graphics appear only when the library is empty.</p>
-  <div class="drop" id="drop"><label for="files">Choose photographs <span>＋</span></label><input id="files" type="file" accept="image/jpeg,image/png,image/webp,image/avif" multiple><small>or drag and drop JPEG, PNG, WebP or AVIF</small></div>
-  <div class="library-info"><span id="library-count"></span><button id="clear-local">Clear local imports</button></div><div id="library-grid"></div>
-  <p class="fine">Public collection: only entries selected for publication in library.json are loaded. A public Instagram post is not automatically licensed for reposting. Keep original post URLs and rights records.</p>
-</dialog>
-<dialog id="viewer" aria-labelledby="view-title"><button class="viewer-close" data-close="viewer" aria-label="Close photograph">×</button><img id="view-image" alt=""><div class="viewer-caption"><span id="view-title"></span><a id="view-source" target="_blank" rel="noopener noreferrer" hidden>Original post ↗</a></div></dialog>
-<noscript>Enable JavaScript to explore MUSE. <a href="./../life/">Return to Life.</a></noscript>
-<script type="module" src="./app.js"></script>
+<footer class="copyright"><strong>非官方 · 粉丝制作</strong><p>版权声明：本站为非营利粉丝创作，与艺人、经纪公司及相关品牌无隶属关系。不商用不等于可以转载或二改，第三方素材权利归相应权利人所有。来源、署名或移除事宜请联系 <a href="mailto:alfro6ull@gmail.com">alfro6ull@gmail.com</a>。</p><p>本地导入照片及处理结果仅在访客浏览器内处理，本站不接收、不存储、不代发。<a href="../filters/image-rights.html">图片出处与许可笔记</a></p></footer>
+<script type="module" src="./lobby.js"></script>
 </body></html>

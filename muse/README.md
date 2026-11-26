@@ -1,5 +1,7 @@
 # MUSE — SEORINA / Image experiments
 
+The landing page at `muse/` offers four animated previews based on the shared catalog. Each link enters an independent WebGL experiment. The landing page samples up to four reviewed public images and uses labeled graphic studies when the catalog is empty. No image files are bundled.
+
 Four independent URLs, shared rendering engine and one collection:
 
 - `muse/infinite/`: infinite depth archive; drag to pan, wheel to fly.

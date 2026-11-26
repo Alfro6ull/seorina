@@ -19,7 +19,7 @@ Opening the HTML through `file://` will not reliably load the ES modules or cata
 ## Photo collection
 
 MUSE reads the site-wide [photo library](../assets/photos/README.md) with the
-`muse` use, loading at most 48 items. The current six photos and their hashes,
+`muse` use, reading the full catalog and decoding photographs on demand. The original six photos and their hashes,
 source records and depth maps were migrated without expanding their existing
 MUSE use. They have not been granted a general reuse license. The exhibition
 allows visitors to select multiple local files with 本机试图. This is an

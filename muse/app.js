@@ -1,7 +1,7 @@
-import { Gallery } from './gallery.js?v=shared-photos';
+import { OnDemandGallery } from './gallery.js?v=lazy-index';
 import { MuseRenderer } from './renderer.js?v=3';
 const $=id=>document.getElementById(id);
-const gallery=new Gallery({includeLocal:false});
+const gallery=new OnDemandGallery();
 let renderer=null,failed=false,localFiles=[],localPhoto=null,localIndex=-1,pendingIndex=-1,generation=0;
 const supported=/\.(?:jpe?g|png|webp|avif|gif|bmp|hei[cf])$/i;
 const current=()=>localPhoto||gallery.current;
@@ -19,8 +19,9 @@ function update(){
 }
 function openViewer(){const photo=current();if(!photo)return;$('view-image').src=photo.src;$('view-image').alt=photo.title;$('viewer').showModal();renderer?.setPaused(true);}
 function showFallback(error){console.warn('Particle renderer:',error);renderer?.dispose();renderer=null;failed=true;$('stage').hidden=true;$('fallback').hidden=false;if(current())$('fallback').src=current().src;$('action').disabled=true;notify('');$('loading').hidden=true;}
-gallery.addEventListener('change',()=>{if(localPhoto)return;try{renderer?.setCollection(gallery.items,gallery.index);}catch(error){showFallback(error);}update();});
-gallery.addEventListener('select',()=>{if(localPhoto)return;renderer?.setIndex(gallery.index);update();});
+gallery.addEventListener('change',()=>{if(localPhoto)return;try{gallery.current&&renderer?.setCollection([gallery.current],0);}catch(error){showFallback(error);}update();});
+gallery.addEventListener('select',()=>{if(localPhoto)return;try{renderer?.setCollection([gallery.current],0);}catch(error){showFallback(error);}update();notify('');});
+gallery.addEventListener('loaderror',()=>{if(!localPhoto)notify('这张照片暂时未能读取，可继续切换。');});
 try{renderer=new MuseRenderer($('stage'),{onError:showFallback});}catch(error){showFallback(error);}
 async function setLocal(rawIndex,dir=1){
  if(!localFiles.length)return;
@@ -53,12 +54,12 @@ function usePublic(){
  generation++;localFiles=[];pendingIndex=localIndex=-1;
  if(localPhoto)URL.revokeObjectURL(localPhoto.src);localPhoto=null;
  $('local-exit').hidden=true;
- try{renderer?.setCollection(gallery.items,gallery.index)}catch(error){showFallback(error)}
+ try{gallery.current&&renderer?.setCollection([gallery.current],0)}catch(error){showFallback(error)}
  update();notify('');
 }
 function step(dir){
  if(localFiles.length)return setLocal(pendingIndex+dir,dir);
- gallery.select(gallery.index+dir);
+ gallery.select(gallery.pending+dir);
 }
 $('local-choose').addEventListener('click',()=>$('local-files').click());
 $('local-exit').addEventListener('click',usePublic);
@@ -76,6 +77,5 @@ for(const button of document.querySelectorAll('[data-close]'))button.addEventLis
 window.addEventListener('keydown',event=>{if($('viewer').open||event.altKey||event.ctrlKey||event.metaKey)return;if(event.key==='ArrowLeft')step(-1);if(event.key==='ArrowRight')step(1);if(event.key==='Escape'&&$('viewer').open)$('viewer').close();});
 window.addEventListener('pagehide',()=>renderer?.setPaused(true));
 window.addEventListener('pageshow',event=>{if(event.persisted)renderer?.setPaused($('viewer').open);});
-try{await gallery.init();const requested=new URLSearchParams(location.search).get('photo');const selected=gallery.items.findIndex(photo=>photo.id===requested);const portrait=gallery.items.findIndex(photo=>photo.depthImage&&photo.width/photo.height>.9&&photo.width/photo.height<1.1);if(selected>=0||portrait>=0)gallery.select(selected>=0?selected:portrait);update();$('loading').hidden=true;}catch(error){notify('');$('loading').hidden=true;}
-
+try{const requested=new URLSearchParams(location.search).get('photo');await gallery.init(requested);update();$('loading').hidden=true;}catch(error){notify('照片暂时未能读取。');$('loading').hidden=true;}
 $('local-choose').disabled=false;

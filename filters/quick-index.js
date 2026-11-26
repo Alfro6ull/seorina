@@ -8,8 +8,7 @@ for(const original of document.querySelectorAll('a[data-quick-index]')){
  const button=document.createElement('button');button.type='button';button.className='quick-toggle';
  button.textContent=icon?'+':'站点索引';if(icon)button.setAttribute('aria-label','站点索引');button.setAttribute('aria-expanded','false');button.setAttribute('aria-controls',id);
  const nav=document.createElement('nav');nav.id=id;nav.className='quick-panel';nav.setAttribute('aria-label','站点索引');nav.hidden=true;
- const items=[['','开场'],['life/','时间线'],['filters/','滤镜'],['muse/','Muse'],['gallery/','图库']];
- if(icon) items.push(['index/','索引页']);
+ const items=[['','开场'],['life/','时间线'],['filters/','滤镜'],['muse/','影像展'],['gallery/','图库'],['index/','索引页']];
  for(const [href,label] of items){
   const a=document.createElement('a');a.href=new URL(href,root);a.textContent=label;
   if(location.pathname.replace(/index\.html$/,'')===new URL(a.href).pathname)a.setAttribute('aria-current','page');nav.append(a);

@@ -1,4 +1,4 @@
-import { photoLibraryURL, photosFor, readPhotoLibrary } from '../assets/photos/library.js';
+import { photoLibraryURL, photosFor, readPhotoLibrary } from '../assets/photos/library.js?v=public-daily';
 import { createStudies } from './demo.js';
 
 const MODULE_BASE = new URL('./', import.meta.url);
@@ -544,5 +544,45 @@ export class Gallery extends EventTarget {
     this._studies = null;
     this._catalogEntries = [];
     this._db = null;
+  }
+}
+
+/** Public browsing keeps catalog metadata but decodes only the chosen photo. */
+export class OnDemandGallery extends Gallery {
+  constructor(options={}) {
+    super({...options,includeLocal:false,maxDimension:1400});
+    this.request=0;this.pending=0;this.loaded=null;this.cache=new Map();this.inflight=new Map();
+  }
+  get current(){return this.loaded;}
+  async init(requested) {
+    this.items=await this._readManifest();
+    if(!this.items.length){this.items=createStudies();this.usingStudies=true;}
+    let index=this.items.findIndex(row=>row.id===requested);
+    if(index<0)index=this.items.findIndex(row=>row.id==='ig-daily-08-guitar');
+    await this.select(Math.max(0,index));
+  }
+  async select(next) {
+    if(!this.items.length||!Number.isFinite(next))return;
+    const total=this.items.length,choice=wrap(Math.trunc(next),total),request=++this.request;
+    this.pending=choice;
+    let photo=this.cache.get(choice);
+    if(!photo){
+      let load=this.inflight.get(choice);
+      if(!load){
+        load=this.usingStudies?Promise.resolve(this.items[choice]):this._loadPublic(this.items[choice]);
+        this.inflight.set(choice,load);
+      }
+      try{photo=await load;}
+      catch{if(request===this.request){this.pending=this.index;this._emit('loaderror');}return;}
+      finally{if(this.inflight.get(choice)===load)this.inflight.delete(choice);}
+    }
+    if(request!==this.request){if(!this.cache.has(choice)&&this.pending!==choice&&!this.usingStudies)this._disposeItem(photo);return;}
+    this.loaded=photo;this.index=choice;
+    this.cache.delete(choice);this.cache.set(choice,photo);
+    this._emit('select');
+    while(this.cache.size>3){
+      const oldest=this.cache.keys().next().value,value=this.cache.get(oldest);
+      this.cache.delete(oldest);if(!this.usingStudies)this._disposeItem(value);
+    }
   }
 }

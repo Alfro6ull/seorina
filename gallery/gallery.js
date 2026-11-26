@@ -1,4 +1,4 @@
-import { photoLibraryURL, photosFor, readPhotoLibrary } from '../assets/photos/library.js';
+import { photoLibraryURL, photosFor, readPhotoLibrary } from '../assets/photos/library.js?v=public-daily';
 const grid=document.querySelector('#gallery-grid'), status=document.querySelector('#gallery-status');
 try{
  const rows=await readPhotoLibrary();
@@ -20,6 +20,7 @@ try{
   }
   imageLink.className='gallery-image';
   const image=document.createElement('img');image.src=new URL(photo.src,photoLibraryURL);image.alt=photo.title;
+  image.width=photo.width;image.height=photo.height;
   if(i>2)image.loading='lazy';image.decoding='async';imageLink.append(image);
   const cap=document.createElement('figcaption');
   const source=new URL(photo.instagramPost||photo.source);

@@ -4,8 +4,8 @@
 
 - 滤镜不发布默认照片，仅由访客从本机选图。
 - `photosFor(rows, 'muse')` 供 MUSE 取该展项的序列。以前已经上架的六张照片标记为 `existing-muse-only`，不视作获得转载或二改许可，也不能自动用于其他页面。
-- 新可复用素材须有具体授权：`license-documented` 带许可证名及链接，或 `permission-documented` 带不含敏感信息的授权记录编号；`uses` 只填写实际被许可的用途。
-- 待审 IG、品牌照、杂志、剧宣，以及未获授权的文件留在仓库外。只隐去链接不算私有，GitHub Pages 仍会公开仓库内的资产。原始照片、滤镜封面等衍生物的出处应标明。
+- 有明确再使用授权的素材：`license-documented` 带许可证名及链接，或 `permission-documented` 带不含敏感信息的授权记录编号；`uses` 只填写实际被许可的用途。
+- 未逐图确认的照片、品牌照、杂志、剧宣和敏感内容留在仓库外。另有一组经站主决定纳入的、逐图目视筛选的公开 Instagram 日常照片，状态为 `public-instagram-fan-display`，仅供图库和 MUSE 展示。该状态不表示得到转载或二改许可。只隐去链接不算私有，GitHub Pages 仍会公开仓库内的资产。原始照片、滤镜封面等衍生物的出处应标明。
 - 私人素材总表（`私人素材库.json`）与本机留档在站点仓库旁的「薛仁雅 IG 私人来源台账」。稳定 ID 格式为 `ig-贴文短码-轮播序号`，既有 MUSE 的 `archivePhotoId` 可与之对应。完整存档不等于公开许可。
 
 批量维护已有明确许可的本地图片：CSV 列为
@@ -19,4 +19,4 @@ python3 muse/tools/index-library.py --source /path/to/local/photos --csv /path/t
 node tools/check-photo-library.mjs
 ```
 
-- `/gallery/` 从同一清单展示 `galleryFeatured: true` 的已核对、已在 MUSE 上线的公开 Instagram 日常图片。涉及商业活动、广告、杂志、剧宣或第三方人物的素材不纳入。编码和图片文件不复制到页面目录；清单字段不是对站外再使用的授权。
+- `/gallery/` 共享现有公开 MUSE 照片和逐图筛选的公开 Instagram 日常照片，缩略图使用浏览器懒加载；MUSE 按选中的照片解码，新照片没有深度图时使用曲面粒子效果。

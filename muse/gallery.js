@@ -101,9 +101,10 @@ async function mapLimited(values, limit, mapper) {
 
 /** Photo collection and local import store shared by both gallery URLs. */
 export class Gallery extends EventTarget {
-  constructor({ catalogURL = new URL('library.json', MODULE_BASE), maxItems = 48, maxDimension = 1600 } = {}) {
+  constructor({ catalogURL = new URL('library.json', MODULE_BASE), maxItems = 48, maxDimension = 1600, includeLocal = true } = {}) {
     super();
     this.catalogURL = new URL(catalogURL, MODULE_BASE);
+    this.includeLocal = includeLocal;
     this.base = new URL('./', this.catalogURL);
     this.maxItems = Math.min(80, Math.max(1, Math.floor(Number(maxItems) || 48)));
     this.maxDimension = Math.min(2000, Math.max(512, Math.floor(Number(maxDimension) || 1600)));
@@ -323,7 +324,7 @@ export class Gallery extends EventTarget {
     if (this._initPromise) return this._initPromise;
     this._initPromise = (async () => {
       this._setStatus({ phase: 'loading', code: 'loading', message: '' });
-      const [entries, records] = await Promise.all([this._readManifest(), this._readRecords()]);
+      const [entries, records] = await Promise.all([this._readManifest(), this.includeLocal ? this._readRecords() : Promise.resolve([])]);
       if (this._destroyed) return this;
       this._catalogEntries = entries;
       const restored = await mapLimited(records.slice(0, this.maxItems), 2, record => this._restoreRecord(record));

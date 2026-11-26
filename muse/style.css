@@ -18,3 +18,12 @@ dialog{color:var(--paper);border:1px solid #c9c1b33b;background:#1c1c1a;padding:
 @media(max-width:370px){.art-copy h1,body[data-scene=particles] .art-copy h1{font-size:55px}.top-controls{gap:8px}.photo-caption small{display:none}.tools{gap:1px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 .notes-page{height:auto;overflow:auto;background:#191916}.notes{width:min(760px,calc(100% - 48px));margin:60px auto}.notes-back{font-size:12px;letter-spacing:.16em;color:#b6b2a7}.notes h1{font:italic 400 clamp(56px,9vw,90px)/1 var(--serif);margin:50px 0 24px}.notes .notes-intro{font-size:14px;line-height:1.9;color:#d7cfbd}.notes section{margin:44px 0;padding-top:28px;border-top:1px solid #c7bda428}.notes h2{font-size:18px;font-weight:500;line-height:1.5;margin:0 0 18px}.notes p,.notes dd{font-size:13px;line-height:1.9;color:#b9b7af}.notes a{text-decoration:underline;text-underline-offset:4px}.notes dt{font-size:13px;color:#eee5d6;margin:25px 0 7px}.notes dd{margin:0}.notes dd p{font-size:12px;margin-top:8px}.notes-footer{border-top:1px solid #c7bda428;padding:24px 0;text-align:center;font-size:10px;color:#b6b2a7}
+
+/* Minimal exhibition UI: keep the particle artwork untouched. */
+#fullscreen{position:absolute;z-index:4;top:28px;right:3%;width:38px;height:38px;border:1px solid #ffffff38;background:#03080c55;backdrop-filter:blur(8px)}
+.tools{left:50%;right:auto;transform:translateX(-50%);bottom:28px;gap:16px;padding:8px 14px;background:#03080c66;border:1px solid #ffffff22;border-radius:2px;backdrop-filter:blur(12px)}
+.action-button{min-width:58px;margin:0;border:0;border-left:1px solid #ffffff33;padding-left:16px}
+.counter{min-width:48px}
+.loading{background:#03080c}.loading span{display:none}.loading:before{border-color:#ffffff35;border-top-color:#d9e9a2}
+.vignette{background:linear-gradient(180deg,#0002,transparent 18%,transparent 78%,#0003)}
+@media(max-width:700px){#fullscreen{top:max(16px,env(safe-area-inset-top));right:5%;width:34px;height:34px}.tools{bottom:max(18px,env(safe-area-inset-bottom));gap:10px;padding:6px 10px}.action-button{min-width:52px;padding-left:12px}}

@@ -77,31 +77,27 @@ a:hover { color:var(--accent); }
 .year-node.is-lit .year-lamp { top:calc(var(--line-y) - 3px); width:22px; height:7px; background:var(--lamp); box-shadow:inset 0 -1px 0 #98791b66; }
 .year-node.is-lit .year-lamp::after { z-index:-1; opacity:.72; }
 .year-node.is-lit .year-lamp::before { position:absolute; z-index:1; inset:0; border-radius:inherit; background:inherit; content:""; }
-.year-avatar { position:absolute; z-index:2; top:calc(var(--stage-top) + var(--line-y) - 53px); left:50%; width:64px; height:56px; color:var(--ink); pointer-events:none; translate:-50% 0; }
+.year-avatar { position:absolute; z-index:2; top:calc(var(--stage-top) + var(--line-y) - 61px); left:50%; width:74px; height:65px; color:var(--ink); pointer-events:none; translate:-50% 0; }
 .year-walker { display:block; width:100%; height:100%; }
 .walker-extra { position:absolute; inset:0 5px 5px; padding:0; border:0; border-radius:8px; background:transparent; cursor:pointer; pointer-events:auto; -webkit-tap-highlight-color:transparent; }
-.walker-shape { transform-origin:32px 28px; }
-.year-avatar.facing-back .walker-shape { transform:scaleX(-1); }
-.walker-pose,.walker-outfit,.walker-cameo { display:none; }
-[data-pose="school"] .walker-school,[data-pose="actor"] .walker-actor,[data-pose="street"] .walker-street,
-.year-avatar:is([data-pose="school"],[data-pose="actor"],[data-pose="street"]) .walker-walk,
-[data-pose="board"] .walker-board,[data-pose="bike"] .walker-bike,[data-pose="boxing"] .walker-boxing,
-[data-pose="ice"] .walker-ice,[data-pose="piano"] .walker-piano,
-[data-cameo="music"] .walker-music,[data-cameo="julie"] .walker-julie { display:inline; }
+.walker-caption { position:absolute; inset-inline-start:100%; top:16px; width:max-content; max-width:min(133px,calc(50vw - 44px)); display:flex; align-items:center; color:var(--muted); font:540 .7rem/1.35 var(--sans); }
+.walker-dismiss { width:32px; height:32px; flex:none; padding:0; border:0; border-radius:6px; color:inherit; font:inherit; font-size:1rem; background:transparent; pointer-events:auto; cursor:pointer; }
+.walker-walk { transform-origin:32px 28px; }
+.year-avatar.facing-back .walker-walk { transform:scaleX(-1); }
 .walker-leg { transform-origin:32px 34px; }
 .walker-arm { transform-origin:35px 20px; }
 .walker-wheel { transform-box:fill-box; transform-origin:center; }
 .walker-board,.walker-ice { transform-origin:32px 52px; }
 .walker-boxer { transform-origin:32px 50px; }
-.walker-dog-tail { transform-origin:49px 43px; }
+.walker-dog-tail { transform-origin:46px 44px; }
 @media(prefers-reduced-motion:no-preference) {
  .year-avatar.walking :is(.walker-leg,.walker-arm) { animation:walking-step 166ms ease-in-out infinite alternate; }
  .year-avatar.walking :is(.walker-leg-back,.walker-arm) { animation-direction:alternate-reverse; }
- .year-avatar.walking .walker-wheel { animation:walker-wheel-turn 390ms linear infinite; }
- .year-avatar.walking :is(.walker-board,.walker-ice) { animation:walker-glide 260ms ease-in-out infinite alternate; }
- .year-avatar.walking .walker-boxer { animation:walker-feint 210ms ease-in-out infinite alternate; }
- [data-cameo="julie"] .walker-dog-tail { animation:walker-tail-wag 180ms ease-in-out 4 alternate; }
- [data-cameo="music"] .walker-music { animation:walker-note-rise 300ms ease-out both; }
+ .walker-bike:not([hidden]) .walker-wheel { animation:walker-wheel-turn 390ms linear 2; }
+ :is(.walker-board,.walker-ice):not([hidden]) { animation:walker-glide 260ms ease-in-out 4 alternate; }
+ .walker-boxing:not([hidden]) .walker-boxer { animation:walker-feint 210ms ease-in-out 4 alternate; }
+ .walker-julie:not([hidden]) .walker-dog-tail { animation:walker-tail-wag 180ms ease-in-out 4 alternate; }
+ .walker-pose:not([hidden]) .walker-float { animation:walker-note-rise 300ms ease-out both; }
 }
 @keyframes walking-step { from { transform:rotate(-11deg); } to { transform:rotate(12deg); } }
 @keyframes walker-wheel-turn { to { transform:rotate(360deg); } }
@@ -354,33 +350,64 @@ a:hover { color:var(--accent); }
 <nav class="year-stage wrap" id="year-index" aria-label="横向年份时间线" hidden>
   <button class="track-scroll previous" type="button" aria-label="上一个年份" disabled>‹</button>
   <div class="year-scroll"><div class="year-track"></div></div>
-  <div class="year-avatar" data-pose="street">
+  <div class="year-avatar">
     <svg class="year-walker" viewBox="0 0 64 56" aria-hidden="true">
       <defs>
-        <path id="walker-head" d="M27 12c-1-4 2-8 6-8 4 0 6 2 7 6l2 3-2 1v3l-4 1-1 3-7-2 1-4z"/>
+        <g id="walker-head">
+          <path d="M23 13c0-7 4.3-11.5 10.8-11.5 5.2 0 8.8 2.7 9.3 7.8-1.1 3.6-3.2 7.9-4.9 11.1-4.7 2.1-11.9 1.7-16.1-.9.6-1.9.9-4.2.9-6.5z"/>
+          <path d="M33 5.1c4-.5 7.1 1.5 7.7 5.6l2 3.1c.4.6-.1 1.2-.8 1.3l-1.4.1c-.2 2.2-1.2 4.2-3.9 4.5l-1 2.9-5.2-2.3.8-4.7c-1.3-1.8-1.4-3.6-.5-4.5.5-.6 1.3-.5 1.9.1 1.7-2.9 1.9-4 .4-6.1z" fill="#F1D7C2"/>
+          <path d="M25.2 11c.1-4.8 3.6-8.4 8.3-8.4 3.9 0 6.8 1.6 7.8 4.5-2.8-1-4.5-1.3-6-.8-.5 3.1-2 5.2-4.6 6.1l-2.2 7.1-4.3-1z"/>
+          <path d="M36.7 11.8c.8-.7 1.7-.7 2.5-.3m-1.1 5.2c.7.1 1.3 0 1.7-.3" fill="none" stroke="currentColor" stroke-width=".7" stroke-linecap="round"/>
+          <circle cx="32.2" cy="15.9" r="1" fill="#C7A35A"/>
+        </g>
+        <g id="walker-legs">
+          <path class="walker-leg walker-leg-back" d="M27 32h6l-3 12-6 7-5 1-.4-2 4.6-3.2 3-8z" fill="#646469"/>
+          <path class="walker-leg" d="M32 33h6l.9 10 4.3 6.5 4.4 1.1v1.9h-6.8l-6.6-9.1z"/>
+        </g>
+        <path id="walker-jacket" d="M25 22c2.2-1.8 5.1-2.6 8.4-2.7l5.6 3.1 2.5 6-2.5 5 1.1 4H24.5l2-8.3z"/>
+        <path id="walker-lapel" d="m30.5 20.9 2.1 4.8 3 4.2.9-7.4-2.8-2.3z" fill="#F2ECE2"/>
+        <g id="walker-listening">
+          <use href="#walker-legs"/><use href="#walker-jacket"/><use href="#walker-head"/><use href="#walker-lapel"/>
+          <path d="M27.2 13v-2.4a6 6 0 0 1 10-4.5" fill="none" stroke="#9B9BA2" stroke-width="1.4"/>
+          <rect x="26" y="10.7" width="3.6" height="5.8" rx="1.3" fill="#DEDEDF"/>
+          <path class="walker-float" d="M48 16V8l7-2v8c0 2-2 3-3.5 2.2-1.6-.9-.7-2.8 2-3V9l-4 1v7c0 2-2 3-3.7 2-1.4-.9-.4-2.8 2.2-3z" fill="var(--note-color,#A9790B)"/>
+        </g>
+        <g id="walker-seated">
+          <use href="#walker-head" transform="translate(-4 6) scale(.88)"/>
+          <path d="M17 24c4-2 8-3 12 1l1 7 7 2v3l-10-1-2-4-1 6 9 2-2 10h6v2h-9l.6-9H16l-1-8z"/>
+          <path d="m21 23 3 5 2-4-2.4-1.8z" fill="#F2ECE2"/>
+          <path d="M13 42h10v2H13zm2 2h2v8h-2zm5 0h2v8h-2z"/>
+        </g>
+        <g id="walker-at-desk">
+          <use href="#walker-seated"/>
+          <path d="M34 36h23v3H34zm2 3h2v13h-2zm17 0h2v13h-2z"/>
+        </g>
+        <g id="walker-screen">
+          <use href="#walker-at-desk"/>
+          <rect x="35" y="20" width="23" height="14" rx="1.5"/>
+          <rect x="36.5" y="21.5" width="20" height="11" rx="1" fill="var(--screen-color,#2540CB)"/>
+          <path d="M44 24l5.2 2.8L44 30z" fill="#fff"/>
+        </g>
       </defs>
-      <g class="walker-shape" fill="currentColor">
+      <g fill="currentColor">
         <g class="walker-pose walker-walk">
-          <path class="walker-leg walker-leg-back" d="M27 32h7l-3 10-6 9-6 2v-2l5-4 3-9z"/>
-          <path class="walker-leg" d="M32 32h6l1 10 5 7 4 2v2h-7l-7-10z"/>
-          <use href="#walker-head"/>
-          <g class="walker-outfit walker-school">
-            <path d="M28 7c-5-3-9 1-8 9 1-2 3-4 6-4zM27 20c4-2 8-3 12 1l-2 12 2 5H25l2-7-2-6z"/>
-            <path d="M27 21c-7-1-9 3-9 9 0 2 1 5 3 5h5z"/>
-            <path class="walker-arm" d="M35 21c2-1 3 0 4 2l2 8 4 2-1 2-6-1-4-9z"/>
+          <use href="#walker-legs"/><use href="#walker-jacket"/><use href="#walker-head"/><use href="#walker-lapel"/>
+          <g data-walker-outfit="school" hidden>
+            <path d="M23 22c-5.8-1.3-8 3.1-8 7.6 0 2.6.9 4.3 3 4.6l6.7.2 1.8-9.5z" fill="#2C3550"/>
+            <path d="M32 22c-2.3 3.3-3.7 7.4-3.8 11" fill="none" stroke="#C6A75D" stroke-width="1.2"/>
+            <path class="walker-arm" d="M35 22c2-1 3.5.5 4.1 2.4l1.9 6.4 4.9 1.9-.9 2.2-6.6-1.5-4.5-8.7z"/>
           </g>
-          <g class="walker-outfit walker-actor">
-            <path d="M27 8c-3 2-3 8-4 12l7-1 1-9zM28 19l8-1 4 5-2 10 2 6-15-1 2-9-2-6z"/>
-            <path d="M37 22l3 2 1 4 4-2 1 2-7 5-3-5z"/>
-            <path d="m41 24 1-7 8 2-1 8z" fill="#696969"/>
-            <path d="m44 20 4 1m-4 1 3 1" fill="none" stroke="var(--paper)" stroke-width=".7"/>
+          <g data-walker-outfit="actor" hidden>
+            <path d="m40 20 1.4-7.4 8.7 1.7-1.7 9.3z" fill="#D9CFBB" stroke="currentColor" stroke-width=".8"/>
+            <path d="m43 16.2 4.5.9m-4.7 1 3.9.8" fill="none" stroke="currentColor" stroke-width=".65"/>
+            <path d="M36.5 23c1.8-1.2 3.3.3 3.9 2.3l1.3 2.1 4-2 1 2.3-6.6 4-4.8-5.5z"/>
           </g>
-          <g class="walker-outfit walker-street">
-            <path d="M28 8c-6-4-10 0-10 4 3-2 6-1 8 2l2-2zM27 20l8-2 6 5-3 10 2 7-16-2 3-10-2-5z"/>
-            <path class="walker-arm" d="M35 22c2-2 4-1 5 1l3 10 4 2-1 2-6-2-5-10z"/>
+          <g data-walker-outfit="street">
+            <path d="m25 35 5 1.8 3.6-10 2.4 10.5 4-1.3-1.1 5.2H24z"/>
+            <path class="walker-arm" d="M35 23c2-1.8 4.1-.4 4.7 1.6l2.9 8.5 3.5 1.6-1 2.1-5.2-1.5-5.2-9.3z"/>
           </g>
         </g>
-        <g class="walker-pose walker-board">
+        <g class="walker-pose walker-board" data-scene-label="踩滑板" hidden>
           <path d="M19 47q2 3 6 3h17q4 0 7-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           <circle cx="26" cy="51.4" r="1.6"/><circle cx="42" cy="51.4" r="1.6"/>
           <path d="M27 30l8 2-9 9-1 6h-5l1-8zM30 32l8-2 6 8-4 9h-5l4-8-7-4z"/>
@@ -388,7 +415,17 @@ a:hover { color:var(--accent); }
           <use href="#walker-head" transform="translate(7 1)"/>
           <path d="M34 11c-3-5-7-3-11 0 4 0 7 0 10 3zM34 8c2-5 9-6 13-1l3 1v2H34z"/>
         </g>
-        <g class="walker-pose walker-bike">
+        <g class="walker-pose walker-julie" data-scene-label="和 Julie 散步" hidden>
+          <g transform="translate(-9 0)">
+            <use href="#walker-legs"/><use href="#walker-jacket"/><use href="#walker-head"/><use href="#walker-lapel"/>
+            <path d="M37 23c2 0 3 1 4 3l2 5 4 1-1 2-6-1-4-7z"/>
+          </g>
+          <path d="M37.5 33c2.5 6.8 7.7 11.2 17.4 9.5" fill="none" stroke="#68615A" stroke-width=".85"/>
+          <path class="walker-dog-tail" d="M46.7 43.9c-3.6.8-9.7-2.8-8.4-7 .8-2.7 4.3-2.5 4.5-.8.1.7-.4 1.4-1.1 1.4s-1.1-.6-1-1.1c-2.2 1.6 1.8 5 5.8 4.9z" fill="#9D7655" stroke="currentColor" stroke-width=".55"/>
+          <path d="M44 43.6c.3-2.2 2.3-3.6 4.4-3.4l5.6.7 1.6-4 2 1.3 1.6-1.6.9 3.9 2.8 2.2-.9 1.1-3 .1-1.9 3.9.5 3.8h-2.3l-1-3.8-4.1.1-1.6 3.7h-2.4l1.5-5.1-2.4.4-2.6 4.7h-2.4z" fill="#BC946E" stroke="currentColor" stroke-width=".9" stroke-linejoin="round"/>
+          <path d="m55.1 42.4 3.2 1.5" fill="none" stroke="#2D44C4" stroke-width="1.15"/>
+        </g>
+        <g class="walker-pose walker-bike" data-scene-label="公路自行车" hidden>
           <g fill="none" stroke="currentColor" stroke-linejoin="round" stroke-linecap="round">
             <g class="walker-wheel">
               <circle cx="13" cy="43" r="9" stroke-width="1.8"/>
@@ -404,7 +441,89 @@ a:hover { color:var(--accent); }
           <use href="#walker-head" transform="translate(14 4) scale(.86)"/>
           <path d="M38 12c1-6 9-8 14-3l1 3-8 2z"/>
         </g>
-        <g class="walker-pose walker-boxing">
+        <g class="walker-pose walker-guitar" data-scene-label="弹吉他" hidden>
+          <use href="#walker-seated"/>
+          <path d="M26 31c2.6-2 5.2-1 6.1 1.2l12.3-9.5 2.1 2.9-12.3 9.6c1.9 3.1 1 6-2.2 8-3.8 2.4-8.9-.2-8.7-4.5.1-2.7 2.8-3.3 2.7-7.7z" fill="#A66D44" stroke="currentColor" stroke-width="1.1"/>
+          <circle cx="30.7" cy="36.2" r="1.6" fill="currentColor"/>
+          <path d="m31 36 13.5-10.4" fill="none" stroke="#EEE0CB" stroke-width=".6"/>
+        </g>
+        <g class="walker-pose walker-piano" data-scene-label="弹爵士钢琴" hidden>
+          <path d="M20 22l7-1 3 7 7 3-1 3-9-2-1 6 10 1-2 11h5v3H29l1-10H19l-2-5z"/>
+          <use href="#walker-head" transform="translate(-6 8) scale(.9)"/>
+          <path d="M15 42h11v2H15zm2 2h2v9h-2zm6 0h2v9h-2zM35 31h21v5H35zm3 5h2v17h-2zm14 0h2v17h-2z"/>
+          <path d="M37 32.5h17" fill="none" stroke="var(--paper)"/>
+          <path d="M45 21v-9l6-2v2l-4 1v7c0 2-2 3-4 2s0-3 2-1z" fill="#c09b16"/>
+        </g>
+        <g class="walker-pose" data-scene-label="Coldplay《Yellow》" hidden>
+          <use href="#walker-listening"/>
+        </g>
+        <g class="walker-pose" data-scene-label="听 IU 的歌" style="--note-color:#7550A9" hidden>
+          <use href="#walker-listening"/>
+        </g>
+        <g class="walker-pose" data-scene-label="拼拼图" hidden>
+          <use href="#walker-at-desk"/>
+          <path d="M38 29h5v-2c0-1.8 3-1.8 3 0v2h5v2c-2-.5-2 3 0 2.5V36H38v-2c2 0 2-3 0-3z" fill="#C69B45" stroke="currentColor" stroke-width=".7"/>
+        </g>
+        <g class="walker-pose" data-scene-label="打游戏" hidden>
+          <use href="#walker-at-desk"/>
+          <path d="M38 29c1.8-2 4.2-2.5 6.7-1.3l4.1-.1c2.5-1 4.5.1 5.8 2.4l1.6 4.1c.5 1.6-.5 2.5-2 1.9l-3-2.3h-8.8l-3 2.3c-1.5.7-2.6-.4-2.3-1.9z" fill="#34477E"/>
+          <path d="M41 30v3m-1.5-1.5h3m8-1h.1m1.2 1.3h.1" fill="none" stroke="#FFF" stroke-width=".95" stroke-linecap="round"/>
+        </g>
+        <g class="walker-pose" data-scene-label="摘抄喜欢的书句" hidden>
+          <use href="#walker-at-desk"/>
+          <path d="M38 31c2.4-1.7 4.6-1.4 7.8.1 3.1-1.5 5.4-1.8 7.8-.1v4.5c-2.7-.8-4.8-.6-7.8.6-2.8-1.2-5.1-1.4-7.8-.6z" fill="#EADCC7" stroke="currentColor" stroke-width=".75"/>
+          <path d="m43 31 4-8" fill="none" stroke="#2F45C0" stroke-width="1.2" stroke-linecap="round"/>
+        </g>
+        <g class="walker-pose" data-scene-label="《肖申克的救赎》" hidden><use href="#walker-screen"/></g>
+        <g class="walker-pose" data-scene-label="《盗贼同盟》" style="--screen-color:#633A55" hidden><use href="#walker-screen"/></g>
+        <g class="walker-pose" data-scene-label="《无限挑战》" style="--screen-color:#5B5726" hidden><use href="#walker-screen"/></g>
+        <g class="walker-pose" data-scene-label="户外竞技综艺" style="--screen-color:#366458" hidden><use href="#walker-screen"/></g>
+        <g class="walker-pose" data-scene-label="复古的年代感" hidden>
+          <use href="#walker-legs"/><use href="#walker-jacket"/><use href="#walker-head"/><use href="#walker-lapel"/>
+          <rect x="38" y="25" width="15" height="10" rx="1.5" fill="#C3BBA8" stroke="currentColor" stroke-width=".8"/>
+          <path d="M41 25v-2h4v2" fill="none" stroke="currentColor"/>
+          <circle cx="47" cy="30" r="3" fill="currentColor"/><circle cx="47" cy="30" r="1.3" fill="#667184"/>
+        </g>
+        <g class="walker-pose" data-scene-label="想去瑞士" hidden>
+          <use href="#walker-legs"/><use href="#walker-jacket"/><use href="#walker-head"/><use href="#walker-lapel"/>
+          <rect x="43" y="35" width="13" height="15" rx="1.7" fill="#34477E"/>
+          <path d="M47 35v-3h5v3m-6 15v2m7-2v2" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+          <path d="M48 44h5m-2.5-2.5v5" fill="none" stroke="#fff" stroke-width="1"/>
+        </g>
+        <g class="walker-pose" data-scene-label="炒年糕" hidden>
+          <use href="#walker-at-desk"/>
+          <path d="M38 32h16c-1 2.8-3.6 4-8 4s-7-1.2-8-4z" fill="#B9523A"/>
+          <path d="m41 30 3-2m1 2 3-3m.5 3 3-2" stroke="#CF7A57" fill="none" stroke-width="1.7" stroke-linecap="round"/>
+        </g>
+        <g class="walker-pose" data-scene-label="羊排" hidden>
+          <use href="#walker-at-desk"/>
+          <ellipse cx="46" cy="34" rx="8.5" ry="2" fill="#85868A"/>
+          <path d="M41 33c-1-1.7 0-3.2 2.2-3.7l5-1c2.5-.5 4.2 2.6 2.3 3.7-2.2 1.1-7 2.6-9.5 1z" fill="#9B583C"/>
+          <path d="m47.3 29.5 4-4.5" fill="none" stroke="#D2B995" stroke-width="1.7" stroke-linecap="round"/>
+        </g>
+        <g class="walker-pose" data-scene-label="黑白单色系" hidden>
+          <use href="#walker-legs"/><use href="#walker-jacket"/><use href="#walker-head"/><use href="#walker-lapel"/>
+          <rect x="44" y="15" width="7.5" height="7.5" rx="1" fill="#171717"/>
+          <rect x="50" y="21" width="7.5" height="7.5" rx="1" fill="#fff" stroke="#171717" stroke-width=".75"/>
+        </g>
+        <g class="walker-pose" data-scene-label="海军蓝" hidden>
+          <use href="#walker-legs"/><use href="#walker-jacket" fill="#213653"/><use href="#walker-head"/><use href="#walker-lapel"/>
+          <rect x="47" y="17" width="9" height="9" rx="1.1" fill="#213653"/>
+        </g>
+        <g class="walker-pose" data-scene-label="在家独处" hidden>
+          <use href="#walker-seated"/>
+          <path d="M40 18h13v13H40zm6.5 0v13M40 24.5h13" fill="none" stroke="#9E7860" stroke-width="1"/>
+          <path d="M49.8 20.5a2.3 2.3 0 0 0 2.4 2.6 2 2 0 1 1-2.4-2.6" fill="#AD8827"/>
+        </g>
+        <g class="walker-pose" data-scene-label="让我们去爱" hidden>
+          <use href="#walker-legs"/><use href="#walker-jacket"/><use href="#walker-head"/><use href="#walker-lapel"/>
+          <path class="walker-float" d="M49.5 26c-6.6-4.1-6.1-8.9-2.6-9.6 1.2-.3 2.2.4 2.6 1.4.5-1 1.7-1.8 2.9-1.3 3.5 1 3.7 5.6-2.9 9.5z" fill="#AA514B"/>
+        </g>
+        <g class="walker-pose" data-scene-label="柔术" hidden>
+          <use href="#walker-legs"/><use href="#walker-jacket" fill="#E9E3D8" stroke="currentColor" stroke-width=".85"/><use href="#walker-head"/>
+          <path d="m27 33 12-.2m-6 .2-3 5m3-5 3 4m-6-16 5 8 2-7" fill="none" stroke="#32385A" stroke-width="1.2" stroke-linecap="round"/>
+        </g>
+        <g class="walker-pose walker-boxing" data-scene-label="拳击训练" hidden>
           <path d="m28 32 6 3-6 10-7 6v2h-7v-2l7-7zM33 32l6 2 1 11 4 5h6v3H40l-6-8z"/>
           <g class="walker-boxer">
             <use href="#walker-head" transform="translate(1 1)"/>
@@ -413,31 +532,20 @@ a:hover { color:var(--accent); }
             <path d="m45 21 4 2m-14-5 4 1" fill="none" stroke="#cbaa35" stroke-width="1.4"/>
           </g>
         </g>
-        <g class="walker-pose walker-ice">
+        <g class="walker-pose walker-ice" data-scene-label="短道速滑" hidden>
           <path d="m28 32 8-3 8 10-8 9 4 1v2h-9l-1-4 7-8zM29 29l7 5-16 7-7 7h-5l8-12z"/>
           <path d="M26 32c-2-5 1-10 10-14l10-1 1 5-9 4-4 10zM27 25l-9 6h-8v-2l8-1 10-8zM43 20l6 9 5 2v2l-7-1-8-9z"/>
           <use href="#walker-head" transform="translate(18 6) scale(.86)"/>
           <path d="M41 11c2-5 9-5 13 0l1 3h-7l-8 2z"/>
           <path d="M7 50h10m12 2h14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
         </g>
-        <g class="walker-pose walker-piano">
-          <path d="M21 18c-6-2-8 1-8 6l6-2zM20 22l7-1 3 7 7 3-1 3-9-2-1 6 10 1-2 11h5v3H29l1-10H19l-2-5z"/>
-          <use href="#walker-head" transform="translate(-6 8) scale(.9)"/>
-          <path d="M15 42h11v2H15zm2 2h2v9h-2zm6 0h2v9h-2zM35 31h21v5H35zm3 5h2v17h-2zm14 0h2v17h-2z"/>
-          <path d="M37 32.5h17" fill="none" stroke="var(--paper)"/>
-          <path d="M45 21v-9l6-2v2l-4 1v7c0 2-2 3-4 2s0-3 2-1z" fill="#c09b16"/>
-        </g>
-        <g class="walker-cameo walker-music" fill="#c09b16">
-          <path d="M46 13V5l7-2v8c0 2-2 3-3 2-1-1 0-3 2-3V6l-5 1v7c0 2-2 3-3 2-1-1 0-3 2-3z"/>
-        </g>
-        <g class="walker-cameo walker-julie">
-          <path class="walker-dog-tail" d="M50 43c-7-1-10-7-7-9 2-1 3 2 1 2-1 3 4 5 7 5z"/>
-          <path d="M47 44c0-4 4-5 8-4l1-5 2 2 2-2v4l3 2-1 2h-3l-1 4v4l-3 1v-4h-5l-2 4h-2l1-4z"/>
-          <path d="m56 41 3 2" fill="none" stroke="#c09b16" stroke-width="1.3"/>
-        </g>
       </g>
     </svg>
-    <button class="walker-extra" type="button" aria-label="切换剪影彩蛋" aria-pressed="false" hidden></button>
+    <button class="walker-extra" type="button" aria-label="切换剪影彩蛋"></button>
+    <div class="walker-caption">
+      <span role="status"></span>
+      <button class="walker-dismiss" type="button" aria-label="收起彩蛋" hidden>×</button>
+    </div>
   </div>
   <button class="track-scroll next" type="button" aria-label="下一个年份" disabled>›</button>
 </nav>
@@ -4974,6 +5082,10 @@ a:hover { color:var(--accent); }
   const track = stage.querySelector(".year-track");
   const walker = stage.querySelector(".year-avatar");
   const walkerExtra = stage.querySelector(".walker-extra");
+  const walkerCaption = stage.querySelector(".walker-caption [role=status]");
+  const walkerDismiss = stage.querySelector(".walker-dismiss");
+  const defaultWalkerScene = walker.querySelector(".walker-walk");
+  const walkerOutfits = defaultWalkerScene.querySelectorAll("[data-walker-outfit]");
   const previous = stage.querySelector(".previous");
   const next = stage.querySelector(".next");
   const tools = document.querySelector(".year-tools");
@@ -4987,30 +5099,32 @@ a:hover { color:var(--accent); }
   const notes = document.getElementById("evidence-notes");
   const banner = document.querySelector(".year-banner");
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
-  const sportsPoses = new Map([[2022, "board"], [2024, "bike"], [2025, "boxing"], [2026, "ice"]]);
-  const cameoLabels = { music: "《Yellow》音符", julie: "爱犬 Julie", piano: "爵士钢琴" };
-  let walkerPose;
-  let walkerCameo;
+  let walkerScene = defaultWalkerScene;
 
-  function showWalkerCameo(active) {
-    walkerExtra.setAttribute("aria-pressed", String(active));
-    walker.dataset.cameo = active ? walkerCameo : "";
-    walker.dataset.pose = active && walkerCameo === "piano" ? "piano" : walkerPose;
+  function showWalkerScene(scene) {
+    if (scene === walkerScene) return;
+    walkerScene.setAttribute("hidden", "");
+    scene.removeAttribute("hidden");
+    walkerScene = scene;
+    walkerCaption.textContent = scene.dataset.sceneLabel || "";
+    walkerDismiss.hidden = scene === defaultWalkerScene;
   }
 
   function updateWalker(record) {
-    const year = Number(record.label);
-    walkerPose = record.phase.section.id === "early" ? "school" :
-      sportsPoses.get(year) || (year && year < 2020 ? "actor" : "street");
-    walkerCameo = year === 2026 ? "piano" :
-      year >= 2018 && year <= 2023 ? "julie" :
-      year === 2016 || year === 2017 ? "music" : "";
-    walkerExtra.hidden = !walkerCameo;
-    if (walkerCameo) walkerExtra.setAttribute("aria-label", "剪影彩蛋 · " + cameoLabels[walkerCameo]);
-    showWalkerCameo(false);
+    let outfit = "street";
+    if (record.phase.section.id === "early") outfit = "school";
+    else if (record.label && Number(record.label) < 2020) outfit = "actor";
+    for (const layer of walkerOutfits) layer.toggleAttribute("hidden", layer.dataset.walkerOutfit !== outfit);
   }
 
-  walkerExtra.addEventListener("click", () => showWalkerCameo(walkerExtra.getAttribute("aria-pressed") === "false"));
+  walkerExtra.addEventListener("click", () => showWalkerScene(walkerScene.nextElementSibling || defaultWalkerScene));
+  walkerDismiss.addEventListener("click", () => {
+    showWalkerScene(defaultWalkerScene);
+    walkerExtra.focus({preventScroll:true});
+  });
+  walker.addEventListener("keydown", event => {
+    if (event.key === "Escape" && walkerScene !== defaultWalkerScene) walkerDismiss.click();
+  });
 
   function updateYearBanner(record) {
     const year = document.createElement(record.label ? "time" : "span");

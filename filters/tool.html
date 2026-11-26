@@ -6,8 +6,8 @@
 <meta name="theme-color" content="#141414">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' blob: data:; connect-src 'self'; media-src blob:; base-uri 'none'; form-action 'none'">
 <title>长虹玻璃 · 薛仁雅档案</title>
-<link rel="stylesheet" href="./style.css">
-<script type="module" src="./art-tools.js?v=rgb-and-stretch"></script>
+<link rel="stylesheet" href="./style.css?v=monitor-poster">
+<script type="module" src="./art-tools.js?v=monitor-poster"></script>
 <link rel="stylesheet" href="../assets/copyright.css?v=centered">
 </head>
 <body>
@@ -40,6 +40,7 @@
       <input type="range" id="amp" min="0" max="100" value="65">
       <div class="range-row" id="detail-row"><label for="detail" id="detail-label">竖纹宽度</label><output id="detail-value" for="detail"></output></div>
       <input type="range" id="detail" min="0" max="100" value="50">
+      <label id="poster-title-wrap" hidden>海报标题 <input id="poster-title" type="text" maxlength="24" autocomplete="off"></label>
       <div class="actions">
         <button type="button" id="undo" hidden disabled>撤销一笔</button>
         <button type="button" id="clean" disabled>重置效果</button>

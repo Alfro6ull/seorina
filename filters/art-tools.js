@@ -1,3 +1,4 @@
+import {drawCRT,drawPoster} from './digital-art.js?v=art';
 import {filterDemo, saveFrame} from './shared.js?v=shared-photos';
 import {renderGlass,createStretchBrush,renderRGBGlitch} from './art-effects.js?v=rgb-and-stretch';
 
@@ -5,34 +6,41 @@ const el=id=>document.getElementById(id);
 const canvas=el('preview'), ctx=canvas.getContext('2d'), stage=el('stage'), original=el('original'), notice=el('notice');
 let image,buffer,focus,src,photoName='',demo=false,compare=false,serial=0,frame=0;
 const requested=new URLSearchParams(location.search).get('effect');
-const rgb=requested==='rgb',stretch=requested==='stretch',effect=rgb?'rgb':stretch?'stretch':'glass';
+const rgb=requested==='rgb',stretch=requested==='stretch',crt=requested==='crt',poster=requested==='poster';
+const effect=rgb?'rgb':stretch?'stretch':crt?'crt':poster?'poster':'glass';
+let artworkSource;
 let brushPointer=null,keyboardPoint=[.5,.4],seed=97;
 const brush=stretch?createStretchBrush(ctx,{
   getRadius:()=>.006+Number(el('detail').value)*.00065,
   getLength:()=>.07+Number(el('amp').value)*.004,
   changed:n=>{el('undo').disabled=!n}
 }):null;
-if(rgb||stretch){
-  const title=rgb?'RGB 故障':'像素拖影';
+if(effect!=='glass'){
+  const title=({'rgb':'RGB 故障','stretch':'像素拖影','crt':'CRT 监视器','poster':'构成主义海报'})[effect];
   document.title=title+' · 薛仁雅档案';el('tool-name').textContent=title;
-  el('amp-label').textContent=rgb?'强度':'拖影长度';
-  el('detail-label').textContent=rgb?'错帧密度':'画笔宽度';
+  el('amp-label').textContent=stretch?'拖影长度':poster?'网点墨色':'强度';
+  el('detail-label').textContent=rgb?'错帧密度':stretch?'画笔宽度':crt?'扫描线':'网点密度';
   el('mode-wrap').hidden=el('coverage-wrap').hidden=true;
-  document.querySelector('.tool-gesture').textContent=rgb?'点照片或按回车，换一帧故障。':'按住照片划动，拖影会实时出现。也可以用手指画。';
-  canvas.setAttribute('aria-label',rgb?'RGB 故障画布。按回车换一帧故障。':'像素拖影画布。按住划动，或用方向键移动画笔，回车落笔。');
-  if(rgb) document.querySelector('a[href*="glass-reference"]').hidden=true;
-  if(stretch){el('clean').textContent='清空笔迹';canvas.classList.add('stretch-canvas');document.querySelector('a[href*="glass-reference"]').hidden=true}
+  document.querySelector('.tool-gesture').textContent=rgb?'点照片或按回车，换一帧故障。':stretch?'按住照片划动，拖影会实时出现。也可以用手指画。':crt?'调节青蓝显像和扫描线。':'调节半调网点，也可以换成自己的海报标题。';
+  canvas.setAttribute('aria-label',rgb?'RGB 故障画布。按回车换一帧故障。':stretch?'像素拖影画布。按住划动，或用方向键移动画笔，回车落笔。':title+'预览');
+  document.querySelector('a[href*="glass-reference"]').hidden=true;
+  if(poster){el('poster-title-wrap').hidden=false;el('poster-title').addEventListener('input',queue)}
+  if(crt||poster)canvas.classList.add('static-art-canvas');
+  if(stretch){el('clean').textContent='清空笔迹';canvas.classList.add('stretch-canvas')}
 }
 
 
 function loadDefaults() {
-  el('amp').value=rgb?68:stretch?75:66;el('detail').value=rgb?50:stretch?29:41;seed=97;
+  el('amp').value=rgb||crt?68:stretch?75:poster?65:66;el('detail').value=rgb?50:stretch?29:crt?55:poster?52:41;seed=97;
+  if(poster)el('poster-title').value=demo?'SEORINA':'POSTER';
   focus=demo?{x:.47,y:.257}:{x:.50,y:.34};
   document.querySelector('input[name=tone][value=a]').checked=true;
   el('coverage-full').checked=true;
 }
 function render(){
   if(!image||stretch)return;
+  if(crt){drawCRT(ctx,image,{amount:Number(el('amp').value)/100,scan:Number(el('detail').value)/100});return}
+  if(poster){drawPoster(ctx,artworkSource,{ink:Number(el('amp').value)/100,density:Number(el('detail').value)/100,title:el('poster-title').value});return}
   if(rgb){renderRGBGlitch(ctx,image,buffer,{focus,seed,amount:Number(el('amp').value)/100,detail:Number(el('detail').value)/100});return}
   renderGlass(ctx,image,buffer,{
     focus,
@@ -82,6 +90,7 @@ async function choose(file,useDemo=false){
     input.fillStyle='#151413';input.fillRect(0,0,source.width,source.height);input.drawImage(img,0,0,source.width,source.height);
     image=input.getImageData(0,0,source.width,source.height);
     buffer=ctx.createImageData(source.width,source.height);
+    if(poster){artworkSource=source;canvas.width=canvas.height=1080}
     loadDefaults();brush?.set(image);
     el('image-info').textContent=(demo?demo.title+'　/　':'')+img.naturalWidth+' × '+img.naturalHeight+' px';
     sync();
@@ -106,12 +115,12 @@ if(stretch){
  el('undo').addEventListener('click',()=>brush.undo());
 }else{
  canvas.addEventListener('click',e=>{
-   if(!image||compare)return;const p=pointAt(e);if(!p)return;
+   if(!image||compare||crt||poster)return;const p=pointAt(e);if(!p)return;
    focus={x:p[0],y:p[1]};if(rgb)seed+=293;queue();
  });
 }
 canvas.addEventListener('keydown',e=>{
- if(!image||compare)return;
+ if(!image||compare||crt||poster)return;
  if((rgb||stretch)&&(e.key==='Enter'||e.key===' ')){
    e.preventDefault();if(stretch){brush.begin(keyboardPoint);brush.end()}else{seed+=293;queue()}return;
  }
@@ -132,6 +141,6 @@ for(const id of ['amp','detail'])el(id).addEventListener('input',queue);
 for(const radio of document.querySelectorAll('input[type=radio]'))radio.addEventListener('change',queue);
 el('clean').addEventListener('click',()=>{if(stretch)brush.clear();else loadDefaults();sync();});
 el('compare').addEventListener('click',()=>{compare=!compare;sync();});
-el('save').addEventListener('click',()=>{if(stretch)brush.flush();else render();saveFrame(canvas,photoName+'-'+effect,demo,rgb?'RGB glitch filter':stretch?'Pixel stretch filter':'Fluted glass filter',notice);});
+el('save').addEventListener('click',()=>{if(stretch)brush.flush();else render();saveFrame(canvas,photoName+'-'+effect,demo,({'rgb':'RGB glitch filter','stretch':'Pixel stretch filter','crt':'CRT surveillance filter','poster':'Constructivist poster','glass':'Fluted glass filter'})[effect],notice);});
 el('reset-demo').addEventListener('click',()=>void choose(null,true));
 loadDefaults();sync();void choose(null,true);

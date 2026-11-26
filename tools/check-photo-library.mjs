@@ -12,7 +12,7 @@ for (const row of photos) {
   ids.add(row.id);
   const source = new URL(row.source);
   assert.ok(source.protocol === 'https:' && !source.username && !source.password, 'invalid source for '+row.id);
-  assert.ok(Array.isArray(row.uses) && row.uses.length && row.uses.every(x=>['filter-demo','muse'].includes(x)), 'no explicit use: '+row.id);
+  assert.ok(Array.isArray(row.uses) && row.uses.length && row.uses.every(x=>['filter-demo','muse','gallery'].includes(x)), 'no explicit use: '+row.id);
   assert.ok(row.uses.every(use=>photosFor([row],use).length), 'unapproved public entry: '+row.id);
   if (row.rightsStatus === 'existing-muse-only') {
     assert.ok(legacy.has(row.id), 'legacy status cannot be used for new photos');

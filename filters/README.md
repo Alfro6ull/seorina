@@ -10,3 +10,10 @@
 上一版可用备选：[Ten Asia BVLGARI 活动图](https://commons.wikimedia.org/wiki/File:Seol_In-ah_at_BVLGARI_photo_call_event.jpg)，复核为 CC BY 3.0，本版未收录。杂志、剧照、社媒按单图另查，不因公开或可嵌入而搬运。
 
 效果参考与许可记录另见 `references.html`。示例资源本地托管，不由远端热链。
+
+## 其他滤镜
+
+- RGB 故障：调强度和错帧密度，点击预览换一帧；按回车也可操作。
+- 像素拖影：按住划动实时出拖影，支持触摸、撤销、清空、调整拖影长度和画笔宽度。
+
+两项都是浏览器内的像素算法，不上传本地图像。列表缩略图与原长虹玻璃封面同源，基于署名的 K-POPIT CC BY 4.0 示例进行滤镜处理。

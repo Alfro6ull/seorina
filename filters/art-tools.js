@@ -1,18 +1,39 @@
 import {filterDemo, saveFrame} from './shared.js?v=shared-photos';
-import {renderGlass} from './art-effects.js?v=clear-ribs';
+import {renderGlass,createStretchBrush,renderRGBGlitch} from './art-effects.js?v=rgb-and-stretch';
 
 const el=id=>document.getElementById(id);
 const canvas=el('preview'), ctx=canvas.getContext('2d'), stage=el('stage'), original=el('original'), notice=el('notice');
 let image,buffer,focus,src,photoName='',demo=false,compare=false,serial=0,frame=0;
+const requested=new URLSearchParams(location.search).get('effect');
+const rgb=requested==='rgb',stretch=requested==='stretch',effect=rgb?'rgb':stretch?'stretch':'glass';
+let brushPointer=null,keyboardPoint=[.5,.4],seed=97;
+const brush=stretch?createStretchBrush(ctx,{
+  getRadius:()=>.006+Number(el('detail').value)*.00065,
+  getLength:()=>.07+Number(el('amp').value)*.004,
+  changed:n=>{el('undo').disabled=!n}
+}):null;
+if(rgb||stretch){
+  const title=rgb?'RGB 故障':'像素拖影';
+  document.title=title+' · 薛仁雅档案';el('tool-name').textContent=title;
+  el('amp-label').textContent=rgb?'强度':'拖影长度';
+  el('detail-label').textContent=rgb?'错帧密度':'画笔宽度';
+  el('mode-wrap').hidden=el('coverage-wrap').hidden=true;
+  document.querySelector('.tool-gesture').textContent=rgb?'点照片或按回车，换一帧故障。':'按住照片划动，拖影会实时出现。也可以用手指画。';
+  canvas.setAttribute('aria-label',rgb?'RGB 故障画布。按回车换一帧故障。':'像素拖影画布。按住划动，或用方向键移动画笔，回车落笔。');
+  if(rgb) document.querySelector('a[href*="glass-reference"]').hidden=true;
+  if(stretch){el('clean').textContent='清空笔迹';canvas.classList.add('stretch-canvas');document.querySelector('a[href*="glass-reference"]').hidden=true}
+}
+
 
 function loadDefaults() {
-  el('amp').value=66;el('detail').value=41;
+  el('amp').value=rgb?68:stretch?75:66;el('detail').value=rgb?50:stretch?29:41;seed=97;
   focus=demo?{x:.47,y:.257}:{x:.50,y:.34};
   document.querySelector('input[name=tone][value=a]').checked=true;
   el('coverage-full').checked=true;
 }
 function render(){
-  if(!image)return;
+  if(!image||stretch)return;
+  if(rgb){renderRGBGlitch(ctx,image,buffer,{focus,seed,amount:Number(el('amp').value)/100,detail:Number(el('detail').value)/100});return}
   renderGlass(ctx,image,buffer,{
     focus,
     amount:Number(el('amp').value)/100,
@@ -31,6 +52,7 @@ function sync(){
   el('empty').hidden=Boolean(image);
   el('compare').disabled=el('save').disabled=el('clean').disabled=!image;
   el('reset-demo').hidden=!image||demo;
+  if(stretch)el('undo').hidden=!image||compare;
   el('compare').textContent=compare?'返回滤镜':'看原图';
   el('compare').setAttribute('aria-pressed',String(compare));
   el('screen-status').textContent=!image?'未选图':compare?'原图':'滤镜预览';
@@ -60,23 +82,43 @@ async function choose(file,useDemo=false){
     input.fillStyle='#151413';input.fillRect(0,0,source.width,source.height);input.drawImage(img,0,0,source.width,source.height);
     image=input.getImageData(0,0,source.width,source.height);
     buffer=ctx.createImageData(source.width,source.height);
-    loadDefaults();
+    loadDefaults();brush?.set(image);
     el('image-info').textContent=(demo?demo.title+'　/　':'')+img.naturalWidth+' × '+img.naturalHeight+' px';
     sync();
   }catch{if(next&&!useDemo)URL.revokeObjectURL(next);if(id===serial){notice.textContent='无法读取图片，请试试较小的 JPG 或 PNG。';sync();}}
 }
 const clamp01=v=>Math.max(0,Math.min(1,v));
-canvas.addEventListener('click',e=>{
-  if(!image||compare)return;
-  const box=canvas.getBoundingClientRect(), scale=Math.min(box.width/canvas.width,box.height/canvas.height);
-  const w=canvas.width*scale,h=canvas.height*scale;
-  const x=(e.clientX-box.left-(box.width-w)/2)/w,y=(e.clientY-box.top-(box.height-h)/2)/h;
-  if(x>=0&&x<=1&&y>=0&&y<=1){focus={x,y};queue();}
-});
+function pointAt(e,limit=false){
+ const box=canvas.getBoundingClientRect(),scale=Math.min(box.width/canvas.width,box.height/canvas.height);
+ const w=canvas.width*scale,h=canvas.height*scale;
+ const x=(e.clientX-box.left-(box.width-w)/2)/w,y=(e.clientY-box.top-(box.height-h)/2)/h;
+ return limit?[clamp01(x),clamp01(y)]:x>=0&&x<=1&&y>=0&&y<=1?[x,y]:null;
+}
+if(stretch){
+ canvas.addEventListener('pointerdown',e=>{
+   if(!image||compare||!e.isPrimary||e.button!==0)return;
+   const p=pointAt(e);if(!p)return;
+   brushPointer=e.pointerId;canvas.setPointerCapture(e.pointerId);brush.begin(p,e.pressure||.5);
+ });
+ canvas.addEventListener('pointermove',e=>{if(brushPointer===e.pointerId)brush.move(pointAt(e,true),e.pressure||.5)});
+ const end=e=>{if(brushPointer===e.pointerId){brushPointer=null;brush.end()}};
+ for(const type of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(type,end);
+ el('undo').addEventListener('click',()=>brush.undo());
+}else{
+ canvas.addEventListener('click',e=>{
+   if(!image||compare)return;const p=pointAt(e);if(!p)return;
+   focus={x:p[0],y:p[1]};if(rgb)seed+=293;queue();
+ });
+}
 canvas.addEventListener('keydown',e=>{
-  const d={ArrowLeft:[-.04,0],ArrowRight:[.04,0],ArrowUp:[0,-.04],ArrowDown:[0,.04]}[e.key];
-  if(!image||compare||!d)return;
-  e.preventDefault();focus={x:clamp01(focus.x+d[0]),y:clamp01(focus.y+d[1])};queue();
+ if(!image||compare)return;
+ if((rgb||stretch)&&(e.key==='Enter'||e.key===' ')){
+   e.preventDefault();if(stretch){brush.begin(keyboardPoint);brush.end()}else{seed+=293;queue()}return;
+ }
+ const d={ArrowLeft:[-.04,0],ArrowRight:[.04,0],ArrowUp:[0,-.04],ArrowDown:[0,.04]}[e.key];
+ if(!d)return;e.preventDefault();
+ if(stretch)keyboardPoint=keyboardPoint.map((v,i)=>clamp01(v+d[i]));
+ else{focus={x:clamp01(focus.x+d[0]),y:clamp01(focus.y+d[1])};queue()}
 });
 for(const b of document.querySelectorAll('[data-pick]'))b.addEventListener('click',()=>el('file').click());
 el('file').addEventListener('change',e=>{void choose(e.target.files[0]);e.target.value='';});
@@ -88,8 +130,8 @@ stage.addEventListener('dragleave',e=>{if(!stage.contains(e.relatedTarget))stage
 stage.addEventListener('drop',e=>{stage.classList.remove('is-over');if(hasFiles(e))void choose(e.dataTransfer.files[0]);});
 for(const id of ['amp','detail'])el(id).addEventListener('input',queue);
 for(const radio of document.querySelectorAll('input[type=radio]'))radio.addEventListener('change',queue);
-el('clean').addEventListener('click',()=>{loadDefaults();sync();});
+el('clean').addEventListener('click',()=>{if(stretch)brush.clear();else loadDefaults();sync();});
 el('compare').addEventListener('click',()=>{compare=!compare;sync();});
-el('save').addEventListener('click',()=>{render();saveFrame(canvas,photoName+'-glass',demo,'Fluted glass filter',notice);});
+el('save').addEventListener('click',()=>{if(stretch)brush.flush();else render();saveFrame(canvas,photoName+'-'+effect,demo,rgb?'RGB glitch filter':stretch?'Pixel stretch filter':'Fluted glass filter',notice);});
 el('reset-demo').addEventListener('click',()=>void choose(null,true));
 loadDefaults();sync();void choose(null,true);

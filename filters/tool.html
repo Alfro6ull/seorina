@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' blob: data:; connect-src 'self'; media-src blob:; base-uri 'none'; form-action 'none'">
 <title>长虹玻璃 · 薛仁雅档案</title>
 <link rel="stylesheet" href="./style.css">
-<script type="module" src="./art-tools.js?v=shared-photos"></script>
+<script type="module" src="./art-tools.js?v=rgb-and-stretch"></script>
 <link rel="stylesheet" href="../assets/copyright.css?v=centered">
 </head>
 <body>
@@ -41,6 +41,7 @@
       <div class="range-row" id="detail-row"><label for="detail" id="detail-label">竖纹宽度</label><output id="detail-value" for="detail"></output></div>
       <input type="range" id="detail" min="0" max="100" value="50">
       <div class="actions">
+        <button type="button" id="undo" hidden disabled>撤销一笔</button>
         <button type="button" id="clean" disabled>重置效果</button>
         <button type="button" id="compare" aria-pressed="false" disabled>看原图</button>
         <button type="button" id="save" disabled>保存图片</button>

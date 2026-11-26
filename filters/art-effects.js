@@ -42,3 +42,80 @@ export function renderGlass(ctx,source,out,{amount,detail,variant,coverage,focus
   }
   ctx.putImageData(out,0,0);
 }
+
+export function createStretchBrush(ctx,{getRadius=()=>.029,getLength=()=>.39,initial=()=>{},changed=()=>{}}={}){
+ let source=null, paint=null, history=[], prior=null, seed=0, saveFrame=0;
+ const limit=(n,a,b)=>Math.max(a,Math.min(b,n));
+ function commit(){if(!saveFrame)saveFrame=requestAnimationFrame(()=>{saveFrame=0;if(paint)ctx.putImageData(paint,0,0)})}
+ function snapshot(){history.push(new Uint8ClampedArray(paint.data));if(history.length>12)history.shift();changed(history.length)}
+ function dab(nx,ny,pressure){
+  if(!source||!paint)return;
+  const {width:w,height:h,data:original}=source, d=paint.data;
+  const px=nx*w, py=ny*h, radius=Math.max(3,Math.min(w,h)*getRadius()*(.84+.24*pressure)), maxLen=getLength()*h, id=++seed;
+  const left=Math.max(0,Math.floor(px-radius)),right=Math.min(w-1,Math.ceil(px+radius)), top=Math.max(0,Math.floor(py));
+  for(let x=left;x<=right;x++){
+   const t=Math.abs(x+.5-px)/radius;
+   if(t>=1)continue;
+   const feather=Math.pow(1-t*t,.85);
+   const ridges=.65+.20*Math.sin(x*2.17)+.13*Math.sin(x*.83+id*.12);
+   const len=Math.max(4,maxLen*feather*ridges*(.87+.2*pressure));
+   const srcY=limit(Math.round(py+Math.sin(x*.59)*3),0,h-1);
+   const si=(srcY*w+x)*4,end=Math.min(h-1,top+Math.ceil(len));
+   for(let y=top;y<=end;y++){
+    const k=(y-top)/len, mix=feather*(1-k*k)*.69; if(mix<=0)continue;
+    const from=limit(srcY-Math.floor(9*k),0,h-1)*w*4+x*4;
+    const di=(y*w+x)*4;
+    for(let c=0;c<3;c++){const col=original[si+c]*.68+original[from+c]*.32;d[di+c]+=(col-d[di+c])*mix;}
+   }
+  }
+ }
+ function set(image){const {width:w,height:h,data}=image;source=image;paint=ctx.createImageData(w,h);paint.data.set(data);history=[];prior=null;seed=0;initial();changed(0);ctx.putImageData(paint,0,0)}
+ function begin(point,pressure=.5){if(!paint)return;snapshot();prior=point;dab(...point,pressure);commit()}
+ function move(point,pressure=.5){
+  if(!prior||!paint)return;
+  const [x,y]=point,[a,b]=prior;
+  const w=paint.width,h=paint.height;
+  const step=Math.max(1,Math.min(w,h)*getRadius()*.34);
+  const n=limit(Math.ceil(Math.hypot((x-a)*w,(y-b)*h)/step),1,140);
+  for(let j=1;j<=n;j++)dab(a+(x-a)*j/n,b+(y-b)*j/n,pressure);
+  prior=point;commit();
+ }
+ function end(){prior=null}
+ function undo(){end();if(history.length){paint.data.set(history.pop());commit()}changed(history.length)}
+ function clear(){end();if(!source||!paint)return;snapshot();paint.data.set(source.data);commit()}
+ function flush(){if(paint)ctx.putImageData(paint,0,0)}
+ return {set,begin,move,end,undo,clear,flush};
+}
+
+export function renderRGBGlitch(ctx, source, out, {amount, detail, focus, seed}) {
+  const {width:w,height:h,data:src}=source, dst=out.data;
+  if (!amount) { ctx.putImageData(source,0,0); return; }
+  const power=amount/.68;
+  let state=seed>>>0;
+  const random=()=>{state=(Math.imul(state,1664525)+1013904223)>>>0;return state/4294967296;};
+  const bands=new Array(h);
+  for(let i=0,count=Math.round(10+detail*56);i<count;i++){
+    const y=Math.floor((.04+.91*random())*h), len=1+Math.floor(Math.pow(random(),3)*h*.021);
+    const x=random()*.85, spread=.06+.55*random(), off=(random()-.5)*.28;
+    for(let j=y;j<Math.min(y+len,h);j++) bands[j]=[x,x+spread,off,i%3];
+  }
+  const wx=Array.from({length:w},(_,x)=>Math.exp(-(((x/w-focus.x)/.18)**2)));
+  const luma=(i)=>src[i]*.2126+src[i+1]*.7152+src[i+2]*.0722;
+  for(let y=0;y<h;y++){
+    const band=bands[y], row=4*y*w, wy=Math.exp(-(((y/h-focus.y)/.19)**2));
+    const scan=y%3===0 ? 1-.09*power : 1;
+    for(let x=0;x<w;x++){
+      const i=row+4*x,u=x/w,hit=band&&u>=band[0]&&u<=band[1],clear=wx[x]*wy;
+      const shift=(hit?band[2]*w:0)*(1-.65*clear)*power;
+      const edge=Math.abs(luma(i)-luma(row+4*Math.min(w-1,x+4)));
+      const split=(.004+.009*Math.min(1,edge/55))*w*(1-.6*clear)*power;
+      for(let c=0;c<3;c++){
+        const sx=clamp(x+shift+(c-1)*split,0,w-1),lo=Math.floor(sx),a=row+4*lo+c,b=row+4*Math.min(w-1,lo+1)+c;
+        const sampled=src[a]+(src[b]-src[a])*(sx-lo);
+        dst[i+c]=sampled*scan+(hit&&band[3]===c?(22+edge*.45)*(1-.54*clear)*power:0);
+      }
+      dst[i+3]=src[i+3];
+    }
+  }
+  ctx.putImageData(out,0,0);
+}

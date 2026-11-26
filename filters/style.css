@@ -61,3 +61,5 @@ details{border-block:1px solid var(--line);margin:22px 0 36px;color:var(--muted)
 .site-footer{width:calc(100% - 44px);max-width:1520px;margin:24px auto 0;padding:15px 0 24px;border-top:1px solid var(--line);color:var(--muted);font-size:.82rem;line-height:1.75}
 .footer-links{display:flex;gap:6px 18px;flex-wrap:wrap;margin-top:10px;font-size:.75rem}
 @media(max-width:760px){.site-footer{width:calc(100% - 24px);margin-top:18px}}
+
+#preview.stretch-canvas{touch-action:none;cursor:crosshair}

@@ -14,21 +14,21 @@ const check = process.argv.includes('--check');
 const template = await readFile(path.join(root, 'life/templates/research.html'), 'utf8');
 const languages = [
   {
-    language: 'zh', htmlLang: 'zh-Hans', label: '中文', suffix: '',
+    language: 'zh', htmlLang: 'zh-Hans', label: '中文', menuLabel: '语言', suffix: '',
     description: '薛仁雅生平与作品的公开资料考据、日期核对、待考线索及多语种出处。',
     siteIndexLabel: '站点索引', navLabel: '档案导航', archiveLabel: '← 生平档案', namesLabel: '语名索引',
     topLabel: '返回页首 ↑', sourceLabel: 'Markdown 原文', 
     tableLabel: '资料表，可横向滚动', copyrightHeading: '版权声明',
   },
   {
-    language: 'ko', htmlLang: 'ko', label: '한국어', suffix: '.ko',
+    language: 'ko', htmlLang: 'ko', label: '한국어', menuLabel: '언어', suffix: '.ko',
     description: '설인아의 생애와 작품에 관한 공개 자료, 날짜 검증, 확인 대기 항목 및 다국어 출처.',
     siteIndexLabel: '사이트 목록 (중문)', navLabel: '아카이브 탐색', archiveLabel: '← 생애·활동 기록 (중문)', namesLabel: '이름·작품명 색인',
     topLabel: '맨 위로 ↑', sourceLabel: 'Markdown 원문', 
     tableLabel: '자료 표, 가로로 스크롤 가능', copyrightHeading: '저작권 안내',
   },
   {
-    language: 'en', htmlLang: 'en', label: 'English', suffix: '.en',
+    language: 'en', htmlLang: 'en', label: 'English', menuLabel: 'Language', suffix: '.en',
     description: 'Public-source research on Seorina’s life and career, date checks, unresolved leads and multilingual references.',
     siteIndexLabel: 'Site index (Chinese)', navLabel: 'Archive navigation', archiveLabel: '← Life archive (Chinese)', namesLabel: 'Names & Titles Index',
     topLabel: 'Back to top ↑', sourceLabel: 'Markdown source', 

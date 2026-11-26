@@ -9,6 +9,7 @@
  * });
  * x/y is the rail contact point. Locomotion follows the core kit's phase;
  * action is one bounded gesture from 0 to 1. Both endpoints are at rest.
+ * idle (0..1, default 0) enables quiet resting motion; idlePhase is its clock.
  * Leave 0.65*height in front, 0.5*height behind and 1.1*height above.
  */
 (function (root, factory) {
@@ -56,10 +57,10 @@
     }
 
     Character.drawPose(ctx, {...options, phase, moving, action}, p => {
-      const {ctx:c, point:P, ink, accent} = p;
-      const bob = moving*(2.7 + 1.8*Math.cos(phase*2));
-      const hip = P(moving*.8,-51.7+bob);
-      const shoulder = P(moving*.8,-75+bob);
+      const {ctx:c, point:P, ink, accent, rest={phase:0,strength:0,breath:0,sway:0,tilt:0}} = p;
+      const bob = moving*(2.7 + 1.8*Math.cos(phase*2))+rest.breath*.55;
+      const hip = P(moving*.8+rest.sway*.65,-51.7+bob);
+      const shoulder = P(moving*.8+rest.sway,-75+bob);
       const head = P(shoulder.x+1.2,shoulder.y-13.8);
       const upper = (x,y) => P(x+shoulder.x,y+bob);
 
@@ -94,8 +95,8 @@
       }
       function body(angle=0, pony=false) {
         p.torso(hip,shoulder);
-        p.head(head.x,head.y,angle);
-        if (pony) ponytail(head.x,head.y,angle);
+        p.head(head.x,head.y,angle+rest.tilt);
+        if (pony) ponytail(head.x,head.y,angle+rest.tilt);
       }
       function ponytail(x,y,angle=0) {
         c.save();c.translate(x,y);c.rotate(angle);c.fillStyle=ink;
@@ -126,7 +127,7 @@
       }
 
       if (outfit === 'infant') {
-        const rock=(moving*Math.sin(phase)+gesture*Math.sin(action*tau))*.045;
+        const rock=(moving*Math.sin(phase)+gesture*Math.sin(action*tau))*.045+Math.sin(rest.phase*.5)*rest.strength*.012;
         c.save();c.translate(0,-12);c.rotate(rock);
         c.fillStyle=ink;c.beginPath();c.moveTo(-27,2);
         c.bezierCurveTo(-26,-11,-12,-19,4,-13);
@@ -141,15 +142,16 @@
       }
 
       if (outfit === 'cello') {
-        const bowStroke=Math.sin(action*tau*2)*gesture*8;
+        const restingStroke=Math.sin(rest.phase*.7)*rest.strength*5.5;
+        const bowStroke=Math.sin(action*tau*2)*gesture*8+restingStroke;
         // Stool, feet and instrument all share the same ground anchor.
         p.line([[-16,-37],[4,-37]],ink,3.4);
         p.line([[-13,-36],[-16,0]],ink,1.8);
         p.line([[0,-36],[3,0]],ink,1.8);
-        const seatedHip=P(-8,-43),seatedShoulder=P(-7,-69);
+        const seatedHip=P(-8,-43),seatedShoulder=P(-7+rest.sway*.45,-69+rest.breath*.5);
         p.limb(P(-10,-43),P(-1,-24),P(-7,-3.3),4.6,3.2,2.1);p.shoe(P(-7,0));
         p.limb(P(-5,-43),P(14,-26),P(8,-3.3),4.8,3.2,2.1);p.shoe(P(8,0));
-        p.torso(seatedHip,seatedShoulder);p.head(-5.8,-82.8,.08);
+        p.torso(seatedHip,seatedShoulder);p.head(seatedShoulder.x+1.2,seatedShoulder.y-13.8,.08+rest.tilt);
         // The upper waist and wider lower bout keep it readable as a cello.
         c.save();c.translate(21,-19);c.rotate(.06);c.fillStyle=accent;
         c.beginPath();c.moveTo(-4,-36);
@@ -165,8 +167,8 @@
         p.line([[0,7],[0,19]],ink,1.4);
         c.restore();
         const neckHand=P(19,-67),bowHand=P(9+bowStroke,-38);
-        p.limb(P(-4,-68),P(5,-58),neckHand,3.1,2.4,1.65);p.hand(neckHand);
-        p.limb(P(-10,-67),P(-17,-46),bowHand,3.1,2.4,1.65);p.hand(bowHand);
+        p.limb(P(seatedShoulder.x+3,seatedShoulder.y+1),P(5,-58),neckHand,3.1,2.4,1.65);p.hand(neckHand);
+        p.limb(P(seatedShoulder.x-3,seatedShoulder.y+2),P(-17+restingStroke*.3,-46),bowHand,3.1,2.4,1.65);p.hand(bowHand);
         p.line([[bowHand.x-5,bowHand.y+1],[bowHand.x+33,bowHand.y-5]],ink,1.1);
         p.line([[bowHand.x-3,bowHand.y+2.3],[bowHand.x+31,bowHand.y-3.6]],'#fff',.65);
         return;
@@ -175,21 +177,22 @@
       if (outfit === 'triathlete') {
         const run=moving>0?phase:.55+gesture*Math.sin(action*tau)*.7;
         const lift=moving*2*Math.abs(Math.sin(run));
-        const rh=P(-4,-48-lift),rs=P(7,-71-lift);
+        const warmup=rest.breath*.8;
+        const rh=P(-4+rest.sway*.55,-48-lift+warmup),rs=P(7+rest.sway,-71-lift+warmup);
         const front=P(13+Math.sin(run)*10,-Math.max(0,-Math.cos(run))*moving*13);
         const back=P(-17-Math.sin(run)*8,-Math.max(0,Math.cos(run))*moving*13);
         p.leg(P(rh.x-1.5,rh.y),back);p.leg(P(rh.x+1.5,rh.y),front);
-        const farHand=P(-9-Math.sin(run)*8,-61-lift);
-        p.limb(P(rs.x-3,rs.y),P(-9,-55-lift),farHand,3.1,2.4,1.65);p.hand(farHand);
-        p.torso(rh,rs);p.head(rs.x+4,rs.y-13,.15);ponytail(rs.x+4,rs.y-13,.15);
-        const nearHand=P(20+Math.sin(run)*7,-69-lift);
-        p.limb(P(rs.x+2,rs.y+1),P(18,-53-lift),nearHand,3.3,2.4,1.65);p.hand(nearHand);
+        const farHand=P(-9-Math.sin(run)*8+rest.sway,-61-lift+warmup);
+        p.limb(P(rs.x-3,rs.y),P(-9+rest.sway,-55-lift+warmup),farHand,3.1,2.4,1.65);p.hand(farHand);
+        p.torso(rh,rs);p.head(rs.x+4,rs.y-13,.15+rest.tilt);ponytail(rs.x+4,rs.y-13,.15+rest.tilt);
+        const nearHand=P(20+Math.sin(run)*7+rest.sway,-69-lift+warmup);
+        p.limb(P(rs.x+2,rs.y+1),P(18+rest.sway,-53-lift+warmup),nearHand,3.3,2.4,1.65);p.hand(nearHand);
         p.line([[rh.x-1,rh.y-17],[rh.x+6,rh.y-14]],'#fff',1);
         return;
       }
 
       if (outfit === 'trainee') {
-        const reach=gesture;
+        const reach=gesture+(1-Math.cos(rest.phase*.5))*rest.strength*.08;
         legs();
         const backHand=upper(-18-4*reach,-52-12*reach);
         arm(backHand,true,upper(-19,-66));
@@ -211,11 +214,11 @@
           p.ellipse(head.x-7.2,head.y-3.4,3.6,3.6);
           p.line([[head.x-10.7,head.y-4],[head.x-.5,head.y-5.5]],'#fff',.7);
           arm(upper(32+extension,-66),false,upper(18,-65),4.1);
-          const bx=34+extension,by=-64+bob;
+          const bx=34+extension+rest.sway,by=-64+bob;
           c.strokeStyle=accent;c.lineWidth=1.7;c.lineCap='round';c.beginPath();
           c.moveTo(bx,-91+bob);c.bezierCurveTo(bx+18,-79+bob,bx+18,-47+bob,bx,-34+bob);c.stroke();
-          p.line([[bx,-91+bob],[8,-68+bob],[bx,-34+bob]],ink,.7);
-          p.line([[8,-68+bob],[bx+19,by]],ink,.9);
+          p.line([[bx,-91+bob],[8+rest.sway,-68+bob],[bx,-34+bob]],ink,.7);
+          p.line([[8+rest.sway,-68+bob],[bx+19,by]],ink,.9);
           p.line([[bx+14,by-2],[bx+19,by],[bx+14,by+2]],ink,.8);
         } else {
           arm(upper(9,-55),true,upper(-9,-62),4.3);
@@ -232,9 +235,9 @@
       // Every remaining costume shares the same legs, torso and side profile.
       legs();
       if(outfit==='producers') {
-        c.fillStyle=ink;c.beginPath();c.moveTo(-5,-73+bob);
-        c.bezierCurveTo(-15,-76+bob,-18,-67+bob,-15,-53+bob);
-        c.quadraticCurveTo(-9,-49+bob,-4,-53+bob);c.closePath();c.fill();
+        c.fillStyle=ink;c.beginPath();c.moveTo(-5+rest.sway,-73+bob);
+        c.bezierCurveTo(-15+rest.sway,-76+bob,-18+rest.sway,-67+bob,-15+rest.sway,-53+bob);
+        c.quadraticCurveTo(-9+rest.sway,-49+bob,-4+rest.sway,-53+bob);c.closePath();c.fill();
         relaxedArm(true);body(.03,true);skirt(-27,11.5);
         const hand=upper(15,-66+gesture*2);
         book(hand.x+1,hand.y-4,5,10,-.14);

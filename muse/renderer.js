@@ -28,7 +28,7 @@ export class MuseRenderer {
   setIndex(index){this.space?.setIndex(index);this.invalidate(2200);}
   action(){const label=this.space?.action();this.invalidate(3000);return label;}
   setPaused(value){this.paused=value;if(value){cancelAnimationFrame(this.raf);this.raf=0;}else{this.lastTime=0;this.invalidate();}}
-  setMotion(value){this.motion=value;if(this.space)this.space.reducedMotion=!value;this.invalidate(1600);}
+  setMotion(value){this.motion=value;if(this.space)this.space.reducedMotion=!value;this.settleUntil=0;if(value)this.invalidate(900);else{cancelAnimationFrame(this.raf);this.raf=0;this.lastTime=0;this.invalidate(80);}}
   resize(){
     const r=this.canvas.getBoundingClientRect();this.width=Math.max(1,r.width);this.height=Math.max(1,r.height);
     this.renderer.setPixelRatio(Math.min(devicePixelRatio||1,this.width<650?1.35:1.75));

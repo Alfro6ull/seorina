@@ -80,6 +80,7 @@ $('rights-link').href=new URL('credits.html',base).href;
 try{renderer=new MuseRenderer($('stage'),{onError:showFallback});}catch(error){showFallback(error);}
 $('motion').setAttribute('aria-pressed',String(!!renderer?.motion));
 $('motion').setAttribute('aria-label',renderer?.motion?'暂停自动运动':'启用自动运动');
+$('motion-label').textContent=renderer?.motion?'自动运动：开':'自动运动：暂停';
 
 $('library-open').addEventListener('click',openLibrary);
 $('files').addEventListener('change',event=>{importFiles(event.target.files);event.target.value='';});
@@ -91,7 +92,7 @@ $('prev').addEventListener('click',()=>gallery.select(gallery.index-1));
 $('next').addEventListener('click',()=>gallery.select(gallery.index+1));
 $('inspect').addEventListener('click',openViewer);
 $('action').addEventListener('click',()=>{const label=renderer?.action();if(label)$('action').textContent=label;});
-$('motion').addEventListener('click',()=>{if(!renderer)return;renderer.setMotion(!renderer.motion);$('motion').setAttribute('aria-pressed',String(renderer.motion));$('motion').setAttribute('aria-label',renderer.motion?'暂停自动运动':'启用自动运动');});
+$('motion').addEventListener('click',()=>{if(!renderer)return;renderer.setMotion(!renderer.motion);$('motion').setAttribute('aria-pressed',String(renderer.motion));$('motion').setAttribute('aria-label',renderer.motion?'暂停自动运动':'启用自动运动');$('motion-label').textContent=renderer.motion?'自动运动：开':'自动运动：暂停';});
 $('fullscreen').addEventListener('click',async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();}catch{notify('当前浏览器不支持全屏。');}});
 if(!document.documentElement.requestFullscreen)$('fullscreen').hidden=true;
 for(const dialog of document.querySelectorAll('dialog')){

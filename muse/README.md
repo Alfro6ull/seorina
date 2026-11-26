@@ -1,6 +1,6 @@
 # MUSE — SEORINA / Particles
 
-An interactive particle portrait gallery made from Seorina's everyday photographs. `/muse/` opens the particle experience directly; the existing `/muse/particles/` link opens the same experience. Both entry points use one photo catalog and the same browser-local collection.
+An interactive particle portrait gallery made from Seorina's everyday photographs. `/muse/` is the collection index and links to each published experiment. `/muse/particles/` opens the current particle experience. New experiments can be added as separate entries without replacing the index. Both entry points use one photo catalog and the same browser-local collection.
 
 Photographic color samples become a point sculpture, with relative depth supplying bounded displacement. Drag to change the viewpoint, move the pointer to disturb nearby points, or dissolve and reassemble the photograph. The interface also supports touch, keyboard photo selection, an image viewer, and local imports.
 

@@ -1,5 +1,5 @@
 import * as THREE from '../muse/vendor/three.module.js';
-import { readPhotoLibrary } from '../assets/photos/library.js';
+import { photosFor, readPhotoLibrary } from '../assets/photos/library.js';
 const mode=document.body.dataset.gallery, $=id=>document.getElementById(id), canvas=$('webgl');
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 let photos=[],index=0,renderer,scene,camera,planes=[],raf=0,last=0,scroll=0,scrollTarget=0,velocity=0,pointer={x:0,y:0},drag=null,hold=false;
@@ -22,7 +22,7 @@ function tick(t){raf=requestAnimationFrame(tick);const dt=Math.min(.04,(t-last)/
  renderer.render(scene,camera);
 }
 function navigate(delta){select(index+delta);if(mode==='camille')scrollTarget+=delta*110;}
-async function init(){const rows=await readPhotoLibrary();photos=rows.filter(p=>p.publish===true&&p.uses?.includes('muse')&&p.rightsStatus==='existing-muse-only').map(p=>({...p,src:new URL('../assets/photos/'+p.src,import.meta.url).href}));if(!photos.length)throw Error('No reviewed photos in shared gallery collection.');
+async function init(){const rows=await readPhotoLibrary();photos=photosFor(rows,'muse').map(p=>({...p,src:new URL('../assets/photos/'+p.src,import.meta.url).href}));if(!photos.length)throw Error('No reviewed photos in shared gallery collection.');
  renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.setSize(innerWidth,innerHeight);scene=new THREE.Scene();scene.background=new THREE.Color(palette[mode][0]);camera=new THREE.PerspectiveCamera(43,innerWidth/innerHeight,.1,100);const loader=new THREE.TextureLoader();
  const loaded=await Promise.all(photos.map(async p=>{const texture=await new Promise((resolve,reject)=>loader.load(p.src,resolve,undefined,reject));texture.colorSpace=THREE.SRGBColorSpace;let depth=null;if(p.depthSrc){try{depth=await new Promise((resolve,reject)=>loader.load(new URL('../assets/photos/'+p.depthSrc,import.meta.url).href,resolve,undefined,reject));}catch{depth=null;}}return {texture,depth};}));
  planes=loaded.map(({texture,depth},i)=>{const tex=texture,p=photos[i],m=material(tex,depth),mesh=new THREE.Mesh(new THREE.PlaneGeometry(1,1,mode==='depth'?64:24,mode==='depth'?64:24),m);mesh.userData.ratio=p.width/p.height;scene.add(mesh);return mesh;});

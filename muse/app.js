@@ -1,19 +1,11 @@
 import { Gallery } from './gallery.js';
-import { MuseRenderer } from './renderer.js';
+import { MuseRenderer } from './renderer.js?v=3';
 
 const $=id=>document.getElementById(id);
 const base=new URL('./',import.meta.url);
 const two=n=>String(n).padStart(2,'0');
-const modes={
-  infinite:{number:'01',title:'Infinite',subtitle:'无限影像宇宙',hint:'拖动探索 · 滚动穿行',action:'重置视角'},
-  prism:{number:'02',title:'Prism',subtitle:'光学影像实验室',hint:'移动光线 · 拖动玻璃',action:'重置光线'},
-  ribbon:{number:'03',title:'Ribbon',subtitle:'流动胶卷',hint:'拖动旋转 · 滚动流转',action:'展开胶卷'},
-  particles:{number:'04',title:'Particles',subtitle:'记忆粒子',hint:'拖动看立体 · 移动指针拨动光点',action:'散开'},
-};
 const gallery=new Gallery();
-let mode=routeMode(),renderer=null,ready=false,failed=false,importing=false;
-const modeLinks=[...document.querySelectorAll('[data-mode]')];
-function routeMode(){return Object.hasOwn(modes,location.pathname.slice(base.pathname.length).split('/')[0])?location.pathname.slice(base.pathname.length).split('/')[0]:'infinite';}
+let renderer=null,ready=false,failed=false,importing=false;
 function sourceLink(element,url){element.hidden=!url;if(url)element.href=url;else element.removeAttribute('href');}
 function notify(message){$('status').textContent=message||'';$('status').hidden=!message;}
 
@@ -35,26 +27,12 @@ function updatePhoto(){
   $('demo-label').hidden=!photo.demo&&!photo.local;
   $('prev').disabled=$('next').disabled=gallery.items.length<2;
   sourceLink($('source'),photo.source);
-  $('stage').setAttribute('aria-label',`${modes[mode].title}：${photo.title}。${modes[mode].hint}`);
+  $('stage').setAttribute('aria-label',`Particles：${photo.title}。拖动看立体，移动指针拨动光点。`);
   if(failed)$('fallback').src=photo.src;
-  const depth=mode==='particles'&&!photo.depthImage;
+  const depth=!photo.depthImage;
   $('depth-note').hidden=!depth;
   $('depth-note').textContent=depth?'这张照片以曲面光点呈现':' ';
-  $('action').textContent=modes[mode].action;
-}
-function setMode(next,push=false){
-  if(!Object.hasOwn(modes,next))next='infinite';
-  mode=next;const spec=modes[mode];
-  if(push)history.pushState({mode},'',new URL(mode+'/',base));
-  document.body.dataset.scene=mode;
-  document.title=`${spec.title} — MUSE / SEORINA`;
-  $('scene-title').textContent=spec.title;
-  $('scene-subtitle').textContent=`${spec.number} / ${spec.subtitle}`;
-  $('hint').textContent=spec.hint;
-  $('action').textContent=spec.action;
-  for(const link of modeLinks){link.href=new URL(link.dataset.mode+'/',base);if(link.dataset.mode===mode)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');}
-  try{renderer?.setMode(mode);}catch(error){showFallback(error);}
-  updatePhoto();
+  $('action').textContent='散开';
 }
 
 function renderLibrary(){
@@ -82,7 +60,7 @@ function openViewer(){
 async function importFiles(files){
   if(importing)return;importing=true;$('files').disabled=true;$('clear-local').disabled=true;
   $('import-status').textContent='正在载入照片…';
-  try{const result=await gallery.importFiles(files);$('import-status').textContent=gallery.status.message||(result.added?`已加入 ${result.added} 张，四个展厅都可以使用。`:'请选择可读取的照片。');}
+  try{const result=await gallery.importFiles(files);$('import-status').textContent=gallery.status.message||(result.added?`已加入 ${result.added} 张照片。`:'请选择可读取的照片。');}
   catch(error){$('import-status').textContent=error.message||'导入未完成，请重试。';}
   finally{importing=false;$('files').disabled=false;renderLibrary();}
 }
@@ -99,17 +77,10 @@ gallery.addEventListener('select',()=>{
 
 $('brand').href=base.href;$('archive-link').href=new URL('../index/',base).href;
 $('rights-link').href=new URL('credits.html',base).href;
-try{renderer=new MuseRenderer($('stage'),{onPick:index=>{gallery.select(index);openViewer();},onError:showFallback});}catch(error){showFallback(error);}
-setMode(mode);
+try{renderer=new MuseRenderer($('stage'),{onError:showFallback});}catch(error){showFallback(error);}
 $('motion').setAttribute('aria-pressed',String(!!renderer?.motion));
 $('motion').setAttribute('aria-label',renderer?.motion?'暂停自动运动':'启用自动运动');
 
-modeLinks.forEach(link=>link.addEventListener('click',event=>{
-  if(event.button||event.metaKey||event.ctrlKey||event.altKey||event.shiftKey)return;
-  event.preventDefault();if(link.dataset.mode===mode)return;
-  setMode(link.dataset.mode,true);
-}));
-window.addEventListener('popstate',()=>setMode(routeMode()));
 $('library-open').addEventListener('click',openLibrary);
 $('files').addEventListener('change',event=>{importFiles(event.target.files);event.target.value='';});
 $('clear-local').addEventListener('click',async()=>{if(importing)return;const result=await gallery.clearLocal();$('import-status').textContent=gallery.status.message||(result?.error?'清除未完成，请重试。':'已清除本地导入。');});
@@ -139,9 +110,7 @@ window.addEventListener('pageshow',()=>{if(ready)pauseForDialog();});
 try{
   await gallery.init();
   // A square, depth-backed photograph is a useful first view of the point sculpture.
-  if(mode==='particles'){
-    const portrait=gallery.items.findIndex(photo=>photo.depthImage&&photo.width/photo.height>.9&&photo.width/photo.height<1.1);
-    if(portrait>=0)gallery.select(portrait);
-  }
+  const portrait=gallery.items.findIndex(photo=>photo.depthImage&&photo.width/photo.height>.9&&photo.width/photo.height<1.1);
+  if(portrait>=0)gallery.select(portrait);
   ready=true;document.body.classList.add('is-ready');$('loading').hidden=true;
 }catch(error){notify(error.message||'图库暂时无法载入。');$('loading').hidden=true;}

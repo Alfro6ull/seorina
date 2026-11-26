@@ -1,15 +1,10 @@
-# MUSE — SEORINA
+# MUSE — SEORINA / Particles
 
-An interactive photographic exhibition with four independently implemented Three.js scenes and one shared collection. `/muse/` opens the Infinite gallery; the bottom navigation links to each scene's own URL. The interface supports pointer, touch, keyboard photo selection, an image viewer, and local photo imports.
+An interactive particle portrait gallery made from Seorina's everyday photographs. `/muse/` opens the particle experience directly; the existing `/muse/particles/` link opens the same experience. Both entry points use one photo catalog and the same browser-local collection.
 
-| Route | Scene | Main interaction |
-| --- | --- | --- |
-| `muse/infinite/` | A stone gallery with dimensional frames, receding arches, warm light portals, and a real reflected floor | Drag the camera; scroll through the repeating space |
-| `muse/prism/` | A photograph seen through physical glass forms with refraction and dispersion | Move the pointer or drag to change the optical arrangement |
-| `muse/ribbon/` | Photographs mapped onto a continuous, deforming film ribbon | Drag or scroll through the film; fold/unfold the ribbon |
-| `muse/particles/` | Photographic color samples displaced by relative depth into a point sculpture | Drag the viewpoint; disturb, dissolve, and reassemble the points |
+Photographic color samples become a point sculpture, with relative depth supplying bounded displacement. Drag to change the viewpoint, move the pointer to disturb nearby points, or dissolve and reassemble the photograph. The interface also supports touch, keyboard photo selection, an image viewer, and local imports.
 
-`renderer.js` owns one GPU context, input handling, resizing, and the shared color-texture cache. Each module in `scenes/` owns its scene, camera, geometry, materials, interaction state, and disposal. The bundled Three.js revision is r170; its license is retained under `vendor/`. No external JavaScript CDN or build step is needed.
+`renderer.js` owns the GPU context, input handling, and resizing. `scenes/particles.js` owns the particle scene, camera, geometry, materials, interaction state, and disposal. The bundled Three.js revision is r170; its license is retained under `vendor/`. No external JavaScript CDN or build step is needed.
 
 ## Run locally
 
@@ -21,9 +16,9 @@ python3 -m http.server 8769
 
 Opening the HTML through `file://` will not reliably load the ES modules or catalog. Production can serve these files as static assets. Existing `life/` and `filters/` remain separate sections.
 
-## One collection for all four scenes
+## Photo collection
 
-`gallery.js` reads `library.json` and combines its usable public entries with the current browser's local imports. No scene has its own hardcoded image list.
+`gallery.js` reads `library.json` and combines its usable public entries with the current browser's local imports. The particle renderer consumes this collection without a hardcoded image list. `/muse/` and `/muse/particles/` use the same store.
 
 The initial catalog contains **six everyday photographs associated with @_seorina's Instagram posts**, together with small precomputed depth textures. Two images come from the exact posts' public photographic previews; the other four come from an attributed Sports Donga article associated with an official post by its caption. The individual carousel positions for those article images were not inspected. The manifest retains those distinctions, source links, asset URLs, publication dates, image checksums, and depth provenance. See `credits.html`, `library.json`, and `photos/depth/MODEL.md` for the corresponding records.
 
@@ -60,9 +55,9 @@ Depth fields are optional. When a photo has no usable depth map, Particles uses 
 
 Local photos are processed entirely in the browser. They are not uploaded, added to the public catalog, or committed to the repository.
 
-- The default budget is **48 real photographs in the active collection**, with local imports taking precedence. Public entries stay in stable catalog order; they are not randomly resampled per route.
+- The default budget is **48 real photographs in the active collection**, with local imports taking precedence. Public entries stay in stable catalog order.
 - Imported images are normalized to a maximum side of **1600 pixels** and stored as browser-encoded image blobs in IndexedDB. Up to two images are decoded at once. The collection budget is reserved before processing a large import batch.
-- Successfully saved images survive reloads and navigation among the four routes on the same origin and browser profile. Clearing site data, private-browsing policies, or storage eviction can remove them. The selected image ID is also retained when storage permits it.
+- Successfully saved images survive reloads and navigation between the two entry points on the same origin and browser profile. Clearing site data, private-browsing policies, or storage eviction can remove them. The selected image ID is also retained when storage permits it.
 - If IndexedDB is unavailable or a write fails, including a quota failure, usable imports remain in the current page and the store reports that they are **session-only**. They must be imported again after leaving or refreshing that page.
 - A local file must be nonempty and no larger than 40 MB. Unsupported, unreadable, oversized, duplicate, and capacity-exceeding files receive separate result codes. HEIC/HEIF files work only when the browser can decode them; no external service converts them.
 - Clear local imports removes the saved local records and restores the public collection. Failed deletion is reported rather than silently discarding visible saved records.
@@ -135,6 +130,6 @@ The store exposes `items`, `index`, `current`, `status`, `localCount`, and `publ
 
 ## Controls and fallback
 
-Arrow buttons and left/right keys select a photo. Clicking an interactive photo or using the expand control opens the viewer. Library selects or imports photos. The motion control and reduced-motion preference stop optional idle movement while retaining direct manipulation. Dialogs, hidden tabs, and page transitions pause GPU work.
+Arrow buttons and left/right keys select a photo. The expand control opens the photo viewer. Library selects or imports photos. The motion control and reduced-motion preference stop optional idle movement while retaining direct manipulation. Dialogs, hidden tabs, and page transitions pause GPU work.
 
-If WebGL cannot initialize, the static-photo fallback retains the collection and viewer. Leaving a scene disposes its resources; color textures remain shared until the photo leaves the collection or the renderer is disposed.
+If WebGL cannot initialize, the static-photo fallback retains the collection and viewer. Selecting another photograph replaces the previous point geometry. Disposing the renderer releases its GPU resources; disposing the collection releases its decoded images and object URLs.

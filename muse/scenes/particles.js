@@ -150,6 +150,5 @@ export class ParticlesScene {
   drag(dx,dy){this.yawTarget=THREE.MathUtils.clamp(this.yawTarget+dx*4.2,-1.28,1.28);this.pitchTarget=THREE.MathUtils.clamp(this.pitchTarget+dy*2,-.5,.5);}
   wheel(delta){this.zoomTarget=THREE.MathUtils.clamp(this.zoomTarget+delta*.012,this.mobile?9.2:6.4,this.mobile?18:16);}
   action(){this.scatterTarget=this.scatterTarget>.5?0:1;return this.scatterTarget?'重新聚合':'散开';}
-  pick(){return null;}
   dispose(){this.points?.geometry.dispose();this.material.dispose();this.dust.geometry.dispose();this.dust.material.dispose();}
 }

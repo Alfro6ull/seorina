@@ -99,7 +99,7 @@ async function mapLimited(values, limit, mapper) {
   return results;
 }
 
-/** One collection and local import store shared by the entry and all scene routes. */
+/** Photo collection and local import store shared by both gallery URLs. */
 export class Gallery extends EventTarget {
   constructor({ catalogURL = new URL('library.json', MODULE_BASE), maxItems = 48, maxDimension = 1600 } = {}) {
     super();

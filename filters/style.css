@@ -51,3 +51,5 @@ details{border-block:1px solid var(--line);margin:22px 0 36px;color:var(--muted)
 .tool-gesture{color:var(--muted);font-size:.8rem;margin:-5px 0 16px}.tool-pad input[type=range]{margin-bottom:12px}
 .gesture-stage canvas{cursor:crosshair;touch-action:none}.particle-stage canvas{cursor:grab}.particle-stage canvas:active{cursor:grabbing}
 @media(min-width:761px){.filter-list:has(li:nth-child(5)) .filter-row{min-height:67px;grid-template-columns:42px 1fr auto;gap:10px}.filter-list:has(li:nth-child(5)) .filter-row img{width:42px;height:47px}}
+
+.glass-stage:has(canvas:not([hidden])){cursor:default}.stage.glass-stage canvas,.stage.glass-stage img{object-fit:contain;object-position:center}

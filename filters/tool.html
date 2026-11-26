@@ -5,17 +5,17 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#141414">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' blob: data:; connect-src 'none'; media-src blob:; base-uri 'none'; form-action 'none'">
-<title>滤镜 · 薛仁雅档案</title>
+<title>长虹玻璃 · 薛仁雅档案</title>
 <link rel="stylesheet" href="./style.css">
 <script type="module" src="./art-tools.js"></script>
 </head>
 <body>
-<header class="bar"><a href="./">← 滤镜列表</a><h1 id="tool-name">滤镜</h1></header>
+<header class="bar"><a href="./">← 滤镜列表</a><h1 id="tool-name">长虹玻璃</h1></header>
 <main>
   <section class="editor" aria-label="滤镜工作区">
     <div class="viewer">
 
-      <div id="stage" class="stage leak-stage">
+      <div id="stage" class="stage glass-stage">
         <div class="empty" id="empty">
           <svg width="35" height="35" viewBox="0 0 36 36" fill="none" aria-hidden="true"><path d="M12 4H4v8m20-8h8v8M4 24v8h8m20-8v8h-8M18 11v14m-7-7h14" stroke="currentColor"/></svg>
           <button type="button" class="file-primary" data-pick>选择本地图片</button>
@@ -28,22 +28,18 @@
     </div>
     <aside class="controls" aria-label="滤镜设置">
       <h2>调整</h2>
-      <p id="tool-gesture" class="tool-gesture"></p>
+      <p class="tool-gesture">选择整张折射，或保留上半张原图。</p>
       <fieldset id="mode-wrap"><legend>样式</legend>
-        <div class="modes"><label><input type="radio" name="tone" value="a" checked><span id="mode-a">默认</span></label><label><input type="radio" name="tone" value="b"><span id="mode-b">另一种</span></label></div>
+        <div class="modes"><label><input type="radio" name="tone" value="a" checked><span>棱镜</span></label><label><input type="radio" name="tone" value="b"><span>磨砂</span></label></div>
+      </fieldset>
+      <fieldset id="coverage-wrap"><legend>范围</legend>
+        <div class="modes"><label><input type="radio" id="coverage-full" name="coverage" value="full" checked><span>全图</span></label><label><input type="radio" name="coverage" value="half"><span>下半幅</span></label></div>
       </fieldset>
       <div class="range-row"><label for="amp" id="amp-label">强度</label><output id="amp-value" for="amp"></output></div>
       <input type="range" id="amp" min="0" max="100" value="65">
-      <div class="range-row" id="detail-row"><label for="detail" id="detail-label">细节</label><output id="detail-value" for="detail"></output></div>
+      <div class="range-row" id="detail-row"><label for="detail" id="detail-label">竖纹宽度</label><output id="detail-value" for="detail"></output></div>
       <input type="range" id="detail" min="0" max="100" value="50">
-      <div class="tool-pad" id="tool-pad" hidden>
-        <div class="range-row"><label for="tool-x">横向位置</label><output id="x-value" for="tool-x"></output></div>
-        <input type="range" id="tool-x" min="0" max="100">
-        <div class="range-row"><label for="tool-y">纵向位置</label><output id="y-value" for="tool-y"></output></div>
-        <input type="range" id="tool-y" min="0" max="100">
-      </div>
       <div class="actions">
-        <button type="button" id="extra" hidden></button>
         <button type="button" id="clean" disabled>重置效果</button>
         <button type="button" id="compare" aria-pressed="false" disabled>看原图</button>
         <button type="button" id="save" disabled>保存图片</button>
@@ -54,7 +50,7 @@
     </aside>
   </section>
   <p id="notice" role="status" aria-live="polite"></p>
-  <footer class="foot"><a href="./image-rights.html">图片版权 ↗</a><a href="./credits.html">开源与致谢 ↗</a></footer>
+  <footer class="foot"><a href="./image-rights.html">图片版权 ↗</a><a href="./references.html#glass-reference">原帖与设计参考 ↗</a><a href="./credits.html">开源与致谢 ↗</a></footer>
   <input id="file" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/avif,image/bmp" hidden>
 </main>
 </body>

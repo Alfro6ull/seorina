@@ -53,7 +53,7 @@ a:hover { color:var(--accent); }
  .year-display { animation:year-enter 280ms ease-out both; }
  @keyframes year-enter { from { opacity:.15; translate:0 4px; } to { opacity:1; translate:0 0; } }
 }
-.year-stage { --stage-top:12px; --line-y:51px; --rail-inset:36px; position:relative; padding-top:var(--stage-top); }
+.year-stage { --stage-top:32px; --line-y:51px; --rail-inset:36px; position:relative; padding-top:var(--stage-top); }
 .year-stage::before { position:absolute; top:calc(var(--stage-top) + var(--line-y)); inset-inline:var(--rail-inset); height:1px; background:var(--ink); content:""; }
 .year-scroll {
  container-type:inline-size; position:relative; margin-inline:var(--rail-inset); overflow-x:auto;
@@ -77,10 +77,10 @@ a:hover { color:var(--accent); }
 .year-node.is-lit .year-lamp { top:calc(var(--line-y) - 3px); width:22px; height:7px; background:var(--lamp); box-shadow:inset 0 -1px 0 #98791b66; }
 .year-node.is-lit .year-lamp::after { z-index:-1; opacity:.72; }
 .year-node.is-lit .year-lamp::before { position:absolute; z-index:1; inset:0; border-radius:inherit; background:inherit; content:""; }
-.year-avatar { position:absolute; z-index:2; top:calc(var(--stage-top) + var(--line-y) - 61px); left:50%; width:74px; height:65px; color:var(--ink); pointer-events:none; translate:-50% 0; }
-.year-walker { display:block; width:100%; height:100%; }
+.year-avatar { --avatar-width:clamp(83px,9vw,101px); position:absolute; z-index:2; top:calc(var(--stage-top) + var(--line-y) - var(--avatar-width) * .828125); left:50%; width:var(--avatar-width); aspect-ratio:8 / 7; pointer-events:none; translate:-50% 0; }
+.year-walker { display:block; width:100%; height:100%; color:#000; }
 .walker-extra { position:absolute; inset:0 5px 5px; padding:0; border:0; border-radius:8px; background:transparent; cursor:pointer; pointer-events:auto; -webkit-tap-highlight-color:transparent; }
-.walker-caption { position:absolute; inset-inline-start:100%; top:16px; width:max-content; max-width:min(133px,calc(50vw - 44px)); display:flex; align-items:center; color:var(--muted); font:540 .7rem/1.35 var(--sans); }
+.walker-caption { position:absolute; inset-inline-start:100%; top:28%; width:max-content; max-width:min(133px,calc(50vw - var(--avatar-width) / 2 - 6px)); display:flex; align-items:center; color:var(--muted); font:540 .7rem/1.35 var(--sans); }
 .walker-dismiss { width:32px; height:32px; flex:none; padding:0; border:0; border-radius:6px; color:inherit; font:inherit; font-size:1rem; background:transparent; pointer-events:auto; cursor:pointer; }
 .walker-walk { transform-origin:32px 28px; }
 .year-avatar.facing-back .walker-walk { transform:scaleX(-1); }
@@ -105,7 +105,7 @@ a:hover { color:var(--accent); }
 @keyframes walker-feint { to { transform:translate(1px,-2px) rotate(3deg); } }
 @keyframes walker-tail-wag { to { transform:rotate(-24deg); } }
 @keyframes walker-note-rise { from { opacity:0; transform:translateY(4px); } }
-.track-scroll { display:grid; place-items:center; position:absolute; top:37px; width:32px; height:44px; padding:0; border:0; border-radius:4px; background:transparent; color:var(--accent); font:400 1.5rem/1 var(--sans); cursor:pointer; }
+.track-scroll { display:grid; place-items:center; position:absolute; top:calc(var(--stage-top) + var(--line-y) - 26px); width:32px; height:44px; padding:0; border:0; border-radius:4px; background:transparent; color:var(--accent); font:400 1.5rem/1 var(--sans); cursor:pointer; }
 .track-scroll:hover { background:#1717170a; }
 .track-scroll:disabled { visibility:hidden; }
 .track-scroll.previous { left:0; }
@@ -353,21 +353,115 @@ a:hover { color:var(--accent); }
   <div class="year-avatar">
     <svg class="year-walker" viewBox="0 0 64 56" aria-hidden="true">
       <defs>
-        <g id="walker-head">
-          <path d="M23 13c0-7 4.3-11.5 10.8-11.5 5.2 0 8.8 2.7 9.3 7.8-1.1 3.6-3.2 7.9-4.9 11.1-4.7 2.1-11.9 1.7-16.1-.9.6-1.9.9-4.2.9-6.5z"/>
-          <path d="M33 5.1c4-.5 7.1 1.5 7.7 5.6l2 3.1c.4.6-.1 1.2-.8 1.3l-1.4.1c-.2 2.2-1.2 4.2-3.9 4.5l-1 2.9-5.2-2.3.8-4.7c-1.3-1.8-1.4-3.6-.5-4.5.5-.6 1.3-.5 1.9.1 1.7-2.9 1.9-4 .4-6.1z" fill="#F1D7C2"/>
-          <path d="M25.2 11c.1-4.8 3.6-8.4 8.3-8.4 3.9 0 6.8 1.6 7.8 4.5-2.8-1-4.5-1.3-6-.8-.5 3.1-2 5.2-4.6 6.1l-2.2 7.1-4.3-1z"/>
-          <path d="M36.7 11.8c.8-.7 1.7-.7 2.5-.3m-1.1 5.2c.7.1 1.3 0 1.7-.3" fill="none" stroke="currentColor" stroke-width=".7" stroke-linecap="round"/>
-          <circle cx="32.2" cy="15.9" r="1" fill="#C7A35A"/>
+        <path id="year-profile" d="M29.2 9.1c-1.3-1.1-1.7-3.5-.7-5.3 1-1.9 3.3-3.1 5.7-2.4 2.4.7 3.6 2.7 3.5 4.7l1.2 2.2-1.2.7-.1 1.9c-.1 1.3-1.3 1.9-2.8 1.7l-.4 2.3-5.4-1.1.8-2.7z"/>
+        <path id="year-bob" d="M26.9 6.3c.6-3.2 2.7-5.1 5.7-5.2 2.6-.1 4.2 1 4.8 2.6-2-.2-2.5 1.2-3 3.9-.4 2.6.2 4.4.9 6.2-2.7 1.7-6.4 1.8-9.3.5.5-2.3.2-5.4.9-8z"/>
+        <path id="year-pony" d="M29.1 4.4c-2.4-1-4.5-.2-5.4 2.2-.8 2.1-.6 4-3 5.6 3.2.7 5.3-1.9 6.1-3.5.9-1.6 1.5-2.1 2.5-2.2z"/>
+        <g id="year-legs">
+          <path class="walker-leg walker-leg-back" d="M28.4 29.5l5.6 1.2-2.5 10.8-4.3 8.7-2.6 2.7h-4.4c-.4-.7 0-1.4.5-1.7l3.1-2.2 3.8-10.1z"/>
+          <path class="walker-leg" d="M32.9 30.3l5 .1-.3 10.5 3.4 9.4 4.5 1.2c.7.2.8 1.1.2 1.5h-6.8l-4.9-10.1z"/>
+        </g>
+        <path id="year-tailored" d="M30.5 12.6l5.1 1.1c1.8 2.5 3.2 5.9 3.1 8.7l-1.2 5.3 1.7 7.5-7.1 1.7-6.7-1.5 2.1-9.6-1.9-7.8c.2-2.8 1.9-4.7 4.9-5.4z"/>
+        <path id="year-arm" class="walker-arm" d="M34.5 15.8c1.4-.6 2.7.9 3 2.4l.9 7.4 4 8.1-2.5 1.3-5.1-8.3-1.6-8.6c-.2-1.1.3-2 1.3-2.3z"/>
+        <path id="year-skirt" d="M26.9 27.2c3.8.8 7.4.9 11.1.1l3 13.5c-5.7 2.3-11.4 2-18 .5z"/>
+        <path id="year-folder" d="m39 25.9 9.7-2.2 2.6 11.4-10.2 2.6z"/>
+        <g id="year-infant">
+          <path d="M19 47c.4-4.3 6.3-8.2 13.2-8.2 3.2 0 5.4.5 7.3 2.3 1.7-1.4 4.4-1.9 6.6-.2 2.5 1.9 2.9 5.4.5 7.9-1.8 1.9-5.4 3.1-9.4 3.6l-12.9.5c-2.9 0-5.6-2.7-5.3-5.9z"/>
+          <path d="M26 43.8c4.5 1.7 7.4 5.2 7.7 9m-1.6-6c2.7-2.4 5.3-3.5 8.1-4.1" fill="none" stroke="#fff" stroke-width=".75" stroke-linecap="round"/>
+        </g>
+        <g id="year-trainee">
+          <use href="#year-profile" transform="rotate(8 32 10)"/><use href="#year-pony"/>
+          <path d="m28 14 6.8-.5 4.2 10-3.3 8.7-8.2-1.3-2.5-5.5 1.4-9.3z"/>
+          <path d="m27 16-6.1 4.2-9.4-3.2-1 2.5 10.6 5 7.3-3.6zm8.2-1.5 6.9-5.4 5.1-8 2.2 1.2-4.7 10.3-7.6 6.4z"/>
+          <path class="walker-leg walker-leg-back" d="m28 29.5 6 1.8-3.2 10.2-6.2 8.5-5.6 3h-3.8l.2-1.9 5.9-3.8 5.4-9.3z"/>
+          <path class="walker-leg" d="m32 30 5.8.6 5.5 9 7.6 7.1 4.7.4.8 2-6.5 1.1-10-7.2z"/>
+        </g>
+        <g id="year-script">
+          <use href="#year-profile"/><use href="#year-pony"/><use href="#year-legs"/><use href="#year-tailored"/>
+          <path d="m35 19 4 7.1 5-5.2 1.8 1.3-5.7 8.4-5.1-3.1-2.5-6.4z"/>
+          <path d="m39.8 11.6 6 2.1 5.5-1.3-1.8 9.4-5.4 1.1-6.2-2.7z"/>
+          <path d="m45.7 14.4-1.6 7.4" stroke="#fff" stroke-width=".65"/>
+        </g>
+        <g id="year-producers">
+          <use href="#year-profile"/><use href="#year-pony"/><use href="#year-legs"/><use href="#year-tailored"/><use href="#year-skirt"/>
+          <path d="M26.8 16.2c-3.8-.5-7.4 1.5-8.2 5.6l-1.2 10.1c2.4 1.8 5.3 3 8 2.1l2.6-11.8z"/>
+          <path d="m35.3 16.3 2.4 3.3 4.2-3.1 1.6 1.7-5.1 6-4.5-1.7zM40.9 16.4l-1.6-5.4 2.8-.8 1.6 5.7z"/>
+        </g>
+        <g id="year-court">
+          <use href="#year-profile" transform="translate(-.5 1.6) scale(.98)"/>
+          <path d="M26.2 5.7a3.3 3.3 0 1 1 .2 6.6 3.3 3.3 0 0 1-.2-6.6zM27.7 4.7l6.2-.4.5.8-8.3 1.8z"/>
+          <path d="M29.2 14.3c2.1-1.6 5.2-.9 7.2.4l2.7 8.2 1.1 5.6-3.7 2.7 2.6 7.1 6.8 13.2-12 1.5-14.3-1.3 3.2-11.5 3.6-11.2-2-8.3z"/>
+          <path d="m28.8 15.2 4.2 5.8 3.1-5.1m-7.4 6.9c3.4.8 6.3 1 9.4-.2" fill="none" stroke="#fff" stroke-width=".7" stroke-linecap="round"/>
+        </g>
+        <g id="year-uniform">
+          <use href="#year-profile"/><use href="#year-bob"/><use href="#year-legs"/><use href="#year-tailored"/><use href="#year-skirt"/>
+          <path d="m28.7 14.9 4.4 4.7 3.2-4.7m-3.2 5.3 .1 5" fill="none" stroke="#fff" stroke-width=".7" stroke-linecap="round"/>
+          <path d="m36 20 2.6 6.7 5.9-1.5.7 2.2-8.6 3.3-4.6-9.2zM37.1 23.5l2.2-9.1 7 1.6-2 9.1z"/>
+        </g>
+        <g id="year-designer">
+          <use href="#year-profile"/><use href="#year-pony"/><use href="#year-legs"/><use href="#year-tailored"/>
+          <path d="m34.5 17.3 4.7 9.1 6.6 2.2-.4 2.5-8.7-1.1-4-8.5zM40.3 28.8l7-4.8 5.2 1.2-3 8 .9 8-11.8 3.1-2-3.4 4.4-5.9z"/>
+          <path d="m46.3 28.5-4 11.5" stroke="#fff" stroke-width=".65" stroke-linecap="round"/>
+        </g>
+        <g id="year-student">
+          <use href="#year-profile"/><use href="#year-bob"/><use href="#year-legs"/><use href="#year-tailored"/>
+          <path d="m25.6 18.2-2.6 7.6-4.8 5.2 1.6 2 7-5.2 3.7-9zM34.8 18.2l3.5 7.3 6.4-.1 1 2.2-8.6 2.1-5-8.7z"/>
+          <path d="m36.8 24.1 9.6-2.2 2 2.1-9.4 2.7zm.1 3.5 10.1-2.2 1.6 1.8-10 2.5zm2 2.6 9.9-2.4.9 1.9-9.9 2.6z"/>
+        </g>
+        <g id="year-royal">
+          <use href="#year-profile"/>
+          <path d="M26.8 2.6c-.9-2.5 2.1-3.2 4.2-1.6.6.5.9 1.2.6 1.9l-2.7 6-4 .4zM25.5 6.6l11.9-1.4v.8L25.5 7.9z"/>
+          <path d="M29.2 13.9c3.2-1 5.7-.2 7.6 2.1l2.9 7.1 1 6 3.3 8.8 5 13.5c-8.6 1.9-21.9 2.4-33.4.1l4.2-11.8 3.3-10 1.2-8.1c.8-3.2 2.2-6.1 4.9-7.7z"/>
+          <path d="m28.2 16 4.5 5.4 3.3-4.8m-10.1 6.3c3.3 1.3 8 1.8 12.1.5m-6.3.6-2.5 6.6" fill="none" stroke="#fff" stroke-width=".75" stroke-linecap="round"/>
+        </g>
+        <g id="year-hanbok-archery">
+          <use href="#year-royal"/>
+          <path d="M36.8 18.8c2 .6 3.2 3.2 4 5.5l7.2-2.7.8 2.5-9 4.2-4.7-6.4z"/>
+          <path d="M51.2 12.5c2.9 3.6 4.4 7.1 3.7 10.7s-3.3 6.2-7.3 9.1l1.4-10.2z" fill="none" stroke="currentColor" stroke-width=".9" stroke-linejoin="round"/>
+        </g>
+        <g id="year-business">
+          <use href="#year-bob"/><use href="#year-profile"/><use href="#year-legs"/><use href="#year-tailored"/><use href="#year-arm"/>
+          <path d="m28.6 15.1 2 2.4-1.1 1.7 4.1 6.2 1.6-7.6 1.1-1.1m-8.3 12.6c2.6.8 5.4.8 8.3 0" fill="none" stroke="#fff" stroke-width=".75" stroke-linecap="round"/>
+          <path d="M39.5 35.1h10.1l1.2 10.2H38.5z"/>
+          <path d="M42 36.1v-1.7c0-1.7.8-2.7 2.6-2.7s2.5 1 2.5 2.7v1.7" fill="none" stroke="currentColor" stroke-width=".8"/>
+        </g>
+        <g id="year-cello">
+          <use href="#year-profile" transform="translate(-5 5)"/><use href="#year-bob" transform="translate(-5 5)"/>
+          <path d="M17 36.6h12.2v2.5H17zm2.3 2.2h1.2l-1 13.3h-1.3zm7.4 0H28l1.1 13.3h-1.3z"/>
+          <path d="M23.5 17.7c2.5-1 5.4-.5 7.2 1.4l2.8 8.2-1.9 6.2 5.4 2.1c1.2.5 2.1 1.8 1.6 3.5l-3.9 11.2 4.5 1.1-.1 1.3h-7.8l.6-4.1 2.3-8.1-10.4-.5-4.6-2.9 1.1-8.3-.5-6.9z"/>
+          <path d="m28.5 20.2 5.1 4.9 9.7-3 .3 2.1-10.7 4.7-6.3-4.5zM21.4 22.2l4.3 8.6 9.2 1.2-.3 2.1-10.5.3-6.2-9.6z"/>
+          <path d="M43.4 17.6c.9-1.8 3.7-1.9 4.2.1l-3.6 11.7c5.2-.5 7.1 2.8 4.6 6.8-1.1 1.8.8 3.2.2 5.3-.7 4.4-7.1 6.8-12.5 5.6-3.9-.9-5.9-4.5-3.4-7.2 1.5-1.8 3.4-2.3 3.2-4.7-.3-3.3 2.1-5.2 5-5.5zM39 46h1v7h-1z"/>
+          <path d="m42 32-2.4 11.1m-9-5.1 22.6-4.9" stroke="#fff" stroke-width=".7" stroke-linecap="round"/>
+          <path d="m48 34.4 7.6-1.6" fill="none" stroke="currentColor" stroke-width=".85" stroke-linecap="round"/>
+        </g>
+        <g id="year-triathlete">
+          <use href="#year-profile" transform="translate(8 3) rotate(13 33 9)"/>
+          <use href="#year-pony" transform="translate(8 3) rotate(13 33 9)"/>
+          <path d="M34.3 14c4.2 1.1 5.6 3.5 4.7 7.6l-5.9 10.9-9.6-3 3.5-7.1zM36.1 17.8l4.8 8.1 9-4.2 1.5 2.2-10.3 6.4-6.3-5.9zM30 17.6l-7.1 6.1-8.1-1.4-.6 2.2 10.3 3.6 7.1-5.2z"/>
+          <path class="walker-leg walker-leg-back" d="m24.2 29.3 6.9 3.7-6.4 8.4-9.7 7.2-1.5 4.1h-3.9l1.7-4.7 9.8-9.1z"/>
+          <path class="walker-leg" d="m30 30.3 6.7.5 5.5 7.5-4.9 10.4 3.3 2-.4 2.2h-6.7l.2-4.6 3.7-8.3z"/>
+          <path d="m29.8 19.9 6.9 3.3m-8.2-1.8 6.4 3.2" fill="none" stroke="#fff" stroke-width=".7"/>
+        </g>
+        <g id="year-consulting">
+          <use href="#year-profile"/><use href="#year-pony"/><use href="#year-legs"/><use href="#year-tailored"/><use href="#year-folder"/>
+          <path d="m27.8 17 1.3 7.1 10.2 1.5.4 2.5-13.1.6-2.5-10zM35.9 20l4.2 9.1 4.9 1.3-.8 2.6-6.2-.7-5.1-10z"/>
+          <path d="m42.2 27.3 4.7-1.2m-4.3 3 4.5-1.1" fill="none" stroke="#fff" stroke-width=".65" stroke-linecap="round"/>
+        </g>
+        <g id="year-undercover">
+          <use href="#year-profile"/><use href="#year-legs"/>
+          <path d="M30 12.4l5.3.2 5.6 3.5-.4 7.7-1.4 6 1 6.9-7.4 1.3-7.4-2.1 1-8.6-2.4-10.7z"/>
+          <path d="m29.2 13.5 4.1 5.4 3.1-5.8m-3.4 6.6-.6 6.6m-6.4 1.8 2.7 1" fill="none" stroke="#fff" stroke-width=".75" stroke-linecap="round"/>
+          <path class="walker-arm" d="M36.8 15.4c1.6.3 2.4 1.9 2.9 3.2l.4 8.6 3.9 6.4-2.6 1.5-5.4-7.2-1.4-9.1c-.2-1.4.4-3 2.2-3.4z"/>
+        </g>
+        <g id="walker-head" transform="translate(-23 -1) scale(1.65)">
+          <use href="#year-bob"/><use href="#year-profile"/>
         </g>
         <g id="walker-legs">
-          <path class="walker-leg walker-leg-back" d="M27 32h6l-3 12-6 7-5 1-.4-2 4.6-3.2 3-8z" fill="#646469"/>
+          <path class="walker-leg walker-leg-back" d="M27 32h6l-3 12-6 7-5 1-.4-2 4.6-3.2 3-8z"/>
           <path class="walker-leg" d="M32 33h6l.9 10 4.3 6.5 4.4 1.1v1.9h-6.8l-6.6-9.1z"/>
         </g>
         <path id="walker-jacket" d="M25 22c2.2-1.8 5.1-2.6 8.4-2.7l5.6 3.1 2.5 6-2.5 5 1.1 4H24.5l2-8.3z"/>
-        <path id="walker-lapel" d="m30.5 20.9 2.1 4.8 3 4.2.9-7.4-2.8-2.3z" fill="#F2ECE2"/>
         <g id="walker-listening">
-          <use href="#walker-legs"/><use href="#walker-jacket"/><use href="#walker-head"/><use href="#walker-lapel"/>
+          <use href="#walker-legs"/><use href="#walker-jacket"/><use href="#walker-head"/>
           <path d="M27.2 13v-2.4a6 6 0 0 1 10-4.5" fill="none" stroke="#9B9BA2" stroke-width="1.4"/>
           <rect x="26" y="10.7" width="3.6" height="5.8" rx="1.3" fill="#DEDEDF"/>
           <path class="walker-float" d="M48 16V8l7-2v8c0 2-2 3-3.5 2.2-1.6-.9-.7-2.8 2-3V9l-4 1v7c0 2-2 3-3.7 2-1.4-.9-.4-2.8 2.2-3z" fill="var(--note-color,#A9790B)"/>
@@ -375,7 +469,6 @@ a:hover { color:var(--accent); }
         <g id="walker-seated">
           <use href="#walker-head" transform="translate(-4 6) scale(.88)"/>
           <path d="M17 24c4-2 8-3 12 1l1 7 7 2v3l-10-1-2-4-1 6 9 2-2 10h6v2h-9l.6-9H16l-1-8z"/>
-          <path d="m21 23 3 5 2-4-2.4-1.8z" fill="#F2ECE2"/>
           <path d="M13 42h10v2H13zm2 2h2v8h-2zm5 0h2v8h-2z"/>
         </g>
         <g id="walker-at-desk">
@@ -391,21 +484,7 @@ a:hover { color:var(--accent); }
       </defs>
       <g fill="currentColor">
         <g class="walker-pose walker-walk">
-          <use href="#walker-legs"/><use href="#walker-jacket"/><use href="#walker-head"/><use href="#walker-lapel"/>
-          <g data-walker-outfit="school" hidden>
-            <path d="M23 22c-5.8-1.3-8 3.1-8 7.6 0 2.6.9 4.3 3 4.6l6.7.2 1.8-9.5z" fill="#2C3550"/>
-            <path d="M32 22c-2.3 3.3-3.7 7.4-3.8 11" fill="none" stroke="#C6A75D" stroke-width="1.2"/>
-            <path class="walker-arm" d="M35 22c2-1 3.5.5 4.1 2.4l1.9 6.4 4.9 1.9-.9 2.2-6.6-1.5-4.5-8.7z"/>
-          </g>
-          <g data-walker-outfit="actor" hidden>
-            <path d="m40 20 1.4-7.4 8.7 1.7-1.7 9.3z" fill="#D9CFBB" stroke="currentColor" stroke-width=".8"/>
-            <path d="m43 16.2 4.5.9m-4.7 1 3.9.8" fill="none" stroke="currentColor" stroke-width=".65"/>
-            <path d="M36.5 23c1.8-1.2 3.3.3 3.9 2.3l1.3 2.1 4-2 1 2.3-6.6 4-4.8-5.5z"/>
-          </g>
-          <g data-walker-outfit="street">
-            <path d="m25 35 5 1.8 3.6-10 2.4 10.5 4-1.3-1.1 5.2H24z"/>
-            <path class="walker-arm" d="M35 23c2-1.8 4.1-.4 4.7 1.6l2.9 8.5 3.5 1.6-1 2.1-5.2-1.5-5.2-9.3z"/>
-          </g>
+          <use class="year-figure" href="#year-undercover"/>
         </g>
         <g class="walker-pose walker-board" data-scene-label="踩滑板" hidden>
           <path d="M19 47q2 3 6 3h17q4 0 7-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -417,7 +496,7 @@ a:hover { color:var(--accent); }
         </g>
         <g class="walker-pose walker-julie" data-scene-label="和 Julie 散步" hidden>
           <g transform="translate(-9 0)">
-            <use href="#walker-legs"/><use href="#walker-jacket"/><use href="#walker-head"/><use href="#walker-lapel"/>
+            <use href="#walker-legs"/><use href="#walker-jacket"/><use href="#walker-head"/>
             <path d="M37 23c2 0 3 1 4 3l2 5 4 1-1 2-6-1-4-7z"/>
           </g>
           <path d="M37.5 33c2.5 6.8 7.7 11.2 17.4 9.5" fill="none" stroke="#68615A" stroke-width=".85"/>
@@ -479,13 +558,13 @@ a:hover { color:var(--accent); }
         <g class="walker-pose" data-scene-label="《无限挑战》" style="--screen-color:#5B5726" hidden><use href="#walker-screen"/></g>
         <g class="walker-pose" data-scene-label="户外竞技综艺" style="--screen-color:#366458" hidden><use href="#walker-screen"/></g>
         <g class="walker-pose" data-scene-label="复古的年代感" hidden>
-          <use href="#walker-legs"/><use href="#walker-jacket"/><use href="#walker-head"/><use href="#walker-lapel"/>
+          <use href="#walker-legs"/><use href="#walker-jacket"/><use href="#walker-head"/>
           <rect x="38" y="25" width="15" height="10" rx="1.5" fill="#C3BBA8" stroke="currentColor" stroke-width=".8"/>
           <path d="M41 25v-2h4v2" fill="none" stroke="currentColor"/>
           <circle cx="47" cy="30" r="3" fill="currentColor"/><circle cx="47" cy="30" r="1.3" fill="#667184"/>
         </g>
         <g class="walker-pose" data-scene-label="想去瑞士" hidden>
-          <use href="#walker-legs"/><use href="#walker-jacket"/><use href="#walker-head"/><use href="#walker-lapel"/>
+          <use href="#walker-legs"/><use href="#walker-jacket"/><use href="#walker-head"/>
           <rect x="43" y="35" width="13" height="15" rx="1.7" fill="#34477E"/>
           <path d="M47 35v-3h5v3m-6 15v2m7-2v2" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
           <path d="M48 44h5m-2.5-2.5v5" fill="none" stroke="#fff" stroke-width="1"/>
@@ -502,12 +581,12 @@ a:hover { color:var(--accent); }
           <path d="m47.3 29.5 4-4.5" fill="none" stroke="#D2B995" stroke-width="1.7" stroke-linecap="round"/>
         </g>
         <g class="walker-pose" data-scene-label="黑白单色系" hidden>
-          <use href="#walker-legs"/><use href="#walker-jacket"/><use href="#walker-head"/><use href="#walker-lapel"/>
+          <use href="#walker-legs"/><use href="#walker-jacket"/><use href="#walker-head"/>
           <rect x="44" y="15" width="7.5" height="7.5" rx="1" fill="#171717"/>
           <rect x="50" y="21" width="7.5" height="7.5" rx="1" fill="#fff" stroke="#171717" stroke-width=".75"/>
         </g>
         <g class="walker-pose" data-scene-label="海军蓝" hidden>
-          <use href="#walker-legs"/><use href="#walker-jacket" fill="#213653"/><use href="#walker-head"/><use href="#walker-lapel"/>
+          <use href="#walker-legs"/><use href="#walker-jacket"/><use href="#walker-head"/>
           <rect x="47" y="17" width="9" height="9" rx="1.1" fill="#213653"/>
         </g>
         <g class="walker-pose" data-scene-label="在家独处" hidden>
@@ -516,12 +595,12 @@ a:hover { color:var(--accent); }
           <path d="M49.8 20.5a2.3 2.3 0 0 0 2.4 2.6 2 2 0 1 1-2.4-2.6" fill="#AD8827"/>
         </g>
         <g class="walker-pose" data-scene-label="让我们去爱" hidden>
-          <use href="#walker-legs"/><use href="#walker-jacket"/><use href="#walker-head"/><use href="#walker-lapel"/>
+          <use href="#walker-legs"/><use href="#walker-jacket"/><use href="#walker-head"/>
           <path class="walker-float" d="M49.5 26c-6.6-4.1-6.1-8.9-2.6-9.6 1.2-.3 2.2.4 2.6 1.4.5-1 1.7-1.8 2.9-1.3 3.5 1 3.7 5.6-2.9 9.5z" fill="#AA514B"/>
         </g>
         <g class="walker-pose" data-scene-label="柔术" hidden>
-          <use href="#walker-legs"/><use href="#walker-jacket" fill="#E9E3D8" stroke="currentColor" stroke-width=".85"/><use href="#walker-head"/>
-          <path d="m27 33 12-.2m-6 .2-3 5m3-5 3 4m-6-16 5 8 2-7" fill="none" stroke="#32385A" stroke-width="1.2" stroke-linecap="round"/>
+          <use href="#walker-legs"/><use href="#walker-jacket"/><use href="#walker-head"/>
+          <path d="m27 33 12-.2m-6 .2-3 5m3-5 3 4m-6-16 5 8 2-7" fill="none" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/>
         </g>
         <g class="walker-pose walker-boxing" data-scene-label="拳击训练" hidden>
           <path d="m28 32 6 3-6 10-7 6v2h-7v-2l7-7zM33 32l6 2 1 11 4 5h6v3H40l-6-8z"/>
@@ -529,7 +608,7 @@ a:hover { color:var(--accent); }
             <use href="#walker-head" transform="translate(1 1)"/>
             <path d="M27 10c-5-3-8 1-8 6l7-2zM29 20l7-1 4 5-2 12h-13l1-8zM35 22l5 5 6-6 3 3-8 9-6-4zM28 22l4 2 3-6 4 2-4 10-7-3z"/>
             <path d="M44 19c0-3 2-5 5-4 3 0 4 3 2 6l-2 3-5-3zM33 16c0-4 5-5 7-2 2 2 0 5-2 6l-4-1z"/>
-            <path d="m45 21 4 2m-14-5 4 1" fill="none" stroke="#cbaa35" stroke-width="1.4"/>
+            <path d="m45 21 4 2m-14-5 4 1" fill="none" stroke="#fff" stroke-width="1.4"/>
           </g>
         </g>
         <g class="walker-pose walker-ice" data-scene-label="短道速滑" hidden>
@@ -5085,7 +5164,7 @@ a:hover { color:var(--accent); }
   const walkerCaption = stage.querySelector(".walker-caption [role=status]");
   const walkerDismiss = stage.querySelector(".walker-dismiss");
   const defaultWalkerScene = walker.querySelector(".walker-walk");
-  const walkerOutfits = defaultWalkerScene.querySelectorAll("[data-walker-outfit]");
+  const walkerFigure = defaultWalkerScene.querySelector(".year-figure");
   const previous = stage.querySelector(".previous");
   const next = stage.querySelector(".next");
   const tools = document.querySelector(".year-tools");
@@ -5099,7 +5178,26 @@ a:hover { color:var(--accent); }
   const notes = document.getElementById("evidence-notes");
   const banner = document.querySelector(".year-banner");
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+  const annualFigures = {
+    1996: ["infant", "出生"],
+    2010: ["trainee", "练习生时期"],
+    2011: ["trainee", "练习生时期"],
+    2014: ["script", "出道前的表演练习"],
+    2015: ["producers", "《制作人》· 高中生"],
+    2016: ["court", "《狱中花》· 年轻韩尚宫"],
+    2017: ["uniform", "《学校 2017》· 洪南珠"],
+    2018: ["designer", "《明日也晴朗》· 姜荷妮"],
+    2019: ["student", "《爱情是 Beautiful，人生是 Wonderful》· 金清雅"],
+    2020: ["royal", "《哲仁王后》· 赵花真"],
+    2021: ["hanbok-archery", "《哲仁王后》· 赵花真"],
+    2022: ["business", "《社内相亲》· 陈映书"],
+    2023: ["cello", "《闪亮的西瓜》· 崔世京"],
+    2024: ["triathlete", "《钢铁少女团》· 铁人三项"],
+    2025: ["consulting", "《劳务师卢武镇》· 罗熙珠"],
+    2026: ["undercover", "《我的有罪之人》· 姜在熙"]
+  };
   let walkerScene = defaultWalkerScene;
+  let walkerIdentity = "";
 
   function showWalkerScene(scene) {
     if (scene === walkerScene) return;
@@ -5108,13 +5206,16 @@ a:hover { color:var(--accent); }
     walkerScene = scene;
     walkerCaption.textContent = scene.dataset.sceneLabel || "";
     walkerDismiss.hidden = scene === defaultWalkerScene;
+    walkerExtra.title = scene.dataset.sceneLabel || walkerIdentity;
   }
 
   function updateWalker(record) {
-    let outfit = "street";
-    if (record.phase.section.id === "early") outfit = "school";
-    else if (record.label && Number(record.label) < 2020) outfit = "actor";
-    for (const layer of walkerOutfits) layer.toggleAttribute("hidden", layer.dataset.walkerOutfit !== outfit);
+    const fallback = record.phase.section.id === "early" ? ["script", "出道前的表演练习"] : ["business", "演员"];
+    const [figure, identity] = annualFigures[record.label] || fallback;
+    walkerFigure.setAttribute("href", "#year-" + figure);
+    walkerIdentity = identity;
+    showWalkerScene(defaultWalkerScene);
+    walkerExtra.title = identity;
   }
 
   walkerExtra.addEventListener("click", () => showWalkerScene(walkerScene.nextElementSibling || defaultWalkerScene));

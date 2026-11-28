@@ -1,8 +1,8 @@
 # 설인아 생애 및 작품 자료 검증 기록
 
-<!-- Translated from life/research.md at cc4084fb658c2df0c387693bf53fce0e67955ba7; source checked 2026-11-26. Copyright notice translated from f6d34daf687e85ee42b33c02ab9846ee48a24abe. -->
+<!-- Translated from life/research.md at cc4084fb658c2df0c387693bf53fce0e67955ba7; Iron Girls 3 premiere updated on 2026-11-28. Copyright notice translated from f6d34daf687e85ee42b33c02ab9846ee48a24abe. -->
 
-**자료 확인일: 2026-11-26**. 본 연표에는 **156건**을 수록했다. 이 가운데 4건은 세부 정보의 추가 확인이 필요하며, 2건은 공식적으로 방송이 예정되어 있다. 독립된 확인 대기 항목에는 **발행 호수 또는 출연 여부에 관한 단서 11건**을 남겼다. 여기에는 기존에 소속사 필모그래피의 정확성이 의심된 MV 3건도 포함된다. 연표, 확인 대기 항목, 언어·지역별 색인을 합쳐 **URL 기준으로 중복을 제외한 출처 402개**를 연결했다.
+**자료 확인일: 2026-11-28**. 본 연표에는 **156건**을 수록했다. 이 가운데 4건은 세부 정보의 추가 확인이 필요하며, 1건은 공식적으로 방송이 예정되어 있다. 독립된 확인 대기 항목에는 **발행 호수 또는 출연 여부에 관한 단서 11건**을 남겼다. 여기에는 기존에 소속사 필모그래피의 정확성이 의심된 MV 3건도 포함된다. 연표, 확인 대기 항목, 언어·지역별 색인을 합쳐 **URL 기준으로 중복을 제외한 출처 403개**를 연결했다.
 
 설인아는 대한민국의 배우다. 중국어 자료에서는 본명을 흔히 房藝隣으로 표기한다. 소속사 자료와 당시 보도를 기준으로 **2015-06-13 방영된 《프로듀사》 10회**를 정식 드라마 데뷔의 기준점으로 삼았다. 그 이전에는 연습생 생활, 교내 공연, 초기 화보와 MV에 관한 기록 및 단서가 있다. [씨네21 인물 정보](<https://cine21.com/db/person/info/?person_id=102260>) · [소속사 영문 프로필](<https://goldmedalist.com/en/artistView/seorina>) · [KBS 10회](<https://vod.kbs.co.kr/index.html?broadcast_complete_yn=Y&local_station_code=00&program_code=T2015-0165&program_id=PS-2015053907-01-000&sname=vod&source=episode&stype=vod>) · [2015년 당시 보도](<https://www.yeongnam.com/web/view.php?key=20150615.990011105473118>)
 
@@ -241,11 +241,11 @@
 | 2026-11-24 | 인터뷰 · 종영 문답<br>《나의 유죄인간》 종영 인터뷰 공개 | 소속사를 통한 문답에서 강재희 역, 사전 액션 연습, 촬영 경험을 회고했다. 최종회는 이날 저녁 방송되었다. | [소속사를 통한 본인 전체 문답](<https://sports.khan.co.kr/article/202611240743003/amp>) · [뉴스1 본인 문답](<https://www.news1.kr/entertain/broadcast-tv/6364673>) · [종영 날짜를 확인한 연합뉴스 보도](<https://www.yna.co.kr/view/AKR20261125032600005>) |
 | 2026-11-24 | 인터뷰 · 발매·공개<br>《무쇠소녀단 3》 첫 방송 전 문답 공개 <small>(공식 중국어 제목 확인 필요)</small> | 첫 방송에 앞서 멤버 4인의 서면 문답이 공개되었다. 설인아는 쇼트트랙의 새로운 도전과 팀워크에 관해 이야기했다. 날짜는 문답 공개일이다. | [뉴스엔 11월 24일 프로그램 문답](<https://ad.newsen.com/news_view.php?code=100100&uid=202611241000071910>) · [일간스포츠에 게재된 프로그램 문답](<https://isplus.com/article/view/isp202611240120>) |
 
-### 2026-11-26 현재 발표된 향후 편성
+### 최근 방송과 공개된 편성
 
 | 날짜 | 분류·활동 | 확인된 내용 | 확인 가능한 출처 |
 |---|---|---|---|
-| 2026-11-26〔방송 예정〕 | 예능 · 방송<br>《무쇠소녀단 3》 첫 방송 예정 <small>(공식 중국어 제목 확인 필요)</small> | tvN 예고에 따르면 11월 26일 20:40(한국 시간) 첫 방송 예정이다. 설인아는 주장으로 쇼트트랙 계주에 도전한다. CJ ENM 일부 작품 목록은 11월 25일로 기재하지만 여기서는 방송사 예고를 따랐다. | [tvN 1회 예고](<https://tvn.cjenm.com/ko/irongirls3/>) · [CJ ENM의 날짜 차이](<https://ocn-front.cjenm.com/ko/featured-contents/%EB%AC%B4%EC%87%A0%EC%86%8C%EB%85%80%EB%8B%A83/>) · [11월 25일 인터뷰 문답](<https://www.tenasia.co.kr/article/2026112460824>) |
+| 2026-11-26 | 예능 · 방송<br>《무쇠소녀단 3》 첫 방송 <small>(공식 중국어 제목 확인 필요)</small> | 2026년 11월 26일 tvN에서 1회가 첫 방송됐다(공식 편성 안내: 한국 시간 20:40). 티빙도 1회 방송일을 같은 날짜로 표기한다. 설인아는 주장으로 금새록, 한지현, 연우와 함께 쇼트트랙 계주에 도전한다. CJ ENM 일부 목록에는 11월 25일로 표기되어 있으나 여기서는 tvN과 티빙을 기준으로 삼았다. | [tvN 공식 프로그램 페이지](<https://tvn.cjenm.com/ko/irongirls3/>) · [CJ ENM의 날짜 차이](<https://ocn-front.cjenm.com/ko/featured-contents/%EB%AC%B4%EC%87%A0%EC%86%8C%EB%85%80%EB%8B%A83/>) · [11월 25일 인터뷰 문답](<https://www.tenasia.co.kr/article/2026112460824>) · [티빙 1회 편성 기록](<https://www.tving.com/more/special/SP0240>) |
 | 2026-11-28〔방송 예정〕 | 예능 · 방송<br>《놀라운 토요일》 444회 예고 | tvN 444회 예고는 설인아, 금새록, 한지현, 연우를 게스트로 소개한다. 11월 28일 19:30(한국 시간) 방송 예정이다. | [tvN 공식 예고](<https://tvn.cjenm.com/ko/amazingsaturday/>) · [회차·게스트 대조 자료](<https://m.namu.moe/w/%EB%86%80%EB%9D%BC%EC%9A%B4%20%ED%86%A0%EC%9A%94%EC%9D%BC/%EB%B0%A9%EC%98%81%20%EB%AA%A9%EB%A1%9D/2026%EB%85%84>) · [tvN 444회 예고 목록](<https://tvn.cjenm.com/ko/amazingsaturday/video/?7778=removeCacheYn%3DN%26ccsClipTpCd%3DALL%26pageNum%3D1%26searchClipTypeCd%3DMC010220>) |
 
 ## 구분해 기록해야 하는 날짜

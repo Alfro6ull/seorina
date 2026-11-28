@@ -1,6 +1,6 @@
 # 薛仁雅生平与作品考据
 
-**资料核对日 2026-11-26**。主时间线收录 **156 条记录**，其中 4 条仍有具体信息待核，另有 2 条官方预定播出。独立待考区保留 **11 条刊期或出演线索**（含原有 3 条经纪页片目存疑的 MV）。时间线、待考区与跨地区索引共 **402 个按网址去重的来源入口**。
+**资料核对日 2026-11-28**。主时间线收录 **156 条记录**，其中 4 条仍有具体信息待核，另有 1 条官方预定播出。独立待考区保留 **11 条刊期或出演线索**（含原有 3 条经纪页片目存疑的 MV）。时间线、待考区与跨地区索引共 **403 个按网址去重的来源入口**。
 
 薛仁雅是韩国演员。华文资料常将她的本名写作房藝隣。按经纪公司和同期报道，以 **2015-06-13《制作人》第 10 集**作为正式电视剧出道的分界。她在此之前有练习生、校内表演及早期画报、MV 线索。 [Cine21 人物档案](<https://cine21.com/db/person/info/?person_id=102260>) · [经纪公司英文档案](<https://goldmedalist.com/en/artistView/seorina>) · [KBS 第10集](<https://vod.kbs.co.kr/index.html?broadcast_complete_yn=Y&local_station_code=00&program_code=T2015-0165&program_id=PS-2015053907-01-000&sname=vod&source=episode&stype=vod>) · [2015年同期报道](<https://www.yeongnam.com/web/view.php?key=20150615.990011105473118>)
 
@@ -237,11 +237,11 @@
 | 2026-11-24 | 访谈 · 终映问答<br>《我的有罪之人》 &#124; 《伪装恋爱》 终映公开访谈 | 她通过经纪方的问答回顾饰演姜在熙、提前练习动作以及拍摄经历。终集于当晚播出。 | [经纪方本人完整问答](<https://sports.khan.co.kr/article/202611240743003/amp>) · [News1 本人问答](<https://www.news1.kr/entertain/broadcast-tv/6364673>) · [韩联社确认终映日期](<https://www.yna.co.kr/view/AKR20261125032600005>) |
 | 2026-11-24 | 访谈 · 发行／公开<br>《钢铁少女团 3》播前问答公开 <small>（官方中文名待核）</small> | 节目播出前公开四位成员的书面问答。薛仁雅谈到短道速滑带来的新挑战及队伍协作。日期为问答公开日。 | [NewsEN 11 月 24 日节目问答](<https://ad.newsen.com/news_view.php?code=100100&uid=202611241000071910>) · [日刊体育刊发的节目问答](<https://isplus.com/article/view/isp202611240120>) |
 
-### 截至 2026-11-26 已公布的后续排程
+### 近期播出与已公布排程
 
 | 日期 | 类别与活动 | 已知资料 | 可追溯来源 |
 |---|---|---|---|
-| 2026-11-26〔已预告〕 | 综艺 · 播出<br>《钢铁少女团 3》预定首播 <small>（官方中文名待核）</small> | tvN 预告定于 11 月 26 日 20:40（韩国时间）首播。薛仁雅担任队长，挑战短道速滑接力。CJ ENM 部分作品目录另列 11 月 25 日，此处采用播出方预告。 | [tvN 第1集预告](<https://tvn.cjenm.com/ko/irongirls3/>) · [CJ ENM 日期差异](<https://ocn-front.cjenm.com/ko/featured-contents/%EB%AC%B4%EC%87%A0%EC%86%8C%EB%85%80%EB%8B%A83/>) · [11月25日采访问答](<https://www.tenasia.co.kr/article/2026112460824>) |
+| 2026-11-26 | 综艺 · 播出<br>《钢铁少女团 3》首播 <small>（官方中文名待核）</small> | 2026 年 11 月 26 日，tvN 首播第 1 集（官方首播时段 20:40，韩国时间），TVING 的第 1 集也标注为同日。薛仁雅担任队长，与琴世禄、韩智贤、妍雨一起挑战短道速滑接力。CJ ENM 部分作品目录另列 11 月 25 日，此处以 tvN 和 TVING 为准。 | [tvN 节目官网](<https://tvn.cjenm.com/ko/irongirls3/>) · [CJ ENM 日期差异](<https://ocn-front.cjenm.com/ko/featured-contents/%EB%AC%B4%EC%87%A0%EC%86%8C%EB%85%80%EB%8B%A83/>) · [11月25日采访问答](<https://www.tenasia.co.kr/article/2026112460824>) · [TVING 第 1 集播出记录](<https://www.tving.com/more/special/SP0240>) |
 | 2026-11-28〔已预告〕 | 综艺 · 播出<br>《惊人的星期六》第 444 集预告 | tvN 第 444 集预告列薛仁雅、琴世禄、韩智贤、妍雨作客，定于 11 月 28 日 19:30（韩国时间）播出。 | [tvN 官方预告](<https://tvn.cjenm.com/ko/amazingsaturday/>) · [集数与嘉宾对照](<https://m.namu.moe/w/%EB%86%80%EB%9D%BC%EC%9A%B4%20%ED%86%A0%EC%9A%94%EC%9D%BC/%EB%B0%A9%EC%98%81%20%EB%AA%A9%EB%A1%9D/2026%EB%85%84>) · [tvN 第 444 集预告目录](<https://tvn.cjenm.com/ko/amazingsaturday/video/?7778=removeCacheYn%3DN%26ccsClipTpCd%3DALL%26pageNum%3D1%26searchClipTypeCd%3DMC010220>) |
 
 ## 需要分别记的几组日期

@@ -1,4 +1,4 @@
-import {readPhotoLibrary,photosFor,photoLibraryURL} from '../assets/photos/library.js?v=public-daily';
+import {readPhotoLibrary,photosFor,photoLibraryURL} from '../assets/photos/library.js?v=instagram-archive';
 const $=id=>document.getElementById(id),mode=document.body.dataset.study;
 const reduce=matchMedia('(prefers-reduced-motion: reduce)'),clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const pad=n=>String(n).padStart(2,'0'),src=row=>new URL(row.src,photoLibraryURL).href;

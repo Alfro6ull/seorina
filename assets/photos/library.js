@@ -13,6 +13,11 @@ export function photosFor(rows, use) {
   return rows.filter(row => {
     if (row?.publish !== true || (!Array.isArray(row.uses) || !row.uses.includes(use)) || !assetName.test(row.src) || (typeof row.rights !== 'string' || !row.rights.trim())) return false;
     if (row.rightsStatus === 'existing-muse-only') return use === 'muse';
+    if (row.rightsStatus === 'public-instagram-archive-display') {
+      return ['gallery','muse'].includes(use) && row.tags?.includes('instagram') &&
+        /^https:\/\/www\.instagram\.com\/_seorina\/p\/[A-Za-z0-9_-]+\/\?img_index=[1-9]\d*$/.test(row.source) &&
+        Boolean(row.sourceVerification?.trim());
+    }
     if (row.rightsStatus === 'public-instagram-fan-display') {
       return ['gallery','muse'].includes(use) && row.tags?.includes('daily') &&
         /^https:\/\/www\.instagram\.com\/_seorina\/p\/[A-Za-z0-9_-]+\/\?img_index=\d+$/.test(row.source) &&

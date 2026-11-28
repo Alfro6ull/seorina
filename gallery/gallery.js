@@ -1,4 +1,4 @@
-import { photoLibraryURL, photosFor, readPhotoLibrary } from '../assets/photos/library.js?v=public-daily';
+import { photoLibraryURL, photosFor, readPhotoLibrary } from '../assets/photos/library.js?v=instagram-archive';
 
 const grid = document.querySelector('#gallery-grid');
 const status = document.querySelector('#gallery-status');
@@ -32,6 +32,7 @@ try {
   const existingPublic = photosFor(rows, 'muse').filter(photo => photo.rightsStatus === 'existing-muse-only');
   const galleryPhotos = photosFor(rows, 'gallery');
   const photos = [...new Map([...existingPublic, ...galleryPhotos].map(photo => [photo.id, photo])).values()];
+  photos.sort((a, b) => (b.date || '').localeCompare(a.date || '') || (a.instagramPost || '').localeCompare(b.instagramPost || '') || (a.instagramPosition || 1) - (b.instagramPosition || 1));
   if (!photos.length) throw Error('Empty photo library');
   const fragment = document.createDocumentFragment();
   for (const [i, photo] of photos.entries()) {

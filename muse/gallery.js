@@ -1,4 +1,4 @@
-import { photoLibraryURL, photosFor, readPhotoLibrary } from '../assets/photos/library.js?v=public-daily';
+import { photoLibraryURL, photosFor, readPhotoLibrary } from '../assets/photos/library.js?v=instagram-archive';
 import { createStudies } from './demo.js';
 
 const MODULE_BASE = new URL('./', import.meta.url);
@@ -558,7 +558,6 @@ export class OnDemandGallery extends Gallery {
     this.items=await this._readManifest();
     if(!this.items.length){this.items=createStudies();this.usingStudies=true;}
     let index=this.items.findIndex(row=>row.id===requested);
-    if(index<0)index=this.items.findIndex(row=>row.id==='ig-daily-08-guitar');
     await this.select(Math.max(0,index));
   }
   async select(next) {

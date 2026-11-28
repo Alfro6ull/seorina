@@ -1,4 +1,4 @@
-import { OnDemandGallery } from './gallery.js?v=lazy-index';
+import { OnDemandGallery } from './gallery.js?v=instagram-archive';
 import { MuseRenderer } from './renderer.js?v=3';
 const $=id=>document.getElementById(id);
 const gallery=new OnDemandGallery();

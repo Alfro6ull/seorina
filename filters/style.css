@@ -62,7 +62,6 @@ details{border-block:1px solid var(--line);margin:22px 0 36px;color:var(--muted)
 .footer-links{display:flex;gap:6px 18px;flex-wrap:wrap;margin-top:10px;font-size:.75rem}
 @media(max-width:760px){.site-footer{width:calc(100% - 24px);margin-top:18px}}
 
-#preview.stretch-canvas{touch-action:none;cursor:crosshair}
 
 .glass-stage:has(.static-art-canvas:not([hidden])){cursor:default}
 #poster-title-wrap{display:grid;gap:5px;font-size:.78rem;color:var(--muted)}#poster-title{width:100%;min-width:0;background:#1b1a19;color:var(--ink);border:1px solid var(--line);border-radius:2px;padding:7px 9px}
@@ -94,3 +93,40 @@ details{border-block:1px solid var(--line);margin:22px 0 36px;color:var(--muted)
 .example-credit,#photo-credit{font-size:.72rem;color:var(--muted)}
 
 .gallery-add{display:flex;align-items:center;gap:9px;margin-bottom:12px}.gallery-add button,.gallery-remove{color:var(--ink);background:#25221f;border:1px solid var(--line);border-radius:3px;padding:6px 10px}.gallery-add small{color:var(--muted)}.gallery-remove{align-self:flex-start;font-size:.73rem}
+
+.gallery-pagination{display:flex;align-items:center;justify-content:space-between;gap:9px;margin-top:15px;padding-top:11px;border-top:1px solid var(--line);font-size:.79rem}
+.gallery-pagination button{color:var(--ink);background:transparent;border:1px solid var(--line);min-height:38px;padding:4px 11px}
+.gallery-pagination output{color:var(--muted);font:11px/1 var(--mono)}
+
+/* The clip affects only the preview. PNG export still uses the full effect canvas. */
+#original:not([hidden]){clip-path:inset(0 calc(100% - var(--reveal,50%)) 0 0)}
+.compare-overlay{position:absolute;z-index:3;inset:0;cursor:ew-resize;touch-action:none;user-select:none}
+.compare-label{position:absolute;top:12px;padding:3px 8px;background:#19172ade;color:#fff;font-size:.7rem;pointer-events:none}
+.compare-source{left:12px}.compare-result{right:12px}
+.compare-divider{position:absolute;inset:0 auto 0 var(--reveal,50%);width:2px;background:#fff;box-shadow:0 0 6px #16142eaa;pointer-events:none;transform:translateX(-50%)}
+.compare-divider b{display:grid;place-items:center;position:absolute;left:1px;top:50%;width:34px;height:34px;border-radius:50%;background:#fff;color:#252241;font-weight:500;transform:translate(-50%,-50%);box-shadow:0 1px 7px #16142e88}
+#compare-position{position:absolute;top:50%;left:50%;width:1px;height:1px;margin:0;clip-path:inset(100%);}
+.compare-overlay:focus-within .compare-divider b{outline:3px solid var(--blue);outline-offset:3px}
+
+/* The editor surface follows the rendered image, including the comparison slider. */
+.viewer:has(.glass-stage){
+ --preview-height:clamp(300px,59vh,645px);
+}
+.viewer .glass-stage,
+.viewer .glass-stage:has(.empty:not([hidden])){
+ height:auto;min-height:0;aspect-ratio:auto;background:transparent;border:0;border-radius:0;
+}
+.viewer .glass-stage:has(#preview:not([hidden])),
+.viewer:has(.glass-stage) #photo-credit{
+ width:min(100%,var(--photo-width),calc(var(--preview-height) * var(--photo-ratio)));
+ margin-inline:auto;
+}
+.viewer .glass-stage:has(#preview:not([hidden])){
+ aspect-ratio:var(--photo-ratio);
+}
+.viewer .glass-stage:has(.empty:not([hidden])){
+ min-height:clamp(160px,26vh,280px);
+}
+@media(max-width:630px){
+ .viewer:has(.glass-stage){--preview-height:64vh}
+}

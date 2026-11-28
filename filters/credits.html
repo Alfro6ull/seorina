@@ -8,15 +8,35 @@
 <body><header class="bar"><a href="../index/" data-quick-index>站点索引</a></header>
 <main id="open-source" class="info-page">
   <h1>开源致谢</h1>
-  <p class="info-intro">谢谢这些项目的作者和维护者，让本站能用上开放的工具和字体。</p>
+  <p class="info-intro">谢谢这些项目的作者和维护者。这里分开列出实际用到的第三方资源，以及只参考了视觉或交互的作品。</p>
   <ul class="credit-list">
-    <li><div><a class="credit-name" href="https://github.com/mrdoob/three.js">Three.js ↗</a><p>Three.js 作者及贡献者 · MIT</p></div><nav aria-label="Three.js 使用页面"><a href="../">开场</a><a href="../muse/particles/">记忆粒子</a></nav></li>
-    <li><div><a class="credit-name" href="https://github.com/CatharsisFonts/Cormorant">Cormorant Garamond ↗</a><p>Cormorant 项目作者 · SIL OFL 1.1</p></div><nav aria-label="Cormorant 使用页面"><a href="../">开场</a><a href="../index/">站点索引</a><a href="../muse/">MUSE 索引</a></nav></li>
-    <li><div><a class="credit-name" href="https://github.com/indestructible-type/Bodoni">Bodoni Moda ↗</a><p>Bodoni Moda 项目作者 · SIL OFL 1.1</p></div><nav aria-label="Bodoni Moda 使用页面"><a href="../muse/particles/">记忆粒子</a><a href="../muse/credits.html">展览说明</a></nav></li>
-    <li><div><a class="credit-name" href="https://github.com/googlefonts/dm-fonts">DM Sans ↗</a><p>DM Sans 项目作者 · SIL OFL 1.1</p></div><nav aria-label="DM Sans 使用页面"><a href="../muse/particles/">记忆粒子</a><a href="../muse/credits.html">展览说明</a></nav></li>
-    <li><div><a class="credit-name" href="https://github.com/markedjs/marked">Marked ↗</a><p>Marked 贡献者 · MIT · 用于构建考据页</p></div><nav aria-label="Marked 生成页面"><a href="../life/research.html">文字考据</a></nav></li>
-    <li><div><a class="credit-name" href="https://github.com/DepthAnything/Depth-Anything-V2">Depth Anything V2 Small ↗</a><p>Depth Anything 团队 · Apache 2.0 · 用于离线计算景深</p></div><nav aria-label="Depth Anything 使用页面"><a href="../muse/particles/">记忆粒子</a><a href="../muse/credits.html">展览说明</a></nav></li>
+    <li><div><a class="credit-name" href="https://github.com/mrdoob/three.js">Three.js ↗</a><p>Three.js 作者及贡献者 · MIT · <a href="../muse/vendor/THREE-LICENSE.txt">许可全文</a></p></div><nav aria-label="Three.js 使用页面"><a href="../">开场</a><a href="../muse/particles/">记忆粒子</a></nav></li>
+    <li><div><a class="credit-name" href="https://github.com/CatharsisFonts/Cormorant">Cormorant Garamond ↗</a><p>Cormorant 项目作者 · SIL OFL 1.1 · <a href="../assets/home/CORMORANT-OFL.txt">许可全文</a></p></div><nav aria-label="Cormorant 使用页面"><a href="../">开场</a><a href="../index/">站点索引</a><a href="../muse/">MUSE 索引</a></nav></li>
+    <li><div><a class="credit-name" href="https://github.com/indestructible-type/Bodoni">Bodoni Moda ↗</a><p>Bodoni Moda 项目作者 · SIL OFL 1.1 · <a href="../muse/fonts/bodoni-OFL.txt">许可全文</a></p></div><nav aria-label="Bodoni Moda 使用页面"><a href="../muse/particles/">记忆粒子</a><a href="../muse/credits.html">展览说明</a></nav></li>
+    <li><div><a class="credit-name" href="https://github.com/googlefonts/dm-fonts">DM Sans ↗</a><p>DM Sans 项目作者 · SIL OFL 1.1 · <a href="../muse/fonts/dm-sans-OFL.txt">许可全文</a></p></div><nav aria-label="DM Sans 使用页面"><a href="../muse/particles/">记忆粒子</a><a href="../muse/credits.html">展览说明</a></nav></li>
+    <li><div><a class="credit-name" href="https://github.com/markedjs/marked">Marked ↗</a><p>Marked 贡献者 · MIT · 用于构建考据页 · <a href="https://github.com/markedjs/marked/blob/v17.0.5/LICENSE.md">许可全文</a></p></div><nav aria-label="Marked 生成页面"><a href="../life/research.html">文字考据</a></nav></li>
+    <li><div><a class="credit-name" href="https://github.com/DepthAnything/Depth-Anything-V2">Depth Anything V2 Small ↗</a><p>Depth Anything 团队 · Apache 2.0（Small 版）· 仅离线估算景深，网页不加载模型</p></div><nav aria-label="Depth Anything 使用页面"><a href="../muse/particles/">记忆粒子</a><a href="../muse/credits.html">展览说明</a></nav></li>
   </ul>
+  <section aria-labelledby="offline-tools">
+    <h2 id="offline-tools">构建与离线工具</h2>
+    <ul class="credit-list">
+      <li><div><a class="credit-name" href="https://github.com/evanw/esbuild/blob/main/LICENSE.md">esbuild ↗</a><p>Evan Wallace 及贡献者 · MIT · 打包开场动效</p></div><nav aria-label="esbuild 对应页面"><a href="../">开场</a></nav></li>
+      <li><div><a class="credit-name" href="https://onnxruntime.ai/">ONNX Runtime ↗</a><p>Microsoft 及贡献者 · MIT · 离线执行景深模型；感谢 <a href="https://huggingface.co/onnx-community/depth-anything-v2-small">Hugging Face ONNX Community</a> 提供模型转换。</p></div><nav aria-label="景深对应页面"><a href="../muse/particles/">记忆粒子</a></nav></li>
+      <li><div><a class="credit-name" href="https://numpy.org/doc/stable/license.html">NumPy ↗</a> · <a class="credit-name" href="https://pillow.readthedocs.io/en/stable/about.html#license">Pillow ↗</a><p>NumPy 与 Pillow 项目贡献者 · BSD-3-Clause / MIT-CMU · 离线数值与图像处理</p></div></li>
+    </ul>
+  </section>
+  <section aria-labelledby="design-references">
+    <h2 id="design-references">设计参考</h2>
+    <p class="info-intro">谢谢这些创作者的设计启发。以下是视觉或交互参考，不表示采用了原作的代码、照片或其他素材，也不表示其设计已开源。</p>
+    <ul class="credit-list">
+      <li><div><a class="credit-name" href="https://camillemormal.com/">Camille Mormal ↗</a><p>Portfolio 22 · 错层与横向浏览参考</p></div><nav aria-label="对应页面"><a href="../gallery/">图库</a></nav></li>
+      <li><div><a class="credit-name" href="https://github.com/houmahani/codrops-depth-gallery">Houmahani Kane / Codrops ↗</a><p>Atmospheric Depth Gallery · 色场与深度视差参考</p></div><nav aria-label="对应页面"><a href="../gallery/depth/">色场纵深</a></nav></li>
+      <li><div><a class="credit-name" href="https://github.com/yusen-dev/living-ascii">宇森 Yusen / Living ASCII ↗</a><p>感谢字符随风摆动的灵感。索引页的草浪以本站独立编写的 Canvas 2D 绘制，未引入原项目代码或素材。</p></div><nav aria-label="草浪对应页面"><a href="../index/">站点索引</a></nav></li>
+      <li><div><a class="credit-name" href="https://xhslink.cn/o/1BnkWnoGf9M">阿文AI实战笔记 ↗</a><p>Day 48 · 长虹玻璃实验的视觉参考，未移植代码或原帖素材。</p></div><nav aria-label="长虹玻璃参考"><a href="./references.html#glass-reference">历史参考</a></nav></li>
+      <li><div><a class="credit-name" href="https://shadr.studio/tools/contact-sheet">SHADR ↗</a><p>Contact Sheet · 同页画布与控制面板参考</p></div><nav aria-label="对应页面"><a href="./">滤镜工作台</a></nav></li>
+    </ul>
+  </section>
+  <p class="info-intro">第三方许可只适用于各自的项目。本站代码没有统一的开源许可；照片等素材也不随上述项目授权。</p>
 </main>
 <footer class="site-footer">
   <!-- SITE-FOOTER:START -->

@@ -1,72 +1,121 @@
 import {drawCRT,drawPoster} from './digital-art.js?v=art';
 import {saveFrame} from './shared.js?v=local-gallery';
-import {addLocal,listLocal,removeLocal} from './local-gallery.js';
-import {renderGlass,createStretchBrush,renderRGBGlitch} from './art-effects.js?v=rgb-and-stretch';
+import {photoLibraryURL,photosFor,readPhotoLibrary} from '../assets/photos/library.js?v=instagram-archive';
+import {renderRGBGlitch} from './art-effects.js?v=rgb-only';
 
 const el=id=>document.getElementById(id);
 const canvas=el('preview'), ctx=canvas.getContext('2d'), stage=el('stage'), original=el('original'), notice=el('notice');
 let image,buffer,focus,src,photoName='',compare=false,serial=0,frame=0;
+const configs={
+ rgb:{title:'RGB 故障', amp:68, detail:50, ampLabel:'强度', detailLabel:'错帧密度', hint:'点照片或按回车，换一帧故障。', label:'RGB 故障画布。按回车换一帧故障。'},
+ crt:{title:'CRT 监视器', amp:68, detail:55, ampLabel:'强度', detailLabel:'扫描线', hint:'调节青蓝显像和扫描线。'},
+ poster:{title:'构成主义海报', amp:65, detail:52, ampLabel:'网点墨色', detailLabel:'网点密度', hint:'调节半调网点，或换成自己的海报标题。'}
+};
+const buttons=[...document.querySelectorAll('[data-effect]')];
 const requested=new URLSearchParams(location.search).get('effect');
-const rgb=requested==='rgb',stretch=requested==='stretch',crt=requested==='crt',poster=requested==='poster';
-const effect=rgb?'rgb':stretch?'stretch':crt?'crt':poster?'poster':'glass';
-let artworkSource;
-let brushPointer=null,keyboardPoint=[.5,.4],seed=97;
-const brush=stretch?createStretchBrush(ctx,{
-  getRadius:()=>.006+Number(el('detail').value)*.00065,
-  getLength:()=>.07+Number(el('amp').value)*.004,
-  changed:n=>{el('undo').disabled=!n}
-}):null;
-if(effect!=='glass'){
-  const title=({'rgb':'RGB 故障','stretch':'像素拖影','crt':'CRT 监视器','poster':'构成主义海报'})[effect];
-  document.title=title+' · 薛仁雅档案';el('tool-name').textContent=title;
-  el('amp-label').textContent=stretch?'拖影长度':poster?'网点墨色':'强度';
-  el('detail-label').textContent=rgb?'错帧密度':stretch?'画笔宽度':crt?'扫描线':'网点密度';
-  el('mode-wrap').hidden=el('coverage-wrap').hidden=true;
-  document.querySelector('.tool-gesture').textContent=rgb?'点照片或按回车，换一帧故障。':stretch?'按住照片划动，拖影会实时出现。也可以用手指画。':crt?'调节青蓝显像和扫描线。':'调节半调网点，也可以换成自己的海报标题。';
-  canvas.setAttribute('aria-label',rgb?'RGB 故障画布。按回车换一帧故障。':stretch?'像素拖影画布。按住划动，或用方向键移动画笔，回车落笔。':title+'预览');
-  if(poster){el('poster-title-wrap').hidden=false;el('poster-title').addEventListener('input',queue)}
-  if(crt||poster)canvas.classList.add('static-art-canvas');
-  if(stretch){el('clean').textContent='清空笔迹';canvas.classList.add('stretch-canvas')}
+let effect=Object.hasOwn(configs,requested)?requested:'rgb';
+let artworkSource,seed=97;
+const savedSettings=new Map();
+function readSettings(){
+ return {amp:el('amp').value, detail:el('detail').value,
+  title:el('poster-title').value, focus:{...focus},seed};
 }
-
-
-function loadDefaults() {
-  el('amp').value=rgb||crt?68:stretch?75:poster?65:66;el('detail').value=rgb?50:stretch?29:crt?55:poster?52:41;seed=97;
-  if(poster)el('poster-title').value='POSTER';
-  focus={x:.50,y:.34};
-  document.querySelector('input[name=tone][value=a]').checked=true;
-  el('coverage-full').checked=true;
+function loadSettings(state){
+  const defaults=configs[effect];
+  el('amp').value=state?.amp??defaults.amp;el('detail').value=state?.detail??defaults.detail;
+  el('poster-title').value=state?.title??'POSTER';
+  focus=state?.focus??{x:.50,y:.34};seed=state?.seed??97;
+}
+function mountCanvas(){
+ if(!image)return;
+ canvas.width=effect==='poster'?1080:image.width;
+ canvas.height=effect==='poster'?1080:image.height;
+ stage.parentElement.style.setProperty('--photo-width',canvas.width+'px');
+ stage.parentElement.style.setProperty('--photo-ratio',canvas.width/canvas.height);
+}
+function configure(){
+ const c=configs[effect];
+ el('tool-name').textContent=c.title;
+ el('amp-label').textContent=c.ampLabel;el('detail-label').textContent=c.detailLabel;
+ el('poster-title-wrap').hidden=effect!=='poster';
+ document.querySelector('.tool-gesture').textContent=c.hint;
+ canvas.setAttribute('aria-label',c.label||c.title+'预览');
+ canvas.classList.toggle('static-art-canvas',effect==='crt'||effect==='poster');
+ for(const b of buttons)b.setAttribute('aria-pressed',String(b.dataset.effect===effect));
+ if(!buttons.length)document.title=c.title+' · 薛仁雅档案';
+}
+function switchEffect(next){
+ if(next===effect||!Object.hasOwn(configs,next))return;
+ savedSettings.set(effect,readSettings());
+ effect=next;
+ loadSettings(savedSettings.get(next));configure();mountCanvas();sync();
+ if(buttons.length){
+  const url=new URL(location.href);
+  url.searchParams.set('effect',effect);history.replaceState(null,'',url);
+ }
 }
 function render(){
-  if(!image||stretch)return;
-  if(crt){drawCRT(ctx,image,{amount:Number(el('amp').value)/100,scan:Number(el('detail').value)/100});return}
-  if(poster){drawPoster(ctx,artworkSource,{ink:Number(el('amp').value)/100,density:Number(el('detail').value)/100,title:el('poster-title').value});return}
-  if(rgb){renderRGBGlitch(ctx,image,buffer,{focus,seed,amount:Number(el('amp').value)/100,detail:Number(el('detail').value)/100});return}
-  renderGlass(ctx,image,buffer,{
-    focus,
-    amount:Number(el('amp').value)/100,
-    detail:Number(el('detail').value)/100,
-    variant:document.querySelector('input[name=tone]:checked').value==='b'?'frost':'prism',
-    coverage:document.querySelector('input[name=coverage]:checked').value
-  });
+  if(!image)return;
+  if(effect==='crt'){drawCRT(ctx,image,{amount:Number(el('amp').value)/100,scan:Number(el('detail').value)/100});return}
+  if(effect==='poster'){drawPoster(ctx,artworkSource,{ink:Number(el('amp').value)/100,density:Number(el('detail').value)/100,title:el('poster-title').value});return}
+  renderRGBGlitch(ctx,image,buffer,{focus,seed,amount:Number(el('amp').value)/100,detail:Number(el('detail').value)/100});
 }
 function queue(){
   el('amp-value').value=el('amp').value+'%';
   el('detail-value').value=el('detail').value+'%';
   if(!frame)frame=requestAnimationFrame(()=>{frame=0;render();});
 }
+const divider=el('compare-position'), overlay=el('compare-overlay');
+function splitAt(n) {
+  const value=String(Math.max(0,Math.min(100,Math.round(n))));
+  divider.value=value;
+  divider.setAttribute('aria-valuetext','原图 '+value+'%');
+  stage.style.setProperty('--reveal',value+'%');
+}
 function sync(){
-  canvas.hidden=!image||compare;original.hidden=!image||!compare;
+  canvas.hidden=!image;
+  original.hidden=!image||!compare;
+  overlay.hidden=!image||!compare;
   el('empty').hidden=Boolean(image);
   el('compare').disabled=el('save').disabled=el('clean').disabled=!image;
-  if(stretch)el('undo').hidden=!image||compare;
-  el('compare').textContent=compare?'返回滤镜':'看原图';
+  el('compare').textContent=compare?'退出对比':'原图对比';
   el('compare').setAttribute('aria-pressed',String(compare));
-
   queue();
 }
+let comparePointer=null;
+function splitFromPointer(e){
+ const box=stage.getBoundingClientRect();
+ splitAt((e.clientX-box.left)/box.width*100);
+}
+overlay.addEventListener('pointerdown',e=>{
+ if(e.target===divider||!e.isPrimary||e.button!==0)return;
+ comparePointer=e.pointerId;overlay.setPointerCapture(e.pointerId);splitFromPointer(e);
+});
+overlay.addEventListener('pointermove',e=>{if(e.pointerId===comparePointer)splitFromPointer(e);});
+for(const type of ['pointerup','pointercancel','lostpointercapture']){
+ overlay.addEventListener(type,e=>{if(e.pointerId===comparePointer)comparePointer=null;});
+}
+divider.addEventListener('input',()=>splitAt(Number(divider.value)));
 let activePhoto=null;
-async function choose(file,selection=null,saveToGallery=false){
+function setSource(row){
+ const link=el('image-source'), candidates=[row?.source,row?.instagramPost];
+ let address=null;
+ for(const source of candidates){
+  if(!source)continue;
+  try{
+   const url=new URL(source);
+   if(url.origin!=='https://www.instagram.com'||url.username||url.password||
+      !/^\/(?:_seorina\/)?p\/[A-Za-z0-9_-]+\/$/.test(url.pathname))continue;
+   const position=String(row.instagramPosition??url.searchParams.get('img_index')??'');
+   url.search='';url.hash='';
+   if(/^[1-9]\d*$/.test(position))url.searchParams.set('img_index',position);
+   address=url.href;break;
+  }catch{}
+ }
+ if(address)link.href=address;else link.removeAttribute('href');
+ el('photo-credit').hidden=!address;
+}
+async function choose(file,selection=null,signal){
  if(!file)return;
  if(!/\.(png|jpe?g|webp|gif|avif|bmp)$/i.test(file.name)||file.size>24*1024*1024){
    notice.textContent='请选择不超过 24 MB 的图片。';return;
@@ -75,7 +124,7 @@ async function choose(file,selection=null,saveToGallery=false){
  img.src=next;notice.textContent='';
  try{
   await img.decode();
-  if(id!==serial){URL.revokeObjectURL(next);return;}
+  if(id!==serial||signal?.aborted){URL.revokeObjectURL(next);return false;}
   if(!img.naturalWidth||!img.naturalHeight||img.naturalWidth*img.naturalHeight>55000000)throw Error();
   const scale=Math.min(1,1100/Math.max(img.naturalWidth,img.naturalHeight));
   const source=document.createElement('canvas');source.width=Math.max(2,Math.round(img.naturalWidth*scale));source.height=Math.max(2,Math.round(img.naturalHeight*scale));
@@ -84,16 +133,14 @@ async function choose(file,selection=null,saveToGallery=false){
   const decoded=input.getImageData(0,0,source.width,source.height);
   if(src)URL.revokeObjectURL(src);
   src=next;original.src=src;compare=false;photoName=file.name.replace(/\.[^.]+$/,'');
-  image=decoded;canvas.width=poster?1080:source.width;canvas.height=poster?1080:source.height;
+  image=decoded;artworkSource=source;
   buffer=ctx.createImageData(source.width,source.height);
-  if(poster)artworkSource=source;
-  loadDefaults();brush?.set(image);sync();
-  const row=selection||(saveToGallery?await addLocal(file):null);
-  if(id===serial){
-   activePhoto=row?.id||null;
-   if(gallery.open)void refreshGallery();
-  }
+   savedSettings.clear();splitAt(50);
+  loadSettings();mountCanvas();sync();
+  activePhoto=selection?.id||null;setSource(selection);
+  return true;
  }catch{if(src!==next)URL.revokeObjectURL(next);if(id===serial){notice.textContent='无法读取这张图片。';sync();}}
+ return false;
 }
 const clamp01=v=>Math.max(0,Math.min(1,v));
 function pointAt(e,limit=false){
@@ -102,68 +149,129 @@ function pointAt(e,limit=false){
  const x=(e.clientX-box.left-(box.width-w)/2)/w,y=(e.clientY-box.top-(box.height-h)/2)/h;
  return limit?[clamp01(x),clamp01(y)]:x>=0&&x<=1&&y>=0&&y<=1?[x,y]:null;
 }
-if(stretch){
- canvas.addEventListener('pointerdown',e=>{
-   if(!image||compare||!e.isPrimary||e.button!==0)return;
-   const p=pointAt(e);if(!p)return;
-   brushPointer=e.pointerId;canvas.setPointerCapture(e.pointerId);brush.begin(p,e.pressure||.5);
- });
- canvas.addEventListener('pointermove',e=>{if(brushPointer===e.pointerId)brush.move(pointAt(e,true),e.pressure||.5)});
- const end=e=>{if(brushPointer===e.pointerId){brushPointer=null;brush.end()}};
- for(const type of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(type,end);
- el('undo').addEventListener('click',()=>brush.undo());
-}else{
- canvas.addEventListener('click',e=>{
-   if(!image||compare||crt||poster)return;const p=pointAt(e);if(!p)return;
-   focus={x:p[0],y:p[1]};if(rgb)seed+=293;queue();
- });
-}
+canvas.addEventListener('click',e=>{
+ if(!image||compare||effect!=='rgb')return;
+ const p=pointAt(e);if(!p)return;
+ focus={x:p[0],y:p[1]};seed+=293;queue();
+});
 canvas.addEventListener('keydown',e=>{
- if(!image||compare||crt||poster)return;
- if((rgb||stretch)&&(e.key==='Enter'||e.key===' ')){
-   e.preventDefault();if(stretch){brush.begin(keyboardPoint);brush.end()}else{seed+=293;queue()}return;
+ if(!image||compare||effect!=='rgb')return;
+ if(e.key==='Enter'||e.key===' '){
+   e.preventDefault();seed+=293;queue();return;
  }
  const d={ArrowLeft:[-.04,0],ArrowRight:[.04,0],ArrowUp:[0,-.04],ArrowDown:[0,.04]}[e.key];
  if(!d)return;e.preventDefault();
- if(stretch)keyboardPoint=keyboardPoint.map((v,i)=>clamp01(v+d[i]));
- else{focus={x:clamp01(focus.x+d[0]),y:clamp01(focus.y+d[1])};queue()}
+ focus={x:clamp01(focus.x+d[0]),y:clamp01(focus.y+d[1])};queue();
 });
-let addFromPicker=false;
-for(const b of document.querySelectorAll('[data-pick]'))b.addEventListener('click',()=>{addFromPicker=b.dataset.pick==='gallery';el('file').click()});
-el('file').addEventListener('change',e=>{const add=addFromPicker;addFromPicker=false;void choose(e.target.files[0],null,add);e.target.value='';});
+const picker=document.querySelector('.effect-picker');
+if(picker){
+ for(const [i,b] of buttons.entries()){
+   b.addEventListener('click',()=>switchEffect(b.dataset.effect));
+   b.addEventListener('keydown',e=>{
+     const step={ArrowLeft:-1,ArrowUp:-1,ArrowRight:1,ArrowDown:1}[e.key];
+     if(!step)return;e.preventDefault();
+     const next=buttons[(i+step+buttons.length)%buttons.length];
+     next.focus();switchEffect(next.dataset.effect);
+   });
+ }
+ picker.addEventListener('wheel',e=>{
+   if(e.ctrlKey||e.metaKey||Math.abs(e.deltaX)>=Math.abs(e.deltaY)||picker.scrollWidth<=picker.clientWidth+1)return;
+   const old=picker.scrollLeft;picker.scrollLeft+=e.deltaY*(e.deltaMode===1?16:1);
+   if(picker.scrollLeft!==old)e.preventDefault();
+ },{passive:false});
+}
+for(const b of document.querySelectorAll('[data-pick]'))b.addEventListener('click',()=>el('file').click());
+el('file').addEventListener('change',e=>{cancelPending();void choose(e.target.files[0]);e.target.value='';});
 const hasFiles=e=>Array.from(e.dataTransfer?.types||[]).includes('Files');
 document.addEventListener('dragover',e=>{if(hasFiles(e))e.preventDefault();});
 document.addEventListener('drop',e=>{if(hasFiles(e))e.preventDefault();});
 stage.addEventListener('dragover',e=>{if(hasFiles(e))stage.classList.add('is-over');});
 stage.addEventListener('dragleave',e=>{if(!stage.contains(e.relatedTarget))stage.classList.remove('is-over');});
-stage.addEventListener('drop',e=>{stage.classList.remove('is-over');if(hasFiles(e))void choose(e.dataTransfer.files[0]);});
+stage.addEventListener('drop',e=>{stage.classList.remove('is-over');if(hasFiles(e)){cancelPending();void choose(e.dataTransfer.files[0]);}});
 for(const id of ['amp','detail'])el(id).addEventListener('input',queue);
-for(const radio of document.querySelectorAll('input[type=radio]'))radio.addEventListener('change',queue);
-el('clean').addEventListener('click',()=>{if(stretch)brush.clear();else loadDefaults();sync();});
+el('clean').addEventListener('click',()=>{loadSettings();sync();});
 el('compare').addEventListener('click',()=>{compare=!compare;sync();});
-el('save').addEventListener('click',()=>{if(stretch)brush.flush();else render();saveFrame(canvas,photoName+'-'+effect,notice);});
+el('save').addEventListener('click',()=>{render();saveFrame(canvas,photoName+'-'+effect,notice);});
+el('poster-title').addEventListener('input',queue);
 const gallery=el('photo-gallery'),galleryGrid=el('gallery-photos'),galleryStatus=el('gallery-status');
-let thumbURLs=[],galleryUpdate=0;
-function clearThumbs(){for(const url of thumbURLs)URL.revokeObjectURL(url);thumbURLs=[]}
-async function refreshGallery(){
- const epoch=++galleryUpdate, rows=await listLocal();
- if(epoch!==galleryUpdate||!gallery.open)return;
- clearThumbs();
- galleryStatus.hidden=Boolean(rows.length);galleryStatus.textContent='还没有照片';
- galleryGrid.replaceChildren(...rows.map(row=>{
-  const item=document.createElement('article');item.className='gallery-photo';
-  const pick=document.createElement('button');pick.type='button';pick.className='gallery-pick';pick.setAttribute('aria-label','使用 '+row.name);
-  if(row.id===activePhoto)pick.classList.add('is-selected');
-  const img=document.createElement('img');const url=URL.createObjectURL(row.file);thumbURLs.push(url);
-  img.src=url;img.alt='';img.loading='lazy';pick.append(img);
-  pick.addEventListener('click',()=>{gallery.close();void choose(row.file,row)});
-  const remove=document.createElement('button');remove.type='button';remove.className='gallery-remove';remove.textContent='移除';remove.setAttribute('aria-label','移除 '+row.name+'（仅从图库）');
-  remove.addEventListener('click',async()=>{await removeLocal(row.id);void refreshGallery()});
-  item.append(pick,remove);return item;
+const pagination=el('gallery-pagination'), pageSize=36;
+let galleryRows, galleryPromise, pageIndex=0, pending=null, openToken=0;
+function cancelPending(){pending?.abort();pending=null;}
+async function getGallery(){
+ if(galleryRows)return galleryRows;
+ if(!galleryPromise){
+  galleryPromise=readPhotoLibrary().then(rows=>{
+   const legacy=photosFor(rows,'muse').filter(row=>row.rightsStatus==='existing-muse-only');
+   galleryRows=[...new Map([...legacy,...photosFor(rows,'gallery')].map(row=>[row.id,row])).values()];
+   galleryRows.sort((a,b)=>(b.date||'').localeCompare(a.date||'')||
+    (a.instagramPost||'').localeCompare(b.instagramPost||'')||
+    (a.instagramPosition||1)-(b.instagramPosition||1));
+   return galleryRows;
+  }).finally(()=>{galleryPromise=null;});
+ }
+ return galleryPromise;
+}
+async function selectGallery(row){
+ cancelPending();
+ const request=new AbortController();pending=request;
+ galleryStatus.textContent='正在读取照片…';galleryStatus.hidden=false;
+ try{
+  const response=await fetch(new URL(row.src,photoLibraryURL),{signal:request.signal});
+  if(!response.ok)throw Error('Photo request failed');
+  const blob=await response.blob();
+  if(request.signal.aborted)return;
+  const name=row.src.split('/').at(-1);
+  const ok=await choose(new File([blob],name,{type:blob.type}),row,request.signal);
+  if(request.signal.aborted)return;
+  if(!ok)throw Error('Photo decoding failed');
+  pending=null;gallery.close();
+ }catch{
+  if(!request.signal.aborted){galleryStatus.textContent='这张照片暂时无法读取，可以选另一张。';galleryStatus.hidden=false;}
+ }finally{if(pending===request)pending=null;}
+}
+function paintGallery(){
+ const total=galleryRows?.length||0, pages=Math.ceil(total/pageSize);
+ galleryStatus.hidden=total>0;
+ if(!total)galleryStatus.textContent='图库暂时没有可选照片。';
+ pagination.hidden=pages<=1;
+ el('gallery-prev').disabled=pageIndex===0;
+ el('gallery-next').disabled=pageIndex>=pages-1;
+ el('gallery-page').value=(pageIndex+1)+' / '+pages;
+ galleryGrid.replaceChildren(...(galleryRows||[]).slice(pageIndex*pageSize,(pageIndex+1)*pageSize).map((row,i)=>{
+  const pick=document.createElement('button');pick.type='button';pick.className='gallery-pick';
+  const label=row.title||'照片 '+(pageIndex*pageSize+i+1);
+  pick.setAttribute('aria-label','使用 '+label);
+  pick.dataset.photoId=row.id;
+  if(row.id===activePhoto){pick.classList.add('is-selected');pick.setAttribute('aria-current','true');}
+  const img=document.createElement('img');img.src=new URL(row.src,photoLibraryURL);
+  img.alt='';img.loading='lazy';img.decoding='async';pick.append(img);
+  pick.addEventListener('click',()=>{void selectGallery(row);});
+  return pick;
  }));
 }
-el('open-gallery').addEventListener('click',()=>{gallery.showModal();void refreshGallery()});
+async function openGallery(){
+ const token=++openToken;
+ gallery.showModal();galleryStatus.textContent='正在读取图库…';galleryStatus.hidden=false;
+ try{
+  await getGallery();
+  if(token!==openToken||!gallery.open)return;
+  const i=galleryRows.findIndex(row=>row.id===activePhoto);
+  if(i>=0)pageIndex=Math.floor(i/pageSize);
+  paintGallery();gallery.scrollTop=0;
+ }catch{if(token===openToken)galleryStatus.textContent='图库暂时无法读取，请稍后再试。';}
+}
+function changePage(delta){
+ const next=Math.max(0,Math.min(Math.ceil(galleryRows.length/pageSize)-1,pageIndex+delta));
+ if(next===pageIndex)return;
+ cancelPending();pageIndex=next;paintGallery();gallery.scrollTop=0;
+ galleryGrid.firstElementChild?.focus({preventScroll:true});
+}
+el('open-gallery').addEventListener('click',()=>{void openGallery();});
 el('close-gallery').addEventListener('click',()=>gallery.close());
-gallery.addEventListener('close',()=>{galleryUpdate++;clearThumbs();galleryGrid.replaceChildren();el('open-gallery').focus()});
-window.addEventListener('pagehide',e=>{if(!e.persisted){clearThumbs();if(src)URL.revokeObjectURL(src)}});
-loadDefaults();sync();
+el('gallery-prev').addEventListener('click',()=>changePage(-1));
+el('gallery-next').addEventListener('click',()=>changePage(1));
+gallery.addEventListener('close',()=>{
+ openToken++;cancelPending();galleryGrid.replaceChildren();pagination.hidden=true;el('open-gallery').focus();
+});
+window.addEventListener('pagehide',e=>{if(!e.persisted){cancelPending();if(src)URL.revokeObjectURL(src);}});
+loadSettings();configure();sync();

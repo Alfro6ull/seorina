@@ -1,27 +1,93 @@
 <!doctype html>
 <html lang="zh-Hans">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#141820">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; script-src 'self'; font-src 'self'; base-uri 'none'; form-action 'none'">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f6f4ff">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' blob: data:; connect-src 'self'; media-src blob:; base-uri 'none'; form-action 'none'">
 <title>Filters · Seorina</title>
-<link rel="stylesheet" href="../assets/home/home.css"><link rel="stylesheet" href="../assets/copyright.css?v=shared-footer">
-<link rel="stylesheet" href="../assets/home/index.css?v=centered-catalog"><link rel="stylesheet" href="./quick-index.css?v=clean-menu">
-<script type="module" src="./quick-index.js?v=all-destinations"></script>
+<link rel="stylesheet" href="./style.css?v=image-fit">
+<script type="module" src="./art-tools.js?v=three-filters"></script>
+<link rel="stylesheet" href="../assets/copyright.css?v=shared-footer">
+<link rel="stylesheet" href="../assets/entry-nav.css">
+<script type="module" src="../assets/entry-nav.js"></script>
+<link rel="stylesheet" href="workbench.css?v=image-fit">
 </head>
-<body>
-<header class="indexbar"><a class="return-home" href="../index/" data-quick-index>站点索引</a><span class="site-name" lang="en">Seorina</span></header>
-<main class="catalog catalog--section">
- <h1 lang="en">Filters</h1>
- <nav aria-label="滤镜列表"><ol>
-      <li><a href="./tool.html?effect=glass"><span class="entry-text"><span class="entry-title" lang="en">Fluted Glass</span><span class="entry-label">长虹玻璃</span></span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 12h17m-7-7 7 7-7 7" stroke="currentColor" stroke-width="1.25"/></svg></a></li>
-      <li><a href="./tool.html?effect=rgb"><span class="entry-text"><span class="entry-title" lang="en">RGB Glitch</span><span class="entry-label">RGB 故障</span></span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 12h17m-7-7 7 7-7 7" stroke="currentColor" stroke-width="1.25"/></svg></a></li>
-      <li><a href="./tool.html?effect=stretch"><span class="entry-text"><span class="entry-title" lang="en">Pixel Stretch</span><span class="entry-label">像素拖影</span></span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 12h17m-7-7 7 7-7 7" stroke="currentColor" stroke-width="1.25"/></svg></a></li>
-      <li><a href="./tool.html?effect=crt"><span class="entry-text"><span class="entry-title" lang="en">CRT Monitor</span><span class="entry-label">CRT 监视器</span></span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 12h17m-7-7 7 7-7 7" stroke="currentColor" stroke-width="1.25"/></svg></a></li>
-      <li><a href="./tool.html?effect=poster"><span class="entry-text"><span class="entry-title" lang="en">Constructivist Poster</span><span class="entry-label">构成主义海报</span></span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 12h17m-7-7 7 7-7 7" stroke="currentColor" stroke-width="1.25"/></svg></a></li>
- </ol></nav>
+<body class="workbench-page">
+<header class="bar entry-bar">
+  <details class="entry-drawer">
+    <summary aria-label="站点导航"><span aria-hidden="true">+</span></summary>
+    <nav aria-label="站点导航">
+      <a href="../" lang="en">Seorina</a><span aria-hidden="true">｜</span>
+      <a href="../index/">索引</a><span aria-hidden="true">：</span>
+      <a href="../life/" lang="en">Life</a><span aria-hidden="true">·</span>
+      <a href="./" aria-current="page" lang="en">Filters</a><span aria-hidden="true">·</span>
+      <a href="../muse/" lang="en">Muse</a><span aria-hidden="true">｜</span>
+      <a href="../gallery/">图库</a>
+    </nav>
+  </details>
+  <a class="entry-brand" href="../" lang="en">Seorina</a>
+</header>
+<main>
+  <div class="workbench-title"><h1 lang="en">Filters</h1></div>
+  <section class="editor" aria-label="滤镜工作区">
+    <nav class="effect-picker" aria-label="切换滤镜">
+      <button type="button" data-effect="rgb" aria-pressed="true"><span>01</span><strong>RGB 故障</strong></button>
+      <button type="button" data-effect="crt" aria-pressed="false"><span>02</span><strong>CRT 监视器</strong></button>
+      <button type="button" data-effect="poster" aria-pressed="false"><span>03</span><strong>构成主义海报</strong></button>
+    </nav>
+    <div class="viewer">
+
+      <div id="stage" class="stage glass-stage">
+        <div class="empty" id="empty">
+          <svg width="35" height="35" viewBox="0 0 36 36" fill="none" aria-hidden="true"><path d="M12 4H4v8m20-8h8v8M4 24v8h8m20-8v8h-8M18 11v14m-7-7h14" stroke="currentColor"/></svg>
+          <button type="button" class="file-primary" data-pick>上传照片</button>
+          <p>也可以把图片拖到这里</p>
+        </div>
+        <canvas id="preview" tabindex="0" hidden aria-label="效果画布。用方向键移动清晰区"></canvas>
+        <img id="original" hidden alt="你选择的原图">
+        <div class="compare-overlay" id="compare-overlay" hidden>
+          <span class="compare-label compare-source" aria-hidden="true">原图</span>
+          <span class="compare-label compare-result" aria-hidden="true">滤镜</span>
+          <span class="compare-divider" aria-hidden="true"><b>↔</b></span>
+          <input id="compare-position" type="range" min="0" max="100" value="50" aria-label="拖动分界线，调整原图显示比例">
+        </div>
+      </div>
+      <div class="viewer-foot" id="photo-credit" hidden><a id="image-source" target="_blank" rel="noopener noreferrer">IG 原帖</a></div>
+    </div>
+    <aside class="controls" aria-label="滤镜设置">
+      <h2 id="tool-name">RGB 故障</h2>
+      <p class="tool-gesture">点照片或按回车，换一帧故障。</p>
+      <div class="range-row"><label for="amp" id="amp-label">强度</label><output id="amp-value" for="amp"></output></div>
+      <input type="range" id="amp" min="0" max="100" value="65">
+      <div class="range-row" id="detail-row"><label for="detail" id="detail-label">错帧密度</label><output id="detail-value" for="detail"></output></div>
+      <input type="range" id="detail" min="0" max="100" value="50">
+      <label id="poster-title-wrap" hidden>海报标题 <input id="poster-title" type="text" maxlength="24" autocomplete="off"></label>
+      <div class="actions">
+        <button type="button" id="clean" disabled>重置效果</button>
+        <button type="button" id="compare" aria-pressed="false" disabled>原图对比</button>
+        <button type="button" id="save" disabled>保存图片</button>
+        <button type="button" id="change" data-pick>上传照片</button>
+        <button type="button" id="open-gallery">图库</button>
+      </div>
+
+    </aside>
+  </section>
+  <dialog id="photo-gallery" aria-labelledby="photo-gallery-title">
+    <div class="photo-gallery-head"><h2 id="photo-gallery-title">图库</h2><button type="button" id="close-gallery" aria-label="关闭图库" autofocus>×</button></div>
+    <p id="gallery-status" role="status" hidden></p>
+    <div id="gallery-photos" class="gallery-photos"></div>
+    <nav id="gallery-pagination" class="gallery-pagination" aria-label="图库分页" hidden>
+      <button type="button" id="gallery-prev">上一页</button>
+      <output id="gallery-page"></output>
+      <button type="button" id="gallery-next">下一页</button>
+    </nav>
+  </dialog>
+  <p id="notice" role="status" aria-live="polite"></p>
+  <input id="file" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/avif,image/bmp" hidden>
 </main>
-<footer class="index-footer">
-<!-- SITE-FOOTER:START -->
+<footer class="site-footer">
+  <!-- SITE-FOOTER:START -->
 <section class="archive-copyright" aria-labelledby="archive-copyright-title">
   <h2 id="archive-copyright-title">版权声明</h2>
   <p><strong>非官方 · 粉丝制作。</strong> 本站为非营利的薛仁雅粉丝档案，与艺人、经纪公司及相关品牌无隶属关系。</p>
@@ -30,4 +96,5 @@
 </section>
 <!-- SITE-FOOTER:END -->
 </footer>
-</body></html>
+</body>
+</html>

@@ -315,6 +315,58 @@
       "archivePhotoId": "ig-DgMv4KrEkVR-16"
     },
     {
+      "id": "ig-DgIE1nlIyvL-1",
+      "src": "files/ig-DgIE1nlIyvL-1.jpg",
+      "title": "Instagram · 2026-11-24 · 01",
+      "source": "https://www.instagram.com/_seorina/p/DgIE1nlIyvL/?img_index=1",
+      "instagramPost": "https://www.instagram.com/_seorina/p/DgIE1nlIyvL/",
+      "instagramPosition": 1,
+      "date": "2026-11-24",
+      "tags": [
+        "instagram"
+      ],
+      "width": 1024,
+      "height": 1280,
+      "sha256": "e382b8a97f579c719f37dcf4e35552bcca4bd0a63c3a6f92ed4d16b5b8498514",
+      "bytes": 137290,
+      "publish": true,
+      "uses": [
+        "gallery",
+        "muse"
+      ],
+      "rightsStatus": "public-instagram-archive-display",
+      "rights": "Original rights remain with the applicable rights holders. No reuse permission or license claimed.",
+      "sourceAttribution": "@_seorina · Instagram",
+      "sourceVerification": "Original account, publication date and media position confirmed in the public Instagram profile and carousel.",
+      "archivePhotoId": "ig-DgIE1nlIyvL-1"
+    },
+    {
+      "id": "ig-DgIE1nlIyvL-2",
+      "src": "files/ig-DgIE1nlIyvL-2.jpg",
+      "title": "Instagram · 2026-11-24 · 02",
+      "source": "https://www.instagram.com/_seorina/p/DgIE1nlIyvL/?img_index=2",
+      "instagramPost": "https://www.instagram.com/_seorina/p/DgIE1nlIyvL/",
+      "instagramPosition": 2,
+      "date": "2026-11-24",
+      "tags": [
+        "instagram"
+      ],
+      "width": 1024,
+      "height": 1280,
+      "sha256": "3d0f14d2ede26ae55084ab7850c8ebd92839fcd4e5ab100f18a71104ae8c3110",
+      "bytes": 244730,
+      "publish": true,
+      "uses": [
+        "gallery",
+        "muse"
+      ],
+      "rightsStatus": "public-instagram-archive-display",
+      "rights": "Original rights remain with the applicable rights holders. No reuse permission or license claimed.",
+      "sourceAttribution": "@_seorina · Instagram",
+      "sourceVerification": "Original account, publication date and media position confirmed in the public Instagram profile and carousel.",
+      "archivePhotoId": "ig-DgIE1nlIyvL-2"
+    },
+    {
       "id": "ig-DgIAKgNo70_-1",
       "src": "files/ig-DgIAKgNo70_-1.jpg",
       "title": "Instagram · 2026-11-24 · 01",

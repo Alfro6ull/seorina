@@ -344,13 +344,29 @@ a:hover { color:var(--accent); }
 <link rel="stylesheet" href="../assets/copyright.css?v=shared-footer">
 <link rel="stylesheet" href="../assets/archive-language.css?v=menu">
 <script src="../assets/archive-language.js" defer></script>
-<link rel="stylesheet" href="../filters/quick-index.css?v=blue-rail-preview">
-<script type="module" src="../filters/quick-index.js?v=all-destinations"></script>
+<link rel="stylesheet" href="site-drawer.css">
+<script src="site-drawer.js" defer></script>
 </head>
 <body id="top" data-archive-page="timeline" data-archive-language="zh">
 <a class="skip" href="#life">跳至事件档案</a>
 <header class="wrap timeline-top">
-  <a href="../index/" data-quick-index="icon" aria-label="站点索引">+</a>
+  <details class="life-site-drawer">
+    <summary aria-label="站点导航"><span aria-hidden="true">+</span></summary>
+    <nav class="life-site-nav" aria-label="站点导航">
+      <a href="../" lang="en">Seorina</a>
+      <span class="life-nav-separator" aria-hidden="true">｜</span>
+      <span class="life-nav-index">
+        <a href="../index/">索引</a><span aria-hidden="true">：</span>
+        <a href="./" lang="en" aria-current="page">Life</a>
+        <span class="life-nav-dot" aria-hidden="true">·</span>
+        <a href="../filters/" lang="en">Filters</a>
+        <span class="life-nav-dot" aria-hidden="true">·</span>
+        <a href="../muse/" lang="en">Muse</a>
+      </span>
+      <span class="life-nav-separator" aria-hidden="true">｜</span>
+      <a href="../gallery/">图库</a>
+    </nav>
+  </details>
   <h1 class="visually-hidden">薛仁雅｜生平档案</h1>
   <div class="year-banner" hidden>
     <p class="hero-year" aria-live="polite"></p>

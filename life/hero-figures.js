@@ -47,6 +47,15 @@ function attach(avatar, banner, reduce) {
   let previousFrame = 0;
   let idlePhase = 0;
   let lastIdlePaint = 0;
+  let activityMode = '';
+  let activityStart = null;
+  let nextActivityAt = 0;
+  let activityBag = [];
+  const activityDuration = 2600;
+  const activityScenes = [
+    ...core.modes.filter(item => ['dog','boxing','bike','skate','wave','script','bow'].includes(item.id)).map(item => item.id),
+    ...Object.keys(hobbies.modes).filter(item => ['guitar','listen','gaming','puzzle','write','ice','martial'].includes(item))
+  ];
   let inside = false;
   let destroyed = false;
   const idleInterval = 1000 / 30;
@@ -175,7 +184,8 @@ function attach(avatar, banner, reduce) {
     }
     const options = {x, y, height:actorHeight, phase, moving, facing,
       idle:reduce.matches ? 0 : 1, idlePhase};
-    if (mode === 'figure') drawFigure(actor, {...options, outfit, action:progress});
+    if (activityMode) drawActivity(actor, {...options, mode:activityMode, action:progress});
+    else if (mode === 'figure') drawFigure(actor, {...options, outfit, action:progress});
     else drawActivity(actor, {...options, mode, action:progress});
   }
 
@@ -258,16 +268,20 @@ function attach(avatar, banner, reduce) {
     const delta = previousFrame ? Math.min(64, Math.max(0, now - previousFrame)) : 0;
     previousFrame = now;
     idlePhase += delta * .001 * Math.PI * 2 / 4.4;
-    const active = walking || actionStart !== null || sweepStart !== null || landingStart !== null;
+    if (activityMode && activityStart !== null && now - activityStart >= activityDuration) {
+      activityMode = ''; activityStart = null; nextActivityAt = now + 18000 + Math.random()*17000;
+    }
+    const active = walking || actionStart !== null || sweepStart !== null || landingStart !== null || Boolean(activityMode);
     if (!active) {
       if (!lastIdlePaint || now - lastIdlePaint >= idleInterval) {
         paintActor();
         lastIdlePaint = now;
       }
+      if (nextActivityAt && now >= nextActivityAt) playRandom();
       queue();
       return;
     }
-    const action = progress(actionStart, now, actionDuration);
+    const action = activityMode ? Math.max(0,Math.min(1,(now-activityStart)/activityDuration)) : progress(actionStart, now, actionDuration);
     const sweep = progress(sweepStart, now, sweepDuration);
     const landing = progress(landingStart, now, landingDuration) ?? 1;
     const moving = walking ? 1 : 1 - landing;
@@ -299,7 +313,24 @@ function attach(avatar, banner, reduce) {
     queue();
   }
 
+  function playRandom() {
+    if (reduce.matches || !canAnimate() || activityMode) return false;
+    if (!activityBag.length) {
+      activityBag = activityScenes.slice();
+      for (let i=activityBag.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [activityBag[i],activityBag[j]]=[activityBag[j],activityBag[i]]; }
+    }
+    activityMode = activityBag.pop(); activityStart = performance.now();
+    actionStart = null; sweepStart = null; landingStart = null; walking = false;
+    queue(); return true;
+  }
+
+  function stopActivity() {
+    activityMode = ''; activityStart = null; nextActivityAt = performance.now()+18000;
+    if (!frame) paintActor();
+  }
+
   function show(nextMode, nextOutfit, animate) {
+    activityMode = ''; activityStart = null; nextActivityAt = performance.now()+5000+Math.random()*2000;
     actionStart = null;
     mode = nextMode || 'idle';
     outfit = nextOutfit;
@@ -361,7 +392,7 @@ function attach(avatar, banner, reduce) {
     document.removeEventListener('visibilitychange', syncPlayback);
     reduce.removeEventListener('change', syncPlayback);
   }
-  return {show, walk, settle, replay, destroy};
+  return {show, walk, settle, replay, playRandom, stopActivity, destroy};
 }
 
 return {attach};

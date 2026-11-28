@@ -1,6 +1,17 @@
 import { photoLibraryURL, photosFor, readPhotoLibrary } from '../assets/photos/library.js?v=instagram-archive';
 
 
+const index = document.querySelector('.gallery-index');
+index.addEventListener('keydown', event => {
+  if (event.key !== 'Escape' || !index.open) return;
+  event.preventDefault();
+  index.open = false;
+  index.querySelector('summary').focus();
+});
+document.addEventListener('click', event => {
+  if (index.open && !index.contains(event.target)) index.open = false;
+});
+
 function instagramOriginal(photo) {
   for (const candidate of [photo.instagramPost, photo.source]) {
     if (!candidate) continue;

@@ -1,16 +1,28 @@
 <!doctype html>
 <html lang="zh-Hans">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#20201c">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#17181a">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'">
 <title>Gallery · Seorina</title>
-<link rel="stylesheet" href="studies.css?v=colour"><link rel="stylesheet" href="../assets/copyright.css?v=shared-footer"><link rel="stylesheet" href="../filters/quick-index.css?v=clean-menu"><link rel="stylesheet" href="./gallery.css?v=moving-wall">
-<script type="module" src="../filters/quick-index.js?v=all-destinations"></script><script type="module" src="./gallery.js?v=moving-wall"></script>
+<link rel="stylesheet" href="studies.css?v=colour"><link rel="stylesheet" href="../assets/copyright.css?v=shared-footer"><link rel="stylesheet" href="./gallery.css?v=wall-index">
+<script type="module" src="./gallery.js?v=wall-index"></script>
 </head>
 <body>
 <main class="wall-world">
   <header class="wall-bar gallery-bar">
-    <a href="../index/" data-quick-index>站点索引</a>
+    <details class="gallery-index">
+      <summary aria-label="站点导航"><span aria-hidden="true">+</span></summary>
+      <nav aria-label="站点导航">
+        <a href="../" lang="en">Seorina</a><span aria-hidden="true">｜</span>
+        <span class="gallery-index-section">
+          <a href="../index/">索引</a><span class="index-colon" aria-hidden="true">：</span>
+          <a href="../life/" lang="en">Life</a><span class="index-dot" aria-hidden="true">·</span>
+          <a href="../filters/" lang="en">Filters</a><span class="index-dot" aria-hidden="true">·</span>
+          <a href="../muse/" lang="en">Muse</a>
+        </span><span aria-hidden="true">｜</span>
+        <a href="./" aria-current="page">图库</a>
+      </nav>
+    </details>
     <h1 lang="en">Gallery</h1>
     <output id="gallery-count" aria-label="当前浏览位置">—</output>
   </header>

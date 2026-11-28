@@ -1,5 +1,5 @@
 import {readPhotoLibrary,photosFor,photoLibraryURL} from '../assets/photos/library.js?v=instagram-archive';
-const $=id=>document.getElementById(id),mode=document.body.dataset.study;
+const $=id=>document.getElementById(id);
 const reduce=matchMedia('(prefers-reduced-motion: reduce)'),clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const pad=n=>String(n).padStart(2,'0'),src=row=>new URL(row.src,photoLibraryURL).href;
 function shuffled(input){
@@ -9,19 +9,10 @@ function shuffled(input){
 let rows=[];
 function metric(i){$('count').textContent=`${pad(i+1)} / ${pad(rows.length)}`}
 function img(row,lazy=true){const el=new Image();if(lazy)el.loading='lazy';el.decoding='async';el.alt=row.title;el.src=src(row);return el;}
-function photoDetail(row){
- const d=$('detail'),photo=$('detail-image');photo.src=src(row);photo.alt=row.title;$('detail-label').textContent=row.title;$('detail-source').href=row.source;
- if(!d.open)d.showModal();
-}
-if($('detail')){
- $('close').onclick=()=>$('detail').close();
- $('detail').addEventListener('click',e=>{if(e.target===$('detail'))$('detail').close()});
- $('detail').addEventListener('close',()=>$('detail-image').removeAttribute('src'));
-}
 function arrows(prev,next){
  $('prev').onclick=prev;$('next').onclick=next;
  window.addEventListener('keydown',e=>{
-  if($('detail')?.open||e.altKey||e.metaKey||e.ctrlKey||e.target instanceof HTMLButtonElement&&e.key===' ')return;
+  if(e.altKey||e.metaKey||e.ctrlKey||e.target instanceof HTMLButtonElement&&e.key===' ')return;
   if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();prev()}
   if(e.key==='ArrowRight'||e.key==='ArrowDown'){e.preventDefault();next()}
  });
@@ -85,77 +76,5 @@ function depth(){
  window.addEventListener('pageshow',()=>{if(!raf)tick()});
  show(0);tick();
 }
-function slices(){
- const rail=$('strip'),stage=rail.parentElement,ticks=$('ticks');
- let cur=0,target=0,down=null,suppress=0,raf=0;
- const steps=28;ticks.replaceChildren(...Array.from({length:steps},()=>document.createElement('i')));
- const cards=rows.map((row,i)=>{
-  const b=document.createElement('button');b.type='button';b.className='film-window';b.setAttribute('aria-label','查看 '+row.title);
-  const n=document.createElement('small');n.textContent=pad(i+1);b.append(n);
-  b.addEventListener('focus',()=>{if(b.matches(':focus-visible'))set(i)});
-  b.addEventListener('click',()=>{if(performance.now()>suppress)photoDetail(row)});
-  return b;
- });
- rail.replaceChildren(...cards);
- function windowAt(pos){
-  const k=Math.round(pos);
-  for(let i=Math.max(0,k-10);i<Math.min(k+17,cards.length);i++)if(!cards[i].querySelector('img'))cards[i].prepend(img(rows[i],false));
-  for(const i of loaded)if(Math.abs(i-k)>20){cards[i].querySelector('img')?.remove();loaded.delete(i)}
-  for(let i=Math.max(0,k-10);i<Math.min(k+17,cards.length);i++)loaded.add(i);
- }
- const loaded=new Set();let shown=-1,cell=0;
- function measure(){cell=cards[1]?.offsetLeft-cards[0].offsetLeft||70;}
- function set(n){target=clamp(n,0,rows.length-1);if(!raf)tick();}
- function tick(){
-  cur+=(target-cur)*(reduce.matches?1:.14);
-  if(Math.abs(target-cur)<.004)cur=target;
-  rail.style.transform=`translate3d(${-cur*cell}px,0,0)`;
-  const i=Math.round(cur);if(i!==shown){shown=i;windowAt(cur);metric(i);[...ticks.children].forEach((node,j)=>node.classList.toggle('active',j===Math.round(i/(rows.length-1||1)*(steps-1))));}
-  raf=Math.abs(cur-target)>.004?requestAnimationFrame(tick):0;
- }
- arrows(()=>set(target-1),()=>set(target+1));
- stage.addEventListener('wheel',e=>{e.preventDefault();set(target+(Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY)/91)},{passive:false});
- stage.addEventListener('pointerdown',e=>{down={x:e.clientX,start:target,id:e.pointerId,moved:false};});
- stage.addEventListener('pointermove',e=>{if(down?.id!==e.pointerId)return;const d=down.x-e.clientX;if(Math.abs(d)>6){if(!down.moved){stage.setPointerCapture(e.pointerId);down.moved=true;}suppress=performance.now()+260;set(down.start+d/cell);}});
- for(const event of ['pointerup','pointercancel','lostpointercapture','pointerleave'])stage.addEventListener(event,()=>down=null);
- window.addEventListener('resize',()=>{measure();if(!raf)tick()});
- measure();tick();
-}
-function wall(){
- const view=$('wall-scroll'),root=$('wall');let goal=0,frame=0,drag=null,suppress=0;
- const columns=[],mounted=new Set();
- for(let i=0;i<rows.length;i+=3){
-  const group=document.createElement('div');group.className='wall-column';
-  for(const row of rows.slice(i,i+3)){
-   const b=document.createElement('button');b.type='button';b.className='wall-tile';b.setAttribute('aria-label','查看 '+row.title);b.onclick=()=>{if(performance.now()>suppress)photoDetail(row)};group.append(b);
-  }
-  root.append(group);columns.push(group);
- }
- const max=()=>Math.max(0,view.scrollWidth-view.clientWidth);
- function paint(){
-  const frac=clamp(view.scrollLeft/(max()||1),0,1),step=columns[1]?.offsetLeft-columns[0].offsetLeft||300,mid=view.scrollLeft+view.clientWidth*.5;
-  const first=Math.max(0,Math.floor(view.scrollLeft/step)-1),last=Math.min(columns.length,Math.ceil((view.scrollLeft+view.clientWidth)/step)+2);
-  $('progress').style.transform=`scaleX(${frac})`;metric(Math.min(rows.length-1,Math.round(frac*(columns.length-1))*3));
-  for(let i=first;i<last;i++){
-   const c=columns[i];
-   if(!mounted.has(i)){[...c.children].forEach((node,j)=>node.append(img(rows[i*3+j],false)));mounted.add(i);}
-   if(!reduce.matches)c.style.transform=`translateY(calc(var(--shift,0%) + ${clamp((mid-c.offsetLeft-step/2)/9,-39,39)}px))`;
-  }
-  for(const i of mounted)if(i<first-2||i>=last+2){[...columns[i].children].forEach(node=>node.querySelector('img')?.remove());mounted.delete(i);}
-
- }
- function animate(){
-  const dx=goal-view.scrollLeft;
-  if(Math.abs(dx)<1.15||reduce.matches){view.scrollLeft=goal;frame=0;paint();return}
-  view.scrollLeft+=dx*.18;paint();frame=requestAnimationFrame(animate);
- }
- function shift(delta){goal=clamp((frame?goal:view.scrollLeft)+delta,0,max());if(!frame)animate()}
- view.addEventListener('wheel',e=>{e.preventDefault();shift(Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY*.85)},{passive:false});
- window.addEventListener('resize',paint);view.addEventListener('scroll',paint,{passive:true});arrows(()=>shift(-view.clientWidth*.56),()=>shift(view.clientWidth*.56));
- view.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse')return;drag={x:e.clientX,left:view.scrollLeft,id:e.pointerId,moved:false};});
- view.addEventListener('pointermove',e=>{if(drag?.id!==e.pointerId)return;const d=drag.x-e.clientX;if(Math.abs(d)>5){if(!drag.moved){view.setPointerCapture(e.pointerId);drag.moved=true;}cancelAnimationFrame(frame);frame=0;view.classList.add('is-grabbing');view.scrollLeft=drag.left+d;suppress=performance.now()+250;}});
- for(const event of ['pointerup','pointercancel','lostpointercapture','pointerleave'])view.addEventListener(event,()=>{drag=null;view.classList.remove('is-grabbing')});
- paint();
-}
-try{rows=shuffled(photosFor(await readPhotoLibrary(),'muse'));if(!rows.length)throw Error('empty library');if(mode==='depth')depth();else if(mode==='aristide')slices();else wall();}
+try{rows=shuffled(photosFor(await readPhotoLibrary(),'muse'));if(!rows.length)throw Error('empty library');depth();}
 catch(error){$('count').textContent='照片暂时无法读取';console.error(error);}

@@ -1,7 +1,5 @@
 import { photoLibraryURL, photosFor, readPhotoLibrary } from '../assets/photos/library.js?v=instagram-archive';
 
-const grid = document.querySelector('#gallery-grid');
-const status = document.querySelector('#gallery-status');
 
 function instagramOriginal(photo) {
   for (const candidate of [photo.instagramPost, photo.source]) {
@@ -27,179 +25,146 @@ function originalLink(href) {
   return link;
 }
 
-const select = document.querySelector('#gallery-month');
-const paging = document.querySelector('.gallery-paging');
-const prev = document.querySelector('#gallery-newer');
-const next = document.querySelector('#gallery-older');
-const total = document.querySelector('#gallery-total');
-const postTitles = new Map([['DgMv4KrEkVR', '钢3首播']]);
-const element = (tag, name, content) => {
-  const node = document.createElement(tag);
-  if (name) node.className = name;
-  if (content) node.textContent = content;
-  return node;
-};
-const countLabel = n => n.toLocaleString('zh-Hans') + ' 张';
-const monthLabel = key => key === 'undated' ? '日期未记录' : key.slice(0,4) + ' 年 ' + Number(key.slice(5)) + ' 月';
-const months = new Map();
-let visible = [], active = '', resizeFrame = 0, laidOutWidth = 0;
+const view = document.querySelector('#wall-scroll');
+const wall = document.querySelector('#wall');
+const count = document.querySelector('#gallery-count');
+const slider = document.querySelector('#gallery-position');
+const prev = document.querySelector('#gallery-prev');
+const next = document.querySelector('#gallery-next');
+const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
 
-function createPhoto(photo, eager) {
-  const original = instagramOriginal(photo);
-  const frame = original ? originalLink(original) : document.createElement('div');
-  frame.className = 'sheet-photo';
-  const img = document.createElement('img');
-  img.width = photo.width;
-  img.height = photo.height;
-  img.alt = photo.title;
-  img.loading = eager ? 'eager' : 'lazy';
-  img.decoding = 'async';
-  img.src = new URL(photo.src, photoLibraryURL);
-  if (original) frame.setAttribute('aria-label', photo.title + ' · 查看 Instagram 原帖（新标签页）');
-  frame.append(img);
-  return { frame, ratio: photo.width / photo.height };
-}
-
-function makeRows(photos, width, gap, target) {
-  const rows = [];
-  let group = [], sum = 0;
-  const push = (last = false) => {
-    if (!group.length) return;
-    const naturalWidth = target * sum + gap * (group.length - 1);
-    const row = element('div', 'photo-row');
-    row.style.gridTemplateColumns = group.map(x => 'minmax(0,' + x.ratio + 'fr)').join(' ');
-    // Leave a short final row at a similar size to the preceding rows.
-    if (last && naturalWidth < width * .9) row.style.width = Math.round(naturalWidth) + 'px';
-    row.append(...group.map(x => x.frame));
-    rows.push(row);
-    group = [];
-    sum = 0;
-  };
-  for (const photo of photos) {
-    const old = target * sum + gap * Math.max(0, group.length - 1);
-    const added = target * (sum + photo.ratio) + gap * group.length;
-    if (group.length && added >= width && Math.abs(width - old) < Math.abs(width - added)) push();
-    group.push(photo);
-    sum += photo.ratio;
-    if (target * sum + gap * (group.length - 1) >= width) push();
-  }
-  push(true);
-  return rows;
-}
-
-function relayout() {
-  resizeFrame = 0;
-  const reference = visible[0]?.shelf;
-  if (!reference) return;
-  const width = reference.clientWidth;
-  if (!width || width === laidOutWidth) return;
-  laidOutWidth = width;
-  const gap = parseFloat(getComputedStyle(reference).getPropertyValue('--photo-gap'));
-  const target = Math.max(99, Math.min(172, width / (width < 610 ? 3.25 : 5.3)));
-  const focused = document.activeElement;
-  const restoreFocus = grid.contains(focused) && focused.matches('a.sheet-photo');
-  for (const { shelf, photos } of visible) shelf.replaceChildren(...makeRows(photos, width, gap, target));
-  if (restoreFocus) focused.focus({ preventScroll: true });
-}
-
-function render(key) {
-  const posts = months.get(key);
-  if (!posts || key === active) return;
-  active = key;
-  select.value = key;
-  grid.setAttribute('aria-label', monthLabel(key) + '照片');
+function mountWall(photos) {
+  const columns = [], mounted = new Set();
   const fragment = document.createDocumentFragment();
-  visible = [];
-  let first = 0;
-  for (const post of posts.values()) {
-    const sheet = element('section', 'post-sheet');
-    const meta = element('header', 'sheet-meta');
-    const title = element('h2');
-    if (post.date) {
-      const date = element('time', '', post.date.slice(5).replace('-', '.'));
-      date.dateTime = post.date;
-      title.append(date);
+  for (let i = 0; i < photos.length; i += 3) {
+    const column = document.createElement('div');
+    column.className = 'wall-column';
+    for (const photo of photos.slice(i, i + 3)) {
+      const source = instagramOriginal(photo);
+      const tile = source ? originalLink(source) : document.createElement('div');
+      tile.className = 'wall-tile';
+      if (source) tile.setAttribute('aria-label', photo.title + ' · IG 原帖（新标签页）');
+      column.append(tile);
     }
-    const label = postTitles.get(post.id) || (!post.date ? '未标日期' : '');
-    if (label) title.append(element('span', '', label));
-    const info = element('div', 'sheet-details');
-    info.append(element('span', '', countLabel(post.photos.length)));
-    if (post.url) {
-      const link = originalLink(post.url);
-      link.textContent = '原帖 ↗';
-      link.setAttribute('aria-label', (post.date || '该组') + ' · Instagram 原帖（新标签页）');
-      info.append(link);
-    }
-    meta.append(title, info);
-    const shelf = element('div', 'sheet-photos');
-    sheet.append(meta, shelf);
-    fragment.append(sheet);
-    visible.push({ shelf, photos: post.photos.map(photo => createPhoto(photo, first++ < 3)) });
+    fragment.append(column);
+    columns.push(column);
   }
-  grid.replaceChildren(fragment);
-  laidOutWidth = 0;
-  relayout();
-  const keys = [...months.keys()], index = keys.indexOf(key);
-  for (const [control, other, text] of [[prev, keys[index - 1], '← 较新'], [next, keys[index + 1], '继续看 →']]) {
-    control.hidden = !other;
-    if (other) {
-      control.href = '#' + other;
-      control.textContent = text + ' · ' + monthLabel(other);
+  wall.append(fragment);
+  let frame = 0, target = 0, dragging = null, suppressUntil = 0, paintFrame = 0;
+  const max = () => Math.max(0, view.scrollWidth - view.clientWidth);
+  function paint() {
+    paintFrame = 0;
+    const x = view.scrollLeft, end = max(), fraction = end ? x / end : 0;
+    const step = columns[1] ? columns[1].offsetLeft - columns[0].offsetLeft : columns[0].offsetWidth;
+    if (!step) return;
+    const first = Math.max(0, Math.floor(x / step) - 1);
+    const last = Math.min(columns.length, Math.ceil((x + view.clientWidth) / step) + 2);
+    const current = x >= end - 1 && end > 0 ? photos.length :
+      Math.min(photos.length, Math.max(1, Math.floor((x + step / 2) / step) * 3 + 1));
+    count.textContent = current + ' / ' + photos.length;
+    slider.value = String(Math.round(fraction * 1000));
+    slider.setAttribute('aria-valuetext', '第 ' + current + ' 张，共 ' + photos.length + ' 张');
+    prev.disabled = x <= 1;
+    next.disabled = x >= end - 1;
+    slider.disabled = end === 0;
+    for (let i = first; i < last; i++) {
+      const column = columns[i];
+      if (!mounted.has(i)) {
+        [...column.children].forEach((tile, j) => {
+          const photo = photos[i * 3 + j];
+          const image = new Image();
+          image.alt = tile.matches('a') ? '' : photo.title;
+          image.decoding = 'async';
+          image.draggable = false;
+          image.src = new URL(photo.src, photoLibraryURL);
+          tile.append(image);
+        });
+        mounted.add(i);
+      }
+      column.style.transform = reduced.matches ? '' :
+        'translateY(calc(var(--shift,0%) + ' + clamp((x + view.clientWidth / 2 - column.offsetLeft - step / 2) / 9, -39, 39) + 'px))';
+    }
+    for (const i of mounted) {
+      if (i >= first - 2 && i < last + 2) continue;
+      for (const tile of columns[i].children) tile.firstElementChild?.remove();
+      columns[i].style.transform = '';
+      mounted.delete(i);
     }
   }
-  paging.hidden = prev.hidden && next.hidden;
-}
-
-function hashMonth() {
-  const hash = location.hash.slice(1);
-  return months.has(hash) ? hash : months.keys().next().value;
-}
-function jump() {
-  render(hashMonth());
-  grid.focus({ preventScroll: true });
-  window.scrollTo(0, 0);
+  function queuePaint() { if (!paintFrame) paintFrame = requestAnimationFrame(paint); }
+  function animate() {
+    const delta = target - view.scrollLeft;
+    if (Math.abs(delta) < 1.15 || reduced.matches) {
+      frame = 0;
+      view.scrollLeft = target;
+      queuePaint();
+      return;
+    }
+    view.scrollLeft += delta * .18;
+    frame = requestAnimationFrame(animate);
+  }
+  function stop() { if (frame) cancelAnimationFrame(frame); frame = 0; }
+  function shift(delta) {
+    target = clamp((frame ? target : view.scrollLeft) + delta, 0, max());
+    if (!frame) animate();
+  }
+  prev.addEventListener('click', () => shift(-view.clientWidth * .56));
+  next.addEventListener('click', () => shift(view.clientWidth * .56));
+  slider.addEventListener('input', () => { stop(); view.scrollLeft = max() * Number(slider.value) / 1000; queuePaint(); });
+  view.addEventListener('scroll', queuePaint, { passive: true });
+  new ResizeObserver(queuePaint).observe(view);
+  reduced.addEventListener('change', queuePaint);
+  view.addEventListener('wheel', e => {
+    if (e.ctrlKey || e.metaKey) return;
+    const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY * .85;
+    if (!delta || (delta > 0 && view.scrollLeft >= max() - 1) || (delta < 0 && view.scrollLeft <= 1)) return;
+    e.preventDefault();
+    shift(delta * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? view.clientWidth : 1));
+  }, { passive: false });
+  view.addEventListener('keydown', e => {
+    if (!['ArrowLeft', 'ArrowRight'].includes(e.key) || e.altKey || e.ctrlKey || e.metaKey) return;
+    e.preventDefault();
+    shift(view.clientWidth * .56 * (e.key === 'ArrowLeft' ? -1 : 1));
+  });
+  view.addEventListener('dragstart', e => e.preventDefault());
+  view.addEventListener('pointerdown', e => {
+    if (e.pointerType !== 'mouse' || e.button !== 0) return;
+    stop();
+    dragging = { id: e.pointerId, x: e.clientX, left: view.scrollLeft, moved: false };
+  });
+  view.addEventListener('pointermove', e => {
+    if (dragging?.id !== e.pointerId) return;
+    const delta = dragging.x - e.clientX;
+    if (!dragging.moved && Math.abs(delta) <= 6) return;
+    if (!dragging.moved) {
+      dragging.moved = true;
+      view.setPointerCapture(e.pointerId);
+      view.classList.add('is-grabbing');
+    }
+    view.scrollLeft = dragging.left + delta;
+  });
+  for (const name of ['pointerup','pointercancel','lostpointercapture','pointerleave']) {
+    view.addEventListener(name, e => {
+      if (dragging?.id !== e.pointerId) return;
+      if (dragging.moved) suppressUntil = performance.now() + 240;
+      dragging = null;
+      view.classList.remove('is-grabbing');
+    });
+  }
+  view.addEventListener('click', e => { if (e.detail && performance.now() < suppressUntil) e.preventDefault(); }, true);
+  paint();
 }
 
 try {
   const rows = await readPhotoLibrary();
-  const existingPublic = photosFor(rows, 'muse').filter(photo => photo.rightsStatus === 'existing-muse-only');
-  const photos = [...new Map([...existingPublic, ...photosFor(rows, 'gallery')].map(p => [p.id, p])).values()];
+  const legacy = photosFor(rows, 'muse').filter(row => row.rightsStatus === 'existing-muse-only');
+  const photos = [...new Map([...legacy, ...photosFor(rows, 'gallery')].map(row => [row.id, row])).values()];
   photos.sort((a, b) => (b.date || '').localeCompare(a.date || '') || (a.instagramPost || '').localeCompare(b.instagramPost || '') || (a.instagramPosition || 1) - (b.instagramPosition || 1));
   if (!photos.length) throw Error('Empty photo library');
-  for (const photo of photos) {
-    const date = /^\d{4}-\d{2}-\d{2}$/.test(photo.date || '') ? photo.date : '';
-    const key = date ? date.slice(0, 7) : 'undated';
-    const original = instagramOriginal(photo);
-    const url = original?.split('?')[0];
-    const id = url?.split('/').at(-2) || photo.id;
-    if (!months.has(key)) months.set(key, new Map());
-    const posts = months.get(key);
-    if (!posts.has(id)) posts.set(id, { id, date, url, photos: [] });
-    posts.get(id).photos.push(photo);
-  }
-  const years = new Map();
-  for (const key of months.keys()) {
-    const year = key.slice(0, 4);
-    if (!years.has(year)) {
-      const group = document.createElement('optgroup');
-      group.label = key === 'undated' ? '其他' : year;
-      select.append(group);
-      years.set(year, group);
-    }
-    const option = new Option(monthLabel(key), key);
-    years.get(year).append(option);
-  }
-  grid.tabIndex = -1;
-  total.textContent = countLabel(photos.length);
-  select.parentElement.hidden = false;
-  select.addEventListener('change', () => { location.hash = select.value; });
-  window.addEventListener('hashchange', jump);
-  render(hashMonth());
-  new ResizeObserver(() => {
-    if (!resizeFrame) resizeFrame = requestAnimationFrame(relayout);
-  }).observe(grid);
+  mountWall(photos);
 } catch (error) {
-  status.textContent = '图库暂时无法读取。';
-  status.hidden = false;
+  document.querySelector('#gallery-status').textContent = '图库暂时无法读取。';
+  document.querySelector('#gallery-status').hidden = false;
   console.error(error);
 }

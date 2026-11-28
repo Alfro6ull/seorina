@@ -1,0 +1,17 @@
+:root {
+  color-scheme: light;
+  --paper: #f3f6e9;
+  --cream: #233929;
+  --ink: #233929;
+  --muted: #495d4e;
+  --accent: #2a624f;
+  --entry-ink: #233929;
+  --entry-rule: #53694c59;
+  --line: #566e4c45;
+  --edge: clamp(18px,5.6vw,90px);
+  background: var(--paper);
+  color: var(--ink);
+}
+body { background: radial-gradient(ellipse at 12% 2%,#fffbed85,transparent 64%),var(--paper); }
+.day-shell { width: min(1160px, calc(100% - 2 * var(--edge))); margin-inline: auto; }
+.day-shell :is(a,button,summary):focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }

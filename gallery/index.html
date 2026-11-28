@@ -1,21 +1,34 @@
 <!doctype html>
 <html lang="zh-Hans">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#171921">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#f7f9fd">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'">
 <title>Gallery · Seorina</title>
-<link rel="stylesheet" href="../assets/home/home.css"><link rel="stylesheet" href="../assets/home/index.css?v=centered-catalog"><link rel="stylesheet" href="../assets/copyright.css?v=shared-footer"><link rel="stylesheet" href="../filters/quick-index.css?v=clean-menu"><link rel="stylesheet" href="./gallery.css?v=instagram-original">
-<script type="module" src="../filters/quick-index.js?v=all-destinations"></script><script type="module" src="./gallery.js?v=instagram-archive"></script>
+<link rel="stylesheet" href="../assets/home/home.css"><link rel="stylesheet" href="../assets/copyright.css?v=shared-footer"><link rel="stylesheet" href="../filters/quick-index.css?v=clean-menu"><link rel="stylesheet" href="./gallery.css?v=contact-sheets">
+<script type="module" src="../filters/quick-index.js?v=all-destinations"></script><script type="module" src="./gallery.js?v=contact-sheets"></script>
 </head>
 <body>
-<header class="indexbar"><a class="return-home" href="../index/" data-quick-index>站点索引</a><span class="site-name" lang="en">Seorina</span></header>
-<main class="catalog gallery-catalog">
-  <h1 lang="en">Gallery</h1>
-  <div id="gallery-grid" class="gallery-grid"></div>
-  <p id="gallery-status" role="status" hidden></p>
+<header class="gallery-header gallery-shell">
+  <a class="gallery-index-link" href="../index/" data-quick-index>站点索引</a>
+  <a class="gallery-brand" href="../" lang="en">Seorina</a>
+</header>
+<main class="gallery-main gallery-shell">
+  <div class="gallery-heading">
+    <div class="gallery-title"><h1 lang="en">Gallery</h1><span id="gallery-total" class="gallery-total"></span></div>
+    <label class="gallery-jump" hidden>
+      <span class="sr-only">跳到年月</span>
+      <select id="gallery-month"><option value="" disabled>跳到年月</option></select>
+    </label>
+  </div>
+  <div id="gallery-grid" class="gallery-collection" role="region"></div>
+  <p id="gallery-status" class="gallery-status" role="status" hidden></p>
+  <nav class="gallery-paging" aria-label="按月浏览" hidden>
+    <a id="gallery-newer" hidden></a>
+    <a id="gallery-older" hidden></a>
+  </nav>
   <noscript><p>请启用 JavaScript 查看图库。</p></noscript>
 </main>
-<footer class="index-footer">
+<footer class="gallery-footer gallery-shell">
 <!-- SITE-FOOTER:START -->
 <section class="archive-copyright" aria-labelledby="archive-copyright-title">
   <h2 id="archive-copyright-title">版权声明</h2>

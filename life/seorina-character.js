@@ -50,8 +50,8 @@
   function idleMotion(options = {}) {
     const phase=finite(options.idlePhase,0);
     const strength=clamp(options.idle)*(1-clamp(options.moving))*(1-Math.sin(clamp(options.action)*Math.PI)*.65);
-    return {phase,strength,breath:Math.sin(phase)*.9*strength,
-      sway:Math.sin(phase*.5)*1.6*strength,tilt:Math.sin(phase*.5)*.016*strength};
+    return {phase,strength,breath:Math.sin(phase)*2.0*strength,
+      sway:Math.sin(phase*.5)*2.0*strength,tilt:Math.sin(phase*.5)*.026*strength};
   }
 
   /**
